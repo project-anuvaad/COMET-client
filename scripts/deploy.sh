@@ -4,10 +4,15 @@ if ["$1" = ""]; then
     echo "Usage: source deploy.sh s3-bucket-name"
     exit 1
 else
+    echo "Installing dependencies"
+    export CI=false
+    npm install
+    echo "Building ..."
+    npm run build
     echo "Starting Deployment"
     echo "TARGET BUCKET" + $TARGET_BUCKET
-    # Install AWS CLI
     echo " INSTALLING AWS CLI "
+    apk add --update python python-dev py-pip jq
     pip install awscli --upgrade
 
     echo "CONFIGURING AWS"

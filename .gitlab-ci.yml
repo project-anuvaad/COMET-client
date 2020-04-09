@@ -5,19 +5,19 @@ stages:
   - build
   - deploy
 
-build-master:
-  image: node:10.15.0-jessie
-  stage: build
-  script:
-    - source scripts/build.sh 
-  only:
-    - master
+# build-master:
+#   image: node:10.15.0-jessie
+#   stage: build
+#   script:
+#     - source scripts/build.sh 
+#   only:
+#     - master
 
 deploy-production:
-  image: python:latest
+  image: node:10.15.0-jessie
   stage: deploy
-  dependencies:
-    - build-master
+  # dependencies:
+  #   - build-master
   script:
     - source scripts/deploy.sh videowiki-staging.org
   when: manual
