@@ -3,6 +3,7 @@ before_script:
   - echo "Starting..."
 stages:
   - build
+  - deploy
 
 # build-master:
 #   image: node:10.15.0-jessie
