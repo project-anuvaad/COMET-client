@@ -6,7 +6,7 @@ stages:
   - deploy
 
 build-master:
-  image: node:latest
+  image: node:10.15.0-jessie
   stage: build
   script:
     - source scripts/build.sh 
