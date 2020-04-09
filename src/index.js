@@ -20,7 +20,6 @@ ReactDOM.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <ConnectedRouter history={history}>
-        hello test
         <AppRouter />
       </ConnectedRouter>
       <NotificationContainer />
