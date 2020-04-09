@@ -1,0 +1,52 @@
+.upload-progress-box {
+    width: 400px;
+    // height: 200px;
+    .card {
+        height: 100%;
+        button.close {
+            color: white !important;
+            background-color: #83878A !important;
+            box-shadow: none !important;
+        }
+        .header {
+            padding: 0.8rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #7e93a7;
+            .action-buttons {
+                button.minimize {
+                    color: white !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                    font-weight: bold;
+                }
+                
+            }
+        }
+        .content {
+            max-height: 200px;
+            overflow-y: scroll;
+            .progress-container {
+                display: flex;
+                align-items: center;
+                color: #0e7ceb;
+                .progress-percentage {
+                    display: inline-block;
+                    width: 15%;
+                }
+                .progress-bar-container {
+                    display: inline-block;
+                    width: 80%;
+                    .progress {
+                        margin: 0;
+                        .bar {
+                            background-color: #0e7ceb;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

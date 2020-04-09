@@ -1,0 +1,136 @@
+.home {
+    h1 {
+        text-align: center;
+        font: Bold 80px/100px Proxima Nova !important;
+        letter-spacing: 0;
+        opacity: 1;
+    }
+    h2 {
+        text-align: left;
+        font: Bold 45px/73px Proxima Nova !important;
+        letter-spacing: -1.02px;
+        color: #181F38;
+        opacity: 1;
+    }
+    
+    font-family: Proxima Nova;
+    .give-feedback-btn {
+        position: fixed;
+        right: -3rem;
+        top: 50%;
+        padding: 1rem;
+        z-index: 2;
+        transform: rotateZ(270deg)
+    }
+    .register-btn {
+        background: #181F38 0% 0% no-repeat padding-box !important;
+        border-radius: 36px;
+        opacity: 1;
+        color: white;
+        padding: 15px 45px;
+        font: Medium 25px/30px;
+    }
+    .header-wrapper {
+        padding: 0 1em;
+        z-index: 2;
+        background: #FAFAFA 0% 0% no-repeat padding-box;
+        .home-header {
+            // text-transform: uppercase !important;
+            width: 95%;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin: 0 auto !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .video, .wiki {
+                text-align: left;
+                font: Bold 35px/42px;
+                letter-spacing: 0;
+            }
+            .video {
+                color: #181F38;
+            }
+            .wiki {
+                color: #55AE48;
+            }
+        }
+        .logo-wrapper {
+            position: relative;
+            .stage-badge {
+                position: absolute;
+            }   
+            .logo {
+                padding-top: 10px;
+                width: 155px !important;
+                height: 46px !important;
+            }
+        }
+        .navbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            font-size: 1rem;
+            margin: 0;
+            height: 85px;
+            .nav-btn {
+                background-color: transparent !important;
+                &:hover, &:focus {
+                    background-color: transparent !important;
+                }
+                .active {
+                    color: green !important;
+                }
+                color: #181F38 !important;
+                box-shadow: none;
+                font-weight: normal;
+                padding: 0 1rem;
+                text-align: left;
+                font: 20px/25px Proxima Nova;
+                vertical-align: middle;
+                font-weight: 500;
+                letter-spacing: 0;
+
+                cursor: pointer;
+                a {
+                    color: #181F38 !important;
+                }
+            }
+        }
+    }
+
+    .content {
+        z-index: 1;
+    }
+}
+
+.footer {
+    height: 70px;
+    position: relative;
+    border-top: 1px solid white;
+    color: white !important;
+    background-image: linear-gradient(164deg, #133859, #0c151d 73%, #0b0d0f);
+    // display: flex;
+    // justify-content: flex-end;
+    .links {
+        width: 30%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        a {
+            font-weight: bold;
+            color: white !important;
+        }
+    }
+    .initiative {
+        position: absolute;
+        left: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding-left: 1rem;
+    }
+}

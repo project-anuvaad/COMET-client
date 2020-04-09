@@ -1,0 +1,34 @@
+.cover {
+    // width: 100%;
+    // height: 100vh;
+    // position: relative;
+    // background-image: linear-gradient(164deg, #133859, #0c151d 73%, #0b0d0f);
+    // overflow: hidden;
+    margin-top: 4rem;
+    .header-1 {
+        text-align: left;
+        font: Bold 70px/80px Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+    }
+    .header-2 {
+        text-align: left;
+        margin-top: 0;
+        padding-top: 0;
+        font: Bold 70px/80px Proxima Nova;
+        letter-spacing: 0;
+        color: #4E6CF1;
+    }
+    .poc {
+        font: 30px/50px Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+    }
+    .learn-more-btn {
+        border: 2px solid #181E38 !important;
+        border-radius: 36px !important;
+        color: #181E38 !important;
+        width: 230px;
+        font: Medium 25px/30px Proxima Nova;
+    }
+}

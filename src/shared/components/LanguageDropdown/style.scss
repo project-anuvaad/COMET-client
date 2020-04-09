@@ -1,0 +1,41 @@
+.language-search {
+    &.custom-selection {
+        padding-right: 0.5rem !important;
+        cursor: pointer;
+        word-wrap: break-word;
+        background: #fff;
+        color: rgba(0,0,0,.87);
+        line-height: 1em;
+        padding: .78571429em 2.1em .78571429em 1em;
+
+        border: 1px solid rgba(34,36,38,.15);
+        border-radius: .28571429rem;
+        .icon {
+            // position: absolute;
+            // right: 10px;
+            // float: right;
+        }
+    }
+    .ui.dropdown.custom-selection>.left.menu {
+        left: 0 !important;
+    }
+
+    
+    
+    .icon {
+        color: #0e7ceb;
+        margin-left: 5px;
+    }
+    .item .icon {
+        visibility: hidden;
+        position: absolute;
+        right: 5px;
+        margin: 0;
+    }
+    .item:hover .icon {
+        visibility: visible; 
+    }
+    input {
+        border-radius: 20px !important;
+    }
+}

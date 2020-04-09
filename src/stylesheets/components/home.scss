@@ -1,0 +1,51 @@
+.home {
+    .header-wrapper {
+        padding: 1em;
+       
+        .header {
+            height: 60px;
+        }
+        .logo {
+            padding-top: 10px;
+            width: 130px !important;
+            // height: 50px !important;
+        }
+    }
+    
+}
+
+
+/* section - how can you make an impact */
+
+.how-to {
+    padding: 3%;
+}
+
+.how-to > h2 {
+    padding-top: 3%;
+    text-align: center;
+}
+
+.how-to > .steps {
+    padding-top: 5%;
+}
+
+.step-header {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 15px;
+}
+
+.step-description {
+    font-size: 1.2em;
+    margin: 15px;
+}
+
+.row-3 {
+    display: grid;
+    grid-template-columns: 33.3% 33.3% 33.3%;
+}
+
+.row-3 > div {
+    text-align: center;
+}

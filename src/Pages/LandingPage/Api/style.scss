@@ -1,0 +1,34 @@
+.api {
+    // margin: 5rem auto;
+    // height: 550px;
+    .api-container {
+        margin-top: 5rem;
+    }
+    h2 {
+        font: Bold 4rem Proxima Nova !important;
+        letter-spacing: 0;
+        color: #4E6CF1;
+    }
+    p {
+        font: 1.6rem Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+    }
+    .register-input input {
+        padding: 1rem;
+    }
+    .register-action {
+        background: #182038 0% 0% no-repeat padding-box;
+        border-radius: 0px 5px 5px 0px;
+        color: white;
+        &:hover, &:focus {
+            color: white !important;
+            background: #182038 0% 0% no-repeat padding-box !important;
+        }
+    }
+    .construction-img {
+        // margin-top: 5rem;
+        position: relative;
+        bottom: 10%;
+    }
+}

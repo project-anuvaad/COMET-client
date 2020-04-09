@@ -1,0 +1,17 @@
+.pull-left {
+  float: left;
+  margin-left: 0.25em;
+}
+
+.pull-right {
+  float: right;
+   margin-right: 0.25em;
+} 
+
+.wrapper {
+  padding: 20px;
+}
+
+.bold-text {
+  font-weight: bolder;
+}

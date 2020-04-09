@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="115.262" viewBox="0 0 128 115.262">
+  <g id="Audio_Mastering" data-name="Audio Mastering" transform="translate(-2 -5.085)">
+    <g id="Group_27" data-name="Group 27" transform="translate(2 5.085)">
+      <path id="Path_328" data-name="Path 328" d="M85.949,109.062l-7.962-7.977H118.9a10.335,10.335,0,0,0,10.323-10.323V15.408A10.335,10.335,0,0,0,118.9,5.085H13.1A10.335,10.335,0,0,0,2.774,15.408V90.762A10.335,10.335,0,0,0,13.1,101.085H54.125l-7.99,7.976a6.5,6.5,0,0,0-1.449,7.157H2v4.129H130v-4.129H87.4A6.511,6.511,0,0,0,85.949,109.062ZM13.1,9.214H118.9a6.2,6.2,0,0,1,6.194,6.194V81.988H6.9V15.408A6.2,6.2,0,0,1,13.1,9.214Zm0,87.742A6.2,6.2,0,0,1,6.9,90.762V86.117H125.1v4.645a6.2,6.2,0,0,1-6.194,6.194Zm59.056,4.129,6.041,6.052H53.906l6.063-6.052ZM50.816,116.218a2.484,2.484,0,0,1-1.762-4.237l.716-.715H82.316l.712.714a2.478,2.478,0,0,1-1.741,4.238Z" transform="translate(-2 -5.085)" fill="#d94487"/>
+      <path id="Path_329" data-name="Path 329" d="M34.934,45.566a2.877,2.877,0,1,0,2.877,2.877A2.874,2.874,0,0,0,34.934,45.566Z" transform="translate(30.009 38.008)" fill="#d94487"/>
+      <rect id="Rectangle_55" data-name="Rectangle 55" width="4.129" height="37.677" transform="translate(15.484 21.677)" fill="#d94487"/>
+      <rect id="Rectangle_56" data-name="Rectangle 56" width="4.129" height="62.279" transform="translate(25.806 9.377)" fill="#d94487"/>
+      <rect id="Rectangle_57" data-name="Rectangle 57" width="4.129" height="25.806" transform="translate(36.129 27.613)" fill="#d94487"/>
+      <rect id="Rectangle_58" data-name="Rectangle 58" width="4.129" height="37.677" transform="translate(46.452 21.677)" fill="#d94487"/>
+      <rect id="Rectangle_59" data-name="Rectangle 59" width="4.129" height="17.29" transform="translate(56.774 31.871)" fill="#d94487"/>
+      <rect id="Rectangle_60" data-name="Rectangle 60" width="4.129" height="52.129" transform="translate(67.097 14.452)" fill="#d94487"/>
+      <rect id="Rectangle_61" data-name="Rectangle 61" width="4.129" height="10.839" transform="translate(77.419 35.097)" fill="#d94487"/>
+      <rect id="Rectangle_62" data-name="Rectangle 62" width="4.129" height="41.548" transform="translate(87.742 19.742)" fill="#d94487"/>
+      <rect id="Rectangle_63" data-name="Rectangle 63" width="4.129" height="37.677" transform="translate(98.065 21.677)" fill="#d94487"/>
+      <rect id="Rectangle_64" data-name="Rectangle 64" width="4.129" height="22.366" transform="translate(108.387 29.334)" fill="#d94487"/>
+    </g>
+  </g>
+</svg>

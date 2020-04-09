@@ -1,0 +1,41 @@
+
+    .problem {
+        margin-top: 7rem;
+        .problem-header {
+            text-align: center;
+            text-align: center;
+            font: Bold 100px/100px Proxima Nova;
+            color: #181F38;
+            opacity: 1;
+        }
+        .problem-desc {
+            padding-top: 2rem;
+            text-align: center;
+            font: 25px/40px Proxima Nova;
+            color: #181F38;
+            width: 45%;
+            margin: 0 auto;
+            .bold {
+                font-weight: bold;
+            }
+        }
+        .maps-container {
+            .maps-toggle-container {
+                display: flex;
+                justify-content: center;
+                > button {
+                    margin-right: 2rem;
+                    // width: 335px;
+                    // height: 64px;
+                    border-radius: 3px;
+                    opacity: 1;
+                }
+                button.first {
+                    background: #5460F1 0% 0% no-repeat padding-box;
+                }
+                // button.second {
+
+                // }
+            }
+        }
+    }

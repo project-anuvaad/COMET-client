@@ -1,0 +1,69 @@
+.box {
+    // General
+    height: 100%;
+    &:hover {
+        .play-icon.play {
+            display: block !important;
+        }
+    }
+    .box-body {
+        height: 100%;
+        position: relative;
+    }
+    .play-icon-container {
+        position: absolute;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        top: 45%;
+        z-index: 2;
+        .play-icon.play {
+            display: none;
+        }
+        .play-icon {
+            cursor: pointer;
+            padding: 1rem;
+            border: 2px solid gray;
+            border-radius: 50%;
+            align-items: center;
+             i {
+                 padding-left: 0.4rem;
+             }
+        }
+    }
+    .button {
+        font: 15px/20px Proxima Nova;
+        letter-spacing: 0;
+    }
+
+    .basic.button {
+        background-color: white !important;
+        border-radius: 0px 0px 0px 0px !important;
+    }
+
+    .basic.blue.button, .basic.blue.button:hover, .basic.blue.button:focus,
+    .basic.pink.button, .basic.pink.button:hover, .basic.pink.button:focus 
+    // .basic.blue.button, .basic.blue.button:hover, .basic.blue.button:focus,
+    {
+        color: #181F38 !important;
+        box-shadow: none !important;
+    }
+
+    // Blue
+    .blue.button, .blue.button:hover {
+        background-color: #4E6CF1;
+    }
+
+    .basic.blue.button {
+        border: 1px solid #4E6CF1 !important;
+    }
+
+    // PINK 
+    .pink.button, .blue.pink:hover {
+        background-color: #DA4F86;
+    }
+    .basic.pink.button {
+        border: 1px solid #DA4F86 !important;
+    }
+}

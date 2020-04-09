@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-85366308-2"></script>
+    <!-- User guiding -->
+    <script>
+      (function (u, s, e, r, g) {
+          u[r] = u[r] || [];
+          u[r].push({
+            'ug.start': new Date().getTime(), event: 'embed.js',
+          });
+          var f = s.getElementsByTagName(e)[0],
+              j = s.createElement(e);
+          j.async = true;
+          j.src = 'https://static.userguiding.com/media/user-guiding-'
+           + g + '-embedded.js';
+          f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'userGuidingLayer', '92831099ID');
+    </script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-85366308-2');
+    </script>
+
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+    <link rel="" href="assets/fonts/proxima_ssv/ProximaNova-Regular.otf" />
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet"></link>
+    <style>
+        @font-face {
+          font-family: "Proxima Nova";
+          src: url("/assets/fonts/proxima_ssv/ProximaNova-Regular.otf") format("truetype");
+        }
+    </style>
+    <title>Videowikki</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

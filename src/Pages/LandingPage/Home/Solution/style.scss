@@ -1,0 +1,81 @@
+p {
+    font: 25px/40px Proxima Nova;
+}
+.green {
+    color: #55AE48;
+}
+.our-solution {
+    margin-top: 10rem;
+    .solution-header {
+        text-align: center;
+        text-align: center;
+        font: Bold 100px/100px Proxima Nova;
+        color: #181F38;
+        opacity: 1;
+    }
+    .solution-desc {
+        padding-top: 2rem;
+        text-align: center;
+        font: 25px/40px Proxima Nova;
+        color: #181F38;
+        width: 50%;
+        margin: 0 auto;
+        .bold {
+            font-weight: bold;
+        }
+    }
+}
+
+.end-to-end-localization {
+    margin-top: 5rem;
+    padding: 3rem;
+    .end-to-end-header {
+        font: Bold 51px/73px Proxima Nova;
+        letter-spacing: -1.02px;
+        color: #181F38;
+    }
+    .end-to-end-subheader {
+        font: Bold 25px/40px Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+    }
+    .end-to-end-desc {
+        font: 20px/40px Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+    }
+    .vendors-container {
+        display: flex;
+        align-items: center !important;
+        .vendor-item {
+            margin-bottom: 2rem !important;
+        }
+    }
+}
+
+.faster-subtitles {
+    margin-top: 7rem;
+    .subtitles-header {
+        font: Bold 45px/73px Proxima Nova;
+        letter-spacing: -1.02px;
+        color: #181F38;
+        text-transform: capitalize;
+    }
+    .subtitles-desc {
+        font: 25px/40px Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+    }
+    .captioning-header {
+        font: Bold 26px/58px Proxima Nova;
+        letter-spacing: 0;
+        display: inline-block;
+    }
+
+    .captioning-timing {
+        font: 20px/58px Proxima Nova;
+        letter-spacing: 0;
+        color: #181F38;
+        opacity: 1;
+    }
+}

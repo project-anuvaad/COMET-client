@@ -1,0 +1,26 @@
+.article-summary-card {
+    text-align: center;
+    &:hover &__options, &:hover &__add_btn {
+        visibility: visible;
+    }
+    &__card_header {
+        padding: 1rem;
+        font-weight: bold;
+        color: #4183c4;
+        cursor: pointer;
+    }
+    &__options {
+        visibility: hidden;
+        position: absolute;
+        right: 20px;
+        top: 25px;
+        z-index: 2;
+        cursor: pointer;
+        // padding: 0px !important;
+        // box-shadow: none !important;
+    }
+
+    .label-container {
+        margin: 0 0 .5em !important;
+    }
+}

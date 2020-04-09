@@ -1,0 +1,106 @@
+
+.map {
+    font-family: Proxima Nova;
+    .counter-container {
+        margin-top: 12rem;
+        .count-header {
+            font: Bold 158px/158px Proxima Nova;
+            letter-spacing: 0;
+            text-align: left;
+            color: #181F38;
+            text-transform: lowercase;
+            opacity: 1;
+        }
+        .count-desc {
+            font: 20px/40px Proxima Nova;
+            letter-spacing: 0;
+            color: #6F6F6F;
+            opacity: 1;
+        }
+    }
+    .description {
+        margin-top: 3rem;
+        .desc-item {
+            display: flex;
+            align-items: center;
+            font: 22px/40px Proxima Nova;
+            letter-spacing: 0;
+            color: #181F38;
+            .desc-circle {
+                opacity: 1;
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                display: inline-block;
+                margin-right: 1rem;
+            }
+            
+        }
+    }
+}
+
+.map1 {
+    .description .desc-item {
+        .desc1-label {
+            background: #5166F1 0% 0% no-repeat padding-box;
+        }
+        .desc2-label {
+            background: #181D38 0% 0% no-repeat padding-box;
+        }
+    }
+}
+
+.map2 {
+    .description .desc-item {
+        .desc1-label {
+            background: #78D1FB 0% 0% no-repeat padding-box;
+        }
+        .desc2-label {
+            background: #181D38 0% 0% no-repeat padding-box;
+        }
+    }
+}
+
+.map3 {
+    .description .desc-item {
+        .desc1-label {
+            background: #DB4F86 0% 0% no-repeat padding-box;
+        }
+        .desc2-label {
+            background: #181D38 0% 0% no-repeat padding-box;
+        }
+    }
+}
+
+.maps-toggle-container {
+    margin-top: 3rem;
+    .action-buttons.action-active {
+        color: white !important;
+        &:focus, &:hover {
+            color: white !important;
+        }
+    }
+    .action-buttons.action-active.india{
+        background-color: #5360F1 !important;
+    }
+    .action-buttons.action-active.regional{
+        background-color: #77D2FB !important;
+    }
+    .action-buttons.action-active.english{
+        background-color: #DC4F86 !important;
+    }
+
+}
+
+.note-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+    .note {
+        width: 40%;
+        text-align: center;
+        font: 18px/30px Proxima Nova;
+        letter-spacing: 0;
+        color: #707070;
+    }
+}

@@ -1,0 +1,24 @@
+.videos-pagination, .videos-pagination a.item {
+    background-color: transparent ;
+    border: none ;
+    box-shadow: none;
+    outline: none;
+    a.item:before {
+        width: 0;
+        background: transparent;
+    }
+    a.item {
+        color: #999999 ;
+        min-width: 1rem;
+        border-radius: 50%;
+    }
+    a.item.active {
+        background-color: #d4e0ed;
+        color: #333333;
+        font-weight: bold;
+        // opacity: 0.5;
+    }
+    a[type="prevItem"], a[type="nextItem"] {
+        color: #0e7ceb ;
+    }
+}

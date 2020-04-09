@@ -1,0 +1,19 @@
+FROM node:10.15.0-jessie
+WORKDIR /frontend
+
+COPY . .
+RUN npm install
+
+
+# INSTALL NGINX
+#RUN apt-get update
+#RUN apt-get install -y NGINX
+#RUN service nginx start
+#RUN systemctl enable nginx
+#RUN cp videowiki_nginx.conf /etc/nginx/conf.d
+
+#RUN apt-get upgrade libstdc++6
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

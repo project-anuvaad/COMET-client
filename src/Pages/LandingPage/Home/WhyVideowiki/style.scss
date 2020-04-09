@@ -1,0 +1,44 @@
+.why-videowiki {
+    margin-top: 7rem;
+    .why-videowiki-header {
+        text-align: center;
+        text-align: center;
+        font: Bold 100px/100px Proxima Nova;
+        color: #181F38;
+        opacity: 1;
+    }
+    .why-videowiki-desc {
+        padding-top: 2rem;
+        text-align: center;
+        font: 25px/40px Proxima Nova;
+        color: #181F38;
+        width: 50%;
+        margin: 0 auto;
+        .bold {
+            font-weight: bold;
+        }
+    }
+    .reduce-cost {
+        margin-top: 5rem;
+        .reduce-cost-header {
+            text-align: center;
+            font: 45px/73px Proxima Nova;
+            letter-spacing: -0.9px;
+            color: #181F38;
+            span {
+                font: Bold 100px/73px Proxima Nova;
+            }
+        }
+    }
+    .join-us {
+        margin-top: 7rem;
+        .join-us-header {
+            width: 60%;
+            margin: 0 auto;
+            text-align: center;
+            font: 35px/55px Proxima Nova !important;
+            letter-spacing: -0.9px;
+            color: #181F38;
+        }
+    }
+}

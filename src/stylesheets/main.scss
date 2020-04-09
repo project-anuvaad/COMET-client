@@ -1,0 +1,36 @@
+////////////
+// Resets //
+////////////
+
+// Normalize
+// @import 'node_modules/normalize.scss/normalize';
+
+///////////
+// Utils //
+///////////
+// @import 'utils/variables.scss';
+// @import 'utils/utils.scss';
+
+////////////
+// Scoped //
+////////////
+// @import 'scoped/s-signup-form.scss';
+// @import 'scoped/s-wiki.scss';
+// @import 'scoped/s-page.scss';
+
+////////////////
+// Components //
+////////////////
+@import 'global.scss';
+@import 'components/c-app.scss';
+@import 'components/c-export-human-voice.scss';
+@import 'layouts/dashboard.scss';
+// @import 'components/c-app.scss';
+@import 'components/c-editor.scss';
+@import 'components/c-add-human-voice-modal.scss';
+@import 'components/Slideshow.scss';
+@import 'components/react-soundplayer.scss';
+@import 'components/rc-slider.scss';
+@import 'components/dropbox.scss';
+@import 'components/home.scss';
+@import 'components/orgnanization-settings.scss';

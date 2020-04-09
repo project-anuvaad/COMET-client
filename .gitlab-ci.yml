@@ -1,0 +1,26 @@
+# This file is a template, and might need editing before it works on your project.
+before_script:
+  - echo "Starting..."
+stages:
+  - build
+  - deploy
+
+build-master:
+  image: node:latest
+  stage: build
+  script:
+    - source scripts/build.sh 
+  only:
+    - master
+
+deploy-production:
+  image: python:latest
+  stage: deploy
+  dependencies:
+    - build-master
+  script:
+    - source scripts/deploy.sh videowiki-staging.org
+  when: manual
+  only:
+    - master
+
