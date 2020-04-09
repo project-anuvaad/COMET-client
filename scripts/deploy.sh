@@ -12,7 +12,8 @@ else
     echo "Starting Deployment"
     echo "TARGET BUCKET" + $TARGET_BUCKET
     echo " INSTALLING AWS CLI "
-    apk add --update python python-dev py-pip jq
+    apt-get update
+    apt-get install -y python python-dev python-pip
     pip install awscli --upgrade
 
     echo "CONFIGURING AWS"
