@@ -1,25 +1,42 @@
-# This file is a template, and might need editing before it works on your project.
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+
 before_script:
   - echo "Starting..."
 stages:
   - build
   - deploy
-
-# build-master:
-#   image: node:10.15.0-jessie
-#   stage: build
-#   script:
-#     - source scripts/build.sh 
-#   only:
-#     - master
-
-deploy-staging:
-  image: node:10.15.0-jessie
-  stage: deploy
-  # dependencies:
-  #   - build-master
+  
+build-master:
+  image: docker:18-git
+  stage: build
+  services:
+    - docker:18-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - source scripts/deploy.sh videowiki-staging.org
+    - apk add --update curl
+    - apk upgrade -f
+    - curl -o build.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/build.sh
+    - chmod +X build.sh
+    - source build.sh $AWS_ECR_ACCOUNT_URL videowiki client
+  only:
+    - master
+
+deploy-production:
+  image: docker:18-git
+  stage: deploy
+  dependencies:
+    - build-master
+  services:
+    - docker:18-dind
+  script:
+    - apk add --update curl
+    - apk upgrade -f
+    - curl -o deploy.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/deploy.sh
+    - chmod +X deploy.sh
+    - source deploy.sh $AWS_ECR_ACCOUNT_URL videowiki client 
   when: manual
   only:
     - master

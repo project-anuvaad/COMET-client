@@ -1,5 +1,5 @@
 FROM node:10.15.0-jessie
-WORKDIR /frontend
+WORKDIR /client
 
 COPY package*.json ./
 # RUN npm install
