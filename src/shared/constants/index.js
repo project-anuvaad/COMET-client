@@ -34,4 +34,4 @@ export const SPEAKER_TEXT_COLORS = {
 
 
 export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://vw.vw/api' : 'https://api.videowiki-staging.org/api');
-export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://vw.vw' : 'https://api.videowiki-staging.org';
+export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://vw.vw' : 'ws://api.videowiki-staging.org';
