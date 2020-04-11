@@ -110,7 +110,7 @@ class Dashboard extends React.Component {
             this.props.fetchOrganization(this.props.organization._id)
         }
         this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL, {
-            path: '/ws/',
+            path: '/ws',
             transports: ['websocket'],
             secure: true,
         })
