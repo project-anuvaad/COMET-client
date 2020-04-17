@@ -7,6 +7,7 @@ const INITIAL_STATE = {
     apiKeyForm: {
         origins: [],
         permissions: [],
+        keyType: 'platform',
     }
 }
 

@@ -59,9 +59,8 @@ class APIKeys extends React.Component {
                 </div>
 
                 <ApiKeyFormModal
-                    origins={this.props.apiKeyForm.origins}
+                    {...this.props.apiKeyForm}
                     originOptions={this.props.organization.origins.concat(this.props.apiKeyForm.origins)}
-                    permissions={this.props.apiKeyForm.permissions}
                     open={this.props.apiKeyFormOpen}
                     onClose={() => this.props.setApiKeyFormOpen(false)}
                     onChange={this.onApiKeyFormChange}

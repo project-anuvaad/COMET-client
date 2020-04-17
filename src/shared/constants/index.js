@@ -33,5 +33,5 @@ export const SPEAKER_TEXT_COLORS = {
 }
 
 
-export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://vw.vw/api' : 'https://api.videowiki.org/api');
-export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://vw.vw' : 'wss://api.videowiki.org';
+export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'https://api.videowiki.org/api');
+export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://localhost:4010' : 'wss://api.videowiki.org';

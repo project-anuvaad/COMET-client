@@ -52,11 +52,11 @@ export const fetchApiKeys = () => (dispatch, getState) => {
 
 export const createApiKey = () => (dispatch, getState) => {
     const { organization } = getState().organization;
-    const { permissions, origins } = getState()[moduleName].apiKeyForm
+    const { permissions, origins, keyType } = getState()[moduleName].apiKeyForm
     dispatch(setLoading(true))
     dispatch(setApiKeyFormOpen(false));
     requestAgent
-        .post(Api.apiKeys.create(), { organization: organization._id, permissions, origins })
+        .post(Api.apiKeys.create(), { organization: organization._id, permissions, origins, keyType })
         .then((res) => {
             NotificationService.success('Created Successfully');
             console.log(res.body)

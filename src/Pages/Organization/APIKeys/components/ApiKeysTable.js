@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { List, Modal, Button, Icon } from 'semantic-ui-react'
+import { List, Modal, Button } from 'semantic-ui-react'
 // import DeleteUserModal from './DeleteUserModal';
 
 import { connect } from 'react-redux';
@@ -109,7 +109,6 @@ class ApiKeysTable extends Component {
                 <ApiKeyItem
                     key={apiKey._id}
                     apiKey={apiKey}
-                    organization={this.props.organization}
                     onDelete={() => this.onDeleteApiKeyClick(apiKey)}
                     canModify={canModify}
                     onRoleChange={(e, { value }) => this.onRoleChange(value, apiKey)}

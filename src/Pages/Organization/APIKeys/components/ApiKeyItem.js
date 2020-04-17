@@ -20,6 +20,7 @@ function getUserRoleValue(permissions) {
 export default class ApiKeyItem extends React.Component {
     state = {
         visible: false,
+        secretVisible: false,
     }
 
     render() {
@@ -28,10 +29,9 @@ export default class ApiKeyItem extends React.Component {
             rolesOptions,
             onRoleChange,
             canModify,
-            organization,
             onDelete,
         } = this.props;
-        const orgRole = apiKey.user.organizationRoles.find((r) => r.organization === organization._id);
+        const orgRole = apiKey.user.organizationRoles.find((r) => r.organization === apiKey.organization);
         if (!orgRole) return null;
         const isOrganizationOwner = orgRole.organizationOwner;
 
@@ -44,10 +44,15 @@ export default class ApiKeyItem extends React.Component {
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div>
-                            <div>
-                                Origins: {apiKey.origins.join(', ')}
-                            </div>
-                            <div>
+                            <p>
+                                Type: <strong style={{ textTransform: 'capitalize' }} >{apiKey.keyType || 'Platform'}</strong>
+                            </p>
+                            {apiKey.keyType !== 'service' && (
+                                <p>
+                                    Origins: {apiKey.origins.join(', ')}
+                                </p>
+                            )}
+                            <p>
                                 Key: {this.state.visible ? (
                                     <strong>{apiKey.key}</strong>
                                 ) : null}
@@ -58,10 +63,24 @@ export default class ApiKeyItem extends React.Component {
                                     circular
                                     icon={this.state.visible ? 'eye' : 'eye slash'}
                                     onClick={() => this.setState({ visible: !this.state.visible })}
-
                                 />
+                            </p>
+                            {apiKey.secret && (
+                                <p>
+                                    Secret: {this.state.secretVisible ? (
+                                        <strong>{apiKey.secret}</strong>
+                                    ) : null}
 
-                            </div>
+                                    <Button
+                                        style={{ marginLeft: 10, borderBox: 'none' }}
+                                        size="tiny"
+                                        basic
+                                        circular
+                                        icon={this.state.secretVisible ? 'eye' : 'eye slash'}
+                                        onClick={() => this.setState({ secretVisible: !this.state.secretVisible })}
+                                    />
+                                </p>
+                            )}
 
                         </div>
                         {!isOrganizationOwner && (

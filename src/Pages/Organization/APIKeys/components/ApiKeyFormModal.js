@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Dropdown, Grid, Popup, Icon, Button, Select } from 'semantic-ui-react';
+import { Modal, Dropdown, Grid, Popup, Icon, Button, Select, Checkbox, Radio } from 'semantic-ui-react';
 import NotificationService from '../../../../shared/utils/NotificationService';
 
 function cleanOrigin(origin) {
@@ -58,7 +58,8 @@ export default class ApiKeyFormModal extends React.Component {
     ]
 
     canCreate = () => {
-        const { permissions, origins } = this.props;
+        const { permissions, origins, keyType } = this.props;
+        if (keyType === 'service') return true;
         return permissions.length > 0 && origins.length > 0;
     }
 
@@ -107,6 +108,7 @@ export default class ApiKeyFormModal extends React.Component {
             permissions,
             originOptions,
             title,
+            keyType,
         } = this.props;
         return (
             <Modal
@@ -119,66 +121,87 @@ export default class ApiKeyFormModal extends React.Component {
                 </Modal.Header>
                 <Modal.Content>
                     <Grid>
-                        <Grid.Row
-                            style={{ alignItems: 'center' }}
-                        >
-                            <Grid.Column width={6}>
-                                Allowed Origins
-                                <Popup
-                                    trigger={(
-                                        <Icon name="info circle" style={{ marginLeft: 10 }} />
-                                    )}
-                                    content="List of websites that the API key will be used in."
-                                />
+                        <Grid.Row>
+                            <Grid.Column width={4}>
+                                Key type:
                             </Grid.Column>
-                            <Grid.Column width={10}>
+                            <Grid.Column width={12}>
+                                <Grid>
+                                    <Grid.Row>
+                                        <Grid.Column width={16}>
+                                            <Radio checked={keyType === 'platform'} label="Platform key" onClick={() => this.props.onChange({ keyType: 'platform' })} />
+                                        </Grid.Column>
 
-                                <Dropdown
-                                    placeholder="example.com"
-                                    fluid
-                                    selection
-                                    value={origins}
-                                    search
-                                    multiple
-                                    noResultsMessage="Type to add new websites"
-                                    options={(originOptions || []).map((o, i) => ({ key: `origin-item-${o}-${i}`, value: o, text: o }))}
-                                    allowAdditions
-                                    onChange={this.onOriginsChange}
-                                    additionLabel={(
-                                        <span
-                                            className="pull-right"
-                                        >
-                                            <Icon name="plus" color="green" />
-                                            Add
-                                        </span>
-                                    )}
-                                />
-                            </Grid.Column>
-                        </Grid.Row>
-
-                        <Grid.Row
-                            style={{ alignItems: 'center' }}
-                        >
-                            <Grid.Column width={6}>
-                                Permissions
-                                <Popup
-                                    trigger={(
-                                        <Icon name="info circle" style={{ marginLeft: 10 }} />
-                                    )}
-                                    content="The permissions to be assigned for the API key"
-                                />
-                            </Grid.Column>
-                            <Grid.Column width={10}>
-
-
-                                <Select
-                                    name="role"
-                                    onChange={this.onRoleChange}
-                                    value={getUserRoleValue(permissions)}
-                                    options={this.roles} />
+                                        <Grid.Column width={16}>
+                                            <Radio type="radio" checked={keyType === 'service'} label="Service key" onClick={() => this.props.onChange({ keyType: 'service' })} />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
+                    {keyType === 'platform' && (
+                        <Grid>
+                            <Grid.Row
+                                style={{ alignItems: 'center' }}
+                            >
+                                <Grid.Column width={6}>
+                                    Allowed Origins
+                                <Popup
+                                        trigger={(
+                                            <Icon name="info circle" style={{ marginLeft: 10 }} />
+                                        )}
+                                        content="List of websites that the API key will be used in."
+                                    />
+                                </Grid.Column>
+                                <Grid.Column width={10}>
+
+                                    <Dropdown
+                                        placeholder="example.com"
+                                        fluid
+                                        selection
+                                        value={origins}
+                                        search
+                                        multiple
+                                        noResultsMessage="Type to add new websites"
+                                        options={(originOptions || []).map((o, i) => ({ key: `origin-item-${o}-${i}`, value: o, text: o }))}
+                                        allowAdditions
+                                        onChange={this.onOriginsChange}
+                                        additionLabel={(
+                                            <span
+                                                className="pull-right"
+                                            >
+                                                <Icon name="plus" color="green" />
+                                                Add
+                                        </span>
+                                        )}
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+
+                            <Grid.Row
+                                style={{ alignItems: 'center' }}
+                            >
+                                <Grid.Column width={6}>
+                                    Permissions
+                                <Popup
+                                        trigger={(
+                                            <Icon name="info circle" style={{ marginLeft: 10 }} />
+                                        )}
+                                        content="The permissions to be assigned for the API key"
+                                    />
+                                </Grid.Column>
+                                <Grid.Column width={10}>
+                                    <Select
+                                        name="role"
+                                        onChange={this.onRoleChange}
+                                        value={getUserRoleValue(permissions)}
+                                        options={this.roles} />
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                    )}
+
                 </Modal.Content>
 
                 <Modal.Actions>
