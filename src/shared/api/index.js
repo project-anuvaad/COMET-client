@@ -119,7 +119,7 @@ export default {
         get: (params) => `${API_ROOT}/apikey?${querystring.encode(params)}`,
         create: () => `${API_ROOT}/apikey`,
         delete: (id) => `${API_ROOT}/apikey/${id}`,
-        getUserOrganizationApiKey: (organizationId) => `${API_ROOT}/apiKey/userKey?organization=${organizationId}`
+        getUserOrganizationApiKey: (organizationId) => `${API_ROOT}/apikey/userKey?organization=${organizationId}`
     },
     videoTutorialContribution: {
         uploadVideo: () => `${API_ROOT}/videoTutorialContribution`,
