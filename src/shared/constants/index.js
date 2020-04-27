@@ -32,6 +32,7 @@ export const SPEAKER_TEXT_COLORS = {
     10: 'white',
 }
 
+export const VIDEOWIKI_WHATSAPP_NUMBER = process.env.NODE_ENV === 'production' ? '912250323236' : '27600136875'
 
 export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'https://api.videowiki.org/api');
 export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://localhost:4010' : 'wss://api.videowiki.org';

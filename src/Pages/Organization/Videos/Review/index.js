@@ -15,6 +15,7 @@ import websockets from '../../../../websockets';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import VideoCard from '../../../../shared/components/VideoCard';
 
+import { VIDEOWIKI_WHATSAPP_NUMBER } from '../../../../shared/constants'
 import { supportedLangs, isoLangsArray } from '../../../../shared/constants/langs';
 import { debounce, getUserNamePreview, getUsersByRoles, formatTime } from '../../../../shared/utils/helpers';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
@@ -417,12 +418,13 @@ class Review extends React.Component {
                     const loading = ['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1;
                     const props = commonProps(video);
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.transcribe === 1);
+                    const whatsappIconTarget = `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${video._id}`}`;
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                             <VideoCard
                                 {...props}
                                 {...video}
-                                showSkip
+                                showSkip={!loading}
                                 loading={loading}
                                 disabled={loading}
                                 buttonTitle="Transcribe"
@@ -431,6 +433,9 @@ class Review extends React.Component {
                                 focused={animate}
                                 // Animate if it's not loading and there's only 1 video uploaded and it's in AI Transcribe stage
                                 animateButton={animate}
+                                showWhatsappIcon={!loading}
+                                whatsappIconTarget={whatsappIconTarget}
+                                whatsappIconContent={'Send the video to be broken down to slides on WhatsApp'}
                             />
                         </Grid.Column>
                     )
@@ -456,6 +461,9 @@ class Review extends React.Component {
                                 focused={animate}
                                 animateButton={animate}
 
+                                // showWhatsappIcon
+                                // whatsappIconTarget={}
+                                // whatsappIconContent={'Listen to the audio and type down the corresponding text on WhatsApp'}
                             />
                         </Grid.Column>
                     )

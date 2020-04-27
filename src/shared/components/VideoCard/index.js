@@ -107,12 +107,13 @@ class VideoCard extends React.Component {
             titleRoute,
             rounded
         } = this.props;
-        
+
         const isHovering = this.isHovering();
 
         return (
-            <div className={`video-card ${rounded ? 'rounded' : ''} ${selected ? 'selected' : ''}`} style={{ 
-                boxShadow: isHovering ?  '0 2px 34px 0 rgba(0, 0, 0, 0.2)' : 'none'}}>
+            <div className={`video-card ${rounded ? 'rounded' : ''} ${selected ? 'selected' : ''}`} style={{
+                boxShadow: isHovering ? '0 2px 34px 0 rgba(0, 0, 0, 0.2)' : 'none'
+            }}>
                 <Card fluid
                     onMouseEnter={() => this.setState({ hovering: true })}
                     onMouseLeave={() => this.setState({ hovering: false })}
@@ -203,7 +204,22 @@ class VideoCard extends React.Component {
                             )}
                         </div>
                     )}
-
+                    {this.props.showWhatsappIcon && (
+                        <Grid>
+                            <Grid.Row>
+                                <Grid.Column width={16}>
+                                    <Popup
+                                        trigger={(
+                                            <a style={{ marginRight: 20 }} className="pull-right" target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
+                                                <Icon name="whatsapp" color="green" size="huge" />
+                                            </a>
+                                        )}
+                                        content={this.props.whatsappIconContent || ''}
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                    )}
                     <Grid style={{ margin: 0 }}>
                         <Grid.Row style={{ alignItems: 'center' }}>
                             <Grid.Column width={this.props.showSkip ? 8 : 10}>
@@ -220,7 +236,7 @@ class VideoCard extends React.Component {
                                     animation="moema"
                                     animating={this.props.animateButton}
                                 >
-                                    {buttonTitle} 
+                                    {buttonTitle}
                                     <Icon name="chevron right" style={{ marginLeft: 10 }} />
                                 </AnimatedButton>
                             </Grid.Column>
