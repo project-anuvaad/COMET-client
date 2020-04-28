@@ -239,16 +239,14 @@ class VideoCard extends React.Component {
                     </Grid>
                     {this.props.showWhatsappIcon && (
                         <Card.Content extra style={{ backgroundColor: '#ecf5fe' }}>
-                            {this.state.hovering && (
-                                <p>
-                                    <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
-                                        <Icon name="whatsapp" color="green" size="large" />
-                                        {this.props.whatsappIconContent || ''}
-                                        <Icon name="chevron right" className="pull-right" />
-                                    </a>
-                                    {/* <Icon name="whatsapp" /> */}
-                                </p>
-                            )}
+                            <p>
+                                <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
+                                    <Icon name="whatsapp" color="green" size="large" />
+                                    {this.props.whatsappIconContent || ''}
+                                    <Icon name="chevron right" className="pull-right" />
+                                </a>
+                                {/* <Icon name="whatsapp" /> */}
+                            </p>
                         </Card.Content>
                     )}
                 </Card>
