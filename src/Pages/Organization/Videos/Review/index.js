@@ -15,9 +15,15 @@ import websockets from '../../../../websockets';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import VideoCard from '../../../../shared/components/VideoCard';
 
-import { VIDEOWIKI_WHATSAPP_NUMBER } from '../../../../shared/constants'
 import { supportedLangs, isoLangsArray } from '../../../../shared/constants/langs';
-import { debounce, getUserNamePreview, getUsersByRoles, formatTime } from '../../../../shared/utils/helpers';
+import {
+    debounce,
+    getUserNamePreview,
+    getUsersByRoles,
+    formatTime,
+    generateWhatsappTranscribeLink,
+    generateWhatsappProofreadLink
+} from '../../../../shared/utils/helpers';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import AssignReviewUsers from '../../../../shared/components/AssignReviewUsers';
 import routes from '../../../../shared/routes';
@@ -418,7 +424,7 @@ class Review extends React.Component {
                     const loading = ['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1;
                     const props = commonProps(video);
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.transcribe === 1);
-                    const whatsappIconTarget = `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${video._id}`}`;
+                    const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                             <VideoCard
@@ -435,7 +441,7 @@ class Review extends React.Component {
                                 animateButton={animate}
                                 showWhatsappIcon={!loading}
                                 whatsappIconTarget={whatsappIconTarget}
-                                whatsappIconContent={'Send the video to be broken down to slides on WhatsApp'}
+                                whatsappIconContent={'Transcribe on WhatsApp'}
                             />
                         </Grid.Column>
                     )
@@ -449,6 +455,8 @@ class Review extends React.Component {
                     const props = commonProps(video);
                     const loading = video.status === 'converting'
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.proofread === 1);
+                    const whatsappIconTarget = generateWhatsappProofreadLink(video._id);
+
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                             <VideoCard
@@ -461,9 +469,9 @@ class Review extends React.Component {
                                 focused={animate}
                                 animateButton={animate}
 
-                                // showWhatsappIcon
-                                // whatsappIconTarget={}
-                                // whatsappIconContent={'Listen to the audio and type down the corresponding text on WhatsApp'}
+                                showWhatsappIcon
+                                whatsappIconTarget={whatsappIconTarget}
+                                whatsappIconContent={'Proofread on WhatsApp'}
                             />
                         </Grid.Column>
                     )

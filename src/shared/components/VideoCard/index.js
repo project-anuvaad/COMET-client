@@ -204,22 +204,6 @@ class VideoCard extends React.Component {
                             )}
                         </div>
                     )}
-                    {this.props.showWhatsappIcon && (
-                        <Grid>
-                            <Grid.Row>
-                                <Grid.Column width={16}>
-                                    <Popup
-                                        trigger={(
-                                            <a style={{ marginRight: 20 }} className="pull-right" target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
-                                                <Icon name="whatsapp" color="green" size="huge" />
-                                            </a>
-                                        )}
-                                        content={this.props.whatsappIconContent || ''}
-                                    />
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
-                    )}
                     <Grid style={{ margin: 0 }}>
                         <Grid.Row style={{ alignItems: 'center' }}>
                             <Grid.Column width={this.props.showSkip ? 8 : 10}>
@@ -253,6 +237,20 @@ class VideoCard extends React.Component {
                             )}
                         </Grid.Row>
                     </Grid>
+                    {this.props.showWhatsappIcon && (
+                        <Card.Content extra style={{ backgroundColor: '#ecf5fe' }}>
+                            {this.state.hovering && (
+                                <p>
+                                    <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
+                                        <Icon name="whatsapp" color="green" size="large" />
+                                        {this.props.whatsappIconContent || ''}
+                                        <Icon name="chevron right" className="pull-right" />
+                                    </a>
+                                    {/* <Icon name="whatsapp" /> */}
+                                </p>
+                            )}
+                        </Card.Content>
+                    )}
                 </Card>
             </div >
         );

@@ -1,4 +1,4 @@
-import { IMAGE_EXTENSIONS, VIDEOS_EXTESION, GIF_EXTESIONS } from '../constants';
+import { IMAGE_EXTENSIONS, VIDEOS_EXTESION, GIF_EXTESIONS, VIDEOWIKI_WHATSAPP_NUMBER } from '../constants';
 import routes from '../routes';
 import { isoLangs, supportedLangs } from '../constants/langs'
 import { signLangsArray } from './langs';
@@ -221,4 +221,12 @@ export function getSpeakersTranslatorsMap(speakersProfile, translators, users) {
 
 export function getUserName(user) {
   return user.firstname && user.lastname ? `${user.firstname} ${user.lastname} (${user.email})` : user.email;
+}
+
+export function generateWhatsappTranscribeLink(videoId) {
+  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
+}
+
+export function generateWhatsappProofreadLink(videoId) {
+  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
 }
