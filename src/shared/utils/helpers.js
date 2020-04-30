@@ -230,3 +230,8 @@ export function generateWhatsappTranscribeLink(videoId) {
 export function generateWhatsappProofreadLink(videoId) {
   return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
 }
+
+
+export function generateWhatsappTranslateLink(videoId, langTo) {
+  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
+}

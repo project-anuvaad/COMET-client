@@ -14,6 +14,7 @@ const INITIAL_STATE = {
     translatedArticles: [],
     singleTranslatedArticle: null,
     videoStatusFilter: [],
+    translateOnWhatsappActive: false,
     videosCounts: {
         transcribe: 0,
         proofread: 0,
@@ -34,6 +35,8 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, languageFilter: action.payload };
         case actionTypes.SET_ADD_HUMAN_VOICE_MODAL_VISIBLE:
             return { ...state, addHumanVoiceModalVisible: action.payload };
+        case actionTypes.SET_TRANSLATE_ON_WHATSAPP_ACTIVE:
+            return { ...state, translateOnWhatsappActive: action.payload };
         case actionTypes.SET_SELECTED_VIDEO:
             return { ...state, selectedVideo: action.payload };
         case actionTypes.SET_TRANSLATED_ARTICLES:

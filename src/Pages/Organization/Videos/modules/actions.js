@@ -60,6 +60,11 @@ export const setAddHumanVoiceModalVisible = visible => ({
     payload: visible,
 })
 
+export const setTranslateOnWhatsappActive = active => ({
+    type: actionTypes.SET_TRANSLATE_ON_WHATSAPP_ACTIVE,
+    payload: active,
+})
+
 export const setTranslatedArticles = translatedArticles => ({
     type: actionTypes.SET_TRANSLATED_ARTICLES,
     payload: translatedArticles,

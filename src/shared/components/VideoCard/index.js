@@ -105,7 +105,7 @@ class VideoCard extends React.Component {
             uploadedBy,
             selected,
             titleRoute,
-            rounded
+            rounded,
         } = this.props;
 
         const isHovering = this.isHovering();
@@ -115,6 +115,7 @@ class VideoCard extends React.Component {
                 boxShadow: isHovering ? '0 2px 34px 0 rgba(0, 0, 0, 0.2)' : 'none'
             }}>
                 <Card fluid
+                    style={{ boxShadow: 'none' }}
                     onMouseEnter={() => this.setState({ hovering: true })}
                     onMouseLeave={() => this.setState({ hovering: false })}
                 >
@@ -240,11 +241,21 @@ class VideoCard extends React.Component {
                     {this.props.showWhatsappIcon && (
                         <Card.Content extra style={{ backgroundColor: '#ecf5fe' }}>
                             <p>
-                                <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
-                                    <Icon name="whatsapp" color="green" size="large" />
-                                    {this.props.whatsappIconContent || ''}
-                                    <Icon name="chevron right" className="pull-right" />
-                                </a>
+                                {typeof this.props.whatsappIconContent === 'string' ? (
+                                    <a style={{ paddingLeft: 10, paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
+                                        <div>
+                                            <Icon name="whatsapp" color="green" size="large" />
+                                            <span>
+                                                {this.props.whatsappIconContent || ''}
+                                            </span>
+                                        </div>
+                                        <Icon name="chevron right" className="pull-right" />
+                                    </a>
+                                ) : (
+                                        <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} >
+                                            {this.props.whatsappIconContent || ''}
+                                        </a>
+                                    )}
                                 {/* <Icon name="whatsapp" /> */}
                             </p>
                         </Card.Content>

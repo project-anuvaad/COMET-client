@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Grid, Button, Input } from 'semantic-ui-react';
+import { Grid, Button, Input, Icon } from 'semantic-ui-react';
 import querystring from 'query-string';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
@@ -16,6 +16,7 @@ import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import { debounce, getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
 import ClearPagination from '../../../../shared/components/ClearPagination';
 import VideoCard from '../../../../shared/components/VideoCard';
+import TranslateOnWhatsappDropdown from './TranslateOnWhatsappDropdown';
 
 class Translated extends React.Component {
     constructor(props) {
@@ -150,6 +151,10 @@ class Translated extends React.Component {
                                                 this.props.setSelectedVideo(translatedArticle);
                                                 this.props.setAddHumanVoiceModalVisible(true);
                                             }}
+                                            showWhatsappIcon
+                                            whatsappIconContent={(
+                                                <TranslateOnWhatsappDropdown videoId={translatedArticle.video._id} />
+                                            )}
                                             focused={this.isVideoFocused(translatedArticle.video)}
                                             extra={(
                                                 <div style={{ marginLeft: 15, marginTop: 0, color: '#999999', fontSize: 10 }}>
