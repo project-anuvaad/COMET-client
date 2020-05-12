@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Grid, Dropdown, Input, Modal, Button, Card, Popup, Icon } from 'semantic-ui-react';
+import { Grid, Dropdown, Input, Modal, Button, Icon } from 'semantic-ui-react';
 import ClearPagination from '../../../../shared/components/ClearPagination';
 
 import * as videoActions from '../modules/actions';
@@ -43,11 +43,18 @@ const tabsIndexMap = {
     1: 'proofread',
     2: 'completed'
 }
+const TABS = {
+    TRANSCRIBE: 'transcribe',
+    CUT_VIDEO: 'cut_video',
+    PROOFREAD: 'proofread',
+    COMPLETED: 'completed'
+}
 
 const videoStatusMap = {
-    0: ['uploaded', 'uploading', 'transcriping', 'cutting'],
-    1: ['proofreading', 'converting'],
-    2: ['done'],
+    [TABS.TRANSCRIBE]: ['uploaded', 'uploading', 'transcriping'],
+    [TABS.PROOFREAD]: ['proofreading', 'converting'],
+    [TABS.CUT_VIDEO]: ['cutting'],
+    [TABS.COMPLETED]: ['done'],
 }
 
 function formatCount(number) {
@@ -64,13 +71,14 @@ function Separator() {
 
 class Review extends React.Component {
     state = {
-        activeTab: 0,
+        activeTab: TABS.TRANSCRIBE,
         deletedVideo: null,
         deleteVideoModalVisible: false,
         selectedVideo: null,
         assignUsersModalOpen: false,
         assignVerifiersModalOpen: false,
         confirmReviewModalVisible: false,
+        isSelectCutterModalOpen: false,
         editVideoModalOpen: false,
         tmpEditVideo: null,
     }
@@ -87,27 +95,22 @@ class Review extends React.Component {
 
     componentDidMount = () => {
         const { activeTab } = queryString.parse(this.props.location.search);
-        let tabIndex = 0;
         if (activeTab) {
             switch (activeTab) {
                 case 'transcribe':
-                    tabIndex = 0;
-                    this.setState({ activeTab: 0 }); break;
+                    this.setState({ activeTab: 'transcribe' }); break;
                 case 'proofread':
-                    tabIndex = 1;
-                    this.setState({ activeTab: 1 }); break;
+                    this.setState({ activeTab: 'proofread' }); break;
                 case 'completed':
-                    tabIndex = 2;
-                    this.setState({ activeTab: 2 }); break;
+                    this.setState({ activeTab: 'completed' }); break;
                 default:
-                    tabIndex = 0;
-                    this.setState({ activeTab: 0 }); break;
+                    this.setState({ activeTab: 'transcribe' }); break;
             }
         }
         this.props.setSearchFilter('');
         this.props.fetchUsers(this.props.organization._id);
         this.props.setCurrentPageNumber(1);
-        this.props.setVideoStatusFilter(videoStatusMap[tabIndex]);
+        this.props.setVideoStatusFilter(videoStatusMap[activeTab || TABS.TRANSCRIBE]);
         this.props.fetchVideos();
         this.props.fetchVideosCount(this.props.organization._id);
         this.videoUploadedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_UPLOADED, (data) => {
@@ -140,10 +143,10 @@ class Review extends React.Component {
         NotificationService.success(`The video "${video.title}" has been converted successfully!`);
     }
 
-    onTabChange = index => {
-        this.setState({ activeTab: index });
+    onTabChange = tab => {
+        this.setState({ activeTab: tab });
         this.props.setSearchFilter('');
-        this.props.setVideoStatusFilter(videoStatusMap[index]);
+        this.props.setVideoStatusFilter(videoStatusMap[tab]);
         this.props.setCurrentPageNumber(1);
         this.props.fetchVideos();
         this.props.fetchVideosCount(this.props.organization._id);
@@ -187,7 +190,7 @@ class Review extends React.Component {
         this.props.transcribeVideo(video);
     }
 
-    onTranscribeVideoClick = video => {
+    onReReviewVideo = video => {
         this.props.setSelectedVideo(video);
         this.setState({ confirmReviewModalVisible: true });
     }
@@ -196,13 +199,24 @@ class Review extends React.Component {
         window.location.href = routes.convertProgressV2(videoId)
     }
 
-    onTranscribeVideo = video => {
-        console.log('on review', video);
-        this.props.transcribeVideo(video);
+    onTranscribeVideoClick = video => {
+        this.setState({ isSelectCutterModalOpen: false });
+        if (video.canAITranscribe) {
+            this.props.transcribeVideo(video);
+        } else {
+            this.onSkipTranscribeClick(video)
+        }
     }
-    onSkipTranscribe = video => {
-        console.log('skip ', video);
-        this.props.skipTranscribe(video);
+
+    onSkipTranscribeClick = video => {
+        this.props.setSelectedVideo(video);
+        this.setState({ isSelectCutterModalOpen: true });
+        // this.props.skipTranscribe(video);
+    }
+
+    onSkipTranscribe = (cuttingBy) => {
+        const { selectedVideo } = this.props;
+        this.props.skipTranscribe(selectedVideo, cuttingBy);
     }
 
     onSaveAssignedUsers = (users) => {
@@ -271,6 +285,46 @@ class Review extends React.Component {
             onPageChange={this.onPageChange}
             totalPages={this.props.totalPagesCount}
         />
+    )
+
+    renderSelectCutterModal = () => (
+        <Modal
+            size="tiny"
+            open={this.state.isSelectCutterModalOpen}
+            onClose={() => this.setState({ isSelectCutterModalOpen: false })}
+        >
+            <Modal.Header>
+                Who should cut the video? <br />
+                <small>The video requires to be cut into slides</small>
+                <Button
+                    circular
+                    icon="close"
+                    style={{ position: 'absolute', right: '1rem', top: '1rem' }}
+                    onClick={() => this.setState({ isSelectCutterModalOpen: false })}
+                />
+            </Modal.Header>
+            <Modal.Content>
+                <p>
+                    Would you like to do that yourself or let Videowiki's team do it for you?
+                </p>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button
+                    primary
+                    onClick={() => this.onSkipTranscribe('videowiki')}
+                >
+                    Let Videowiki's Team do it
+                </Button>
+                <Button
+                    primary
+                    onClick={() => this.onSkipTranscribe('self')}
+
+                >
+                    I'll do it myself
+                </Button>
+            </Modal.Actions>
+        </Modal>
+
     )
 
     _renderDeleteVideoModal = () => (
@@ -416,7 +470,7 @@ class Review extends React.Component {
             onSelectChange: (selected) => this.onSelectChange(video, selected),
 
         })
-        if (this.state.activeTab === 0) {
+        if (this.state.activeTab === TABS.TRANSCRIBE) {
             renderedComp = (
                 this.props.videos && this.props.videos.length === 0 ? (
                     <div style={{ margin: 50 }}>No videos requires preview</div>
@@ -434,8 +488,8 @@ class Review extends React.Component {
                                 loading={loading}
                                 disabled={loading}
                                 buttonTitle="Transcribe"
-                                onButtonClick={() => this.onTranscribeVideo(video)}
-                                onSkipClick={() => this.onSkipTranscribe(video)}
+                                onButtonClick={() => this.onTranscribeVideoClick(video)}
+                                onSkipClick={() => this.onSkipTranscribeClick(video)}
                                 focused={animate}
                                 // Animate if it's not loading and there's only 1 video uploaded and it's in AI Transcribe stage
                                 animateButton={animate}
@@ -447,7 +501,37 @@ class Review extends React.Component {
                     )
                 })
             )
-        } else if (this.state.activeTab === 1) {
+        } else if (this.state.activeTab === TABS.CUT_VIDEO) {
+            renderedComp = (
+                this.props.videos && this.props.videos.length === 0 ? (
+                    <div style={{ margin: 50 }}>No videos requires proofreading</div>
+                ) : this.props.videos && this.props.videos.map((video) => {
+                    const props = commonProps(video);
+                    const loading = video.status === 'converting'
+                    const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.cutting === 1);
+                    const whatsappIconTarget = generateWhatsappProofreadLink(video._id);
+
+                    return (
+                        <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
+                            <VideoCard
+                                {...props}
+                                {...video}
+                                loading={loading}
+                                disabled={loading}
+                                onButtonClick={() => this.navigateToConvertProgresss(video._id)}
+                                buttonTitle="Break Video"
+                                focused={animate}
+                                animateButton={animate}
+
+                                // showWhatsappIcon
+                                // whatsappIconTarget={whatsappIconTarget}
+                                // whatsappIconContent={'Proofread on WhatsApp'}
+                            />
+                        </Grid.Column>
+                    )
+                })
+            )
+        } else if (this.state.activeTab === TABS.PROOFREAD) {
             renderedComp = (
                 this.props.videos && this.props.videos.length === 0 ? (
                     <div style={{ margin: 50 }}>No videos requires proofreading</div>
@@ -489,7 +573,7 @@ class Review extends React.Component {
                                 {...props}
                                 {...video}
                                 buttonTitle="Re-review"
-                                onButtonClick={() => this.onTranscribeVideoClick(video)}
+                                onButtonClick={() => this.onReReviewVideo(video)}
                             />
                         </Grid.Column>
                     )
@@ -513,7 +597,12 @@ class Review extends React.Component {
     }
 
     render() {
-        const SUBTABS = [{ title: `AI Transcribe (${formatCount(this.props.videosCounts.transcribe)})` }, { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})` }, { title: `Completed (${formatCount(this.props.videosCounts.completed)})` }];
+        const SUBTABS = [
+            { title: `AI Transcribe (${formatCount(this.props.videosCounts.transcribe)})`, value: TABS.TRANSCRIBE },
+            { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting)})`, value: TABS.CUT_VIDEO },
+            { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
+            { title: `Completed (${formatCount(this.props.videosCounts.completed)})`, value: TABS.COMPLETED }
+        ];
         const allSelected = this.props.videos && this.props.videos.length > 0 && this.props.selectedCount === this.props.videos.length;
 
         return (
@@ -529,7 +618,7 @@ class Review extends React.Component {
                                 >
 
                                     <span
-                                        onClick={() => this.onTabChange(index)}
+                                        onClick={() => this.onTabChange(item.value)}
                                         style={{
                                             display: 'inline-block',
                                             cursor: 'pointer',
@@ -537,8 +626,8 @@ class Review extends React.Component {
                                             textTransform: 'none',
                                             padding: '1rem',
                                             fontSize: '1rem',
-                                            borderBottom: this.state.activeTab === index ? '3px solid #0e7ceb' : 'none',
-                                            opacity: this.state.activeTab === index ? 1 : 0.5,
+                                            borderBottom: this.state.activeTab === item.value ? '3px solid #0e7ceb' : 'none',
+                                            opacity: this.state.activeTab === item.value ? 1 : 0.5,
                                         }}
                                     >
                                         {item.title}
@@ -595,7 +684,7 @@ class Review extends React.Component {
                                             <input type="checkbox" style={{ marginRight: 5 }} checked={allSelected} onClick={() => this.props.setAllVideoSelected(!allSelected)} />
                                             Select all videos
                                         </label>
-                                        {this.state.activeTab === 0 && (
+                                        {this.state.activeTab === TABS.TRANSCRIBE && (
                                             <React.Fragment>
                                                 <Separator />
                                                 <Dropdown text='Transcribe'>
@@ -654,7 +743,7 @@ class Review extends React.Component {
                             {this._renderDeleteVideoModal()}
                             {this.renderConfirmReviewModal()}
                             {this.renderEditVideoModal()}
-
+                            {this.renderSelectCutterModal()}
                         </RoleRenderer>
                     </Grid>
                 </div>
@@ -693,7 +782,7 @@ const mapDispatchToProps = (dispatch) => ({
     setVideoStatusFilter: filter => dispatch(videoActions.setVideoStatusFilter(filter)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     transcribeVideo: video => dispatch(videoActions.transcribeVideo(video)),
-    skipTranscribe: video => dispatch(videoActions.skipTranscribe(video)),
+    skipTranscribe: (video, cuttingBy) => dispatch(videoActions.skipTranscribe(video, cuttingBy)),
     updateVideoReviewers: (videoId, users) => dispatch(videoActions.updateVideoReviewers(videoId, users)),
     updateVideoVerifiers: (videoId, users) => dispatch(videoActions.updateVideoVerifiers(videoId, users)),
     setVideoSelected: (videoId, selected) => dispatch(videoActions.setVideoSelected(videoId, selected)),

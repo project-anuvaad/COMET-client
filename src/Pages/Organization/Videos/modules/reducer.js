@@ -19,6 +19,7 @@ const INITIAL_STATE = {
         transcribe: 0,
         proofread: 0,
         completed: 0,
+        cutting: 0,
         total: 0,
     }
 }

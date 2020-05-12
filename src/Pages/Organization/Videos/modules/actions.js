@@ -115,7 +115,6 @@ export const fetchVideosCount = (organizationId) => (dispatch, getState) => {
     requestAgent
         .get(Api.video.getVideosCount({ organization: organization._id }))
         .then((res) => {
-            console.log('counts are', res.body);
             dispatch(setVideosCounts(res.body))
         })
         .catch((err) => {
@@ -314,13 +313,18 @@ export const transcribeSelectedVideos = () => (dispatch, getState) => {
 
 }
 
-export const skipTranscribe = video => (dispatch, getState) => {
+export const skipTranscribe = (video, cuttingBy) => (dispatch, getState) => {
     const { organization } = getState().organization;
     dispatch(setVideoLoading(true));
     requestAgent
-        .post(Api.video.skipTranscribe(video._id), { organization: organization._id })
+        .post(Api.video.skipTranscribe(video._id), { organization: organization._id, cuttingBy })
         .then((res) => {
-            dispatch(push(routes.convertProgressV2(video._id)));
+            if (cuttingBy === 'self') {
+                window.location.href = routes.convertProgressV2(video._id); 
+            } else {
+                NotificationService.success('Videowiki\'s team will get it done shortly!')
+                dispatch(fetchVideos())
+            }
         })
         .catch((err) => {
             NotificationService.responseError(err);
