@@ -100,7 +100,7 @@ export default class ArticleSummaryCard extends React.Component {
                                             color="green"
                                             name="check"
                                         // size="small"
-                                        /> Add Verifiers
+                                        /> Add Approvers
                                     </Dropdown.Item>
                                     <Dropdown.Item
                                         onClick={onDeleteClick}

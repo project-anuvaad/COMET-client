@@ -69,7 +69,7 @@ class VideoCard extends React.Component {
                                 name="add"
                                 size="small"
                                 onClick={this.props.onAddClick}
-                            /> Add Reviewers
+                            /> Add Transcribers
                         </Dropdown.Item>
                         <Dropdown.Item
                             onClick={this.props.onAddVerifiersClick}
@@ -79,7 +79,7 @@ class VideoCard extends React.Component {
                                 name="add"
                                 size="small"
                                 onClick={this.props.onAddVerifiersClick}
-                            /> Add Verifiers
+                            /> Add Approvers
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
