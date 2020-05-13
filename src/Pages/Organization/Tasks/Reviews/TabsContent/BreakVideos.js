@@ -4,7 +4,7 @@ import { Grid } from 'semantic-ui-react';
 import VideoCard from '../../../../../shared/components/VideoCard';
 import routes from '../../../../../shared/routes';
 
-class Proofread extends React.Component {
+class BreakVideos extends React.Component {
 
     navigateToConvertProgresss = videoId => {
         window.location.href = routes.convertProgressV2(videoId);
@@ -23,7 +23,7 @@ class Proofread extends React.Component {
                                 subTitle={video.organization && video.organization.name ? `Orgnization: ${video.organization.name}` : ''}
                                 thumbnailUrl={video.thumbnailUrl}
                                 title={video.title}
-                                buttonTitle="Proofread"
+                                buttonTitle="Break video"
                                 loading={video.status === 'converting'}
                                 disabled={video.status === 'converting'}
                                 onButtonClick={() => this.navigateToConvertProgresss(video._id)}
@@ -36,4 +36,4 @@ class Proofread extends React.Component {
     }
 }
 
-export default withRouter(Proofread);
+export default withRouter(BreakVideos);

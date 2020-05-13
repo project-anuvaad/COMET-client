@@ -53,6 +53,7 @@ class Completed extends React.Component {
                         <Grid.Column key={video._id} width={4}>
                             <VideoCard
                                 showOptions
+                                subTitle={video.organization && video.organization.name ? `Orgnization: ${video.organization.name}` : ''}
                                 url={video.url}
                                 thumbnailUrl={video.thumbnailUrl}
                                 title={video.title}

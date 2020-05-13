@@ -45,7 +45,7 @@ export default class VideoProofreadCard extends React.Component {
                                         icon="play"
                                     />
                                 ) : (
-                                        <Link to={routes.convertProgressV2(video._id)}>
+                                        <a href={routes.convertProgressV2(video._id)}>
                                             <AnimatedButton
                                                 animating={this.props.animating && !loading}
                                                 animation="moema"
@@ -56,7 +56,7 @@ export default class VideoProofreadCard extends React.Component {
                                                 size="tiny"
                                                 icon="play"
                                             />
-                                        </Link>
+                                        </a>
                                     )
 
                                 )}

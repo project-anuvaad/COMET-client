@@ -2,19 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import * as actions from '../modules/actions';
-import { Grid, Pagination, Input } from 'semantic-ui-react';
-import TasksTabs from '../TasksTabs';
+import { Grid, Input, Checkbox } from 'semantic-ui-react';
 import { debounce } from '../../../../shared/utils/helpers';
-import VideoCard from '../../../../shared/components/VideoCard';
 import Tabs from '../../../../shared/components/Tabs';
 import Proofread from './TabsContent/Proofread';
 import Completed from './TabsContent/Completed';
 import LoadingComponent from '../../../../shared/components/LoaderComponent';
 import ClearPagination from '../../../../shared/components/ClearPagination';
+import BreakVideos from './TabsContent/BreakVideos';
 
 const TAB_VIDEO_STATUS = {
-    0: ['proofreading', 'converting'],
-    1: ['done'],
+    0: ['cutting'],
+    1: ['proofreading', 'converting'],
+    2: ['done'],
 }
 
 class Reviews extends React.Component {
@@ -24,8 +24,8 @@ class Reviews extends React.Component {
     componentWillMount = () => {
         this.props.setSearchFilter('');
         this.props.setCurrentPageNumber(1);
-        this.props.fetchUserReviews();
         this.props.setVideoStatusFilter(TAB_VIDEO_STATUS[0]);
+        this.props.fetchUserReviews();
 
         this.debouncedSearch = debounce(() => {
             this.props.setCurrentPageNumber(1);
@@ -88,8 +88,10 @@ class Reviews extends React.Component {
         const tabProps = { videos: this.props.videos };
         switch (this.state.activeTab) {
             case 0:
-                return <Proofread {...tabProps} />
+                return <BreakVideos {...tabProps} />
             case 1:
+                return <Proofread {...tabProps} />
+            case 2:
                 return <Completed {...tabProps} onRereviewVideo={this.onRereviewVideo} />
             default:
                 return <Proofread {...tabProps} />
@@ -105,11 +107,24 @@ class Reviews extends React.Component {
                             style={{ display: 'flex', justifyContent: 'center' }}
                         >
                             <Tabs
-                                items={[{ title: 'Proofread' }, { title: 'Completed' }]}
+                                items={[{ title: 'Break Video Into Slides' }, { title: 'Proofread' }, { title: 'Completed' }]}
                                 onActiveIndexChange={(index) => this.onTabChange(index)}
                                 activeIndex={this.state.activeTab}
                             />
                         </div>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={16}>
+                        <Checkbox
+                            label="Get Videos from all organizations"
+                            checked={this.props.fetchFromAllOrganizations}
+                            onChange={(e, { checked }) => {
+                                this.props.setFetchFromAllOrganizations(checked);
+                                this.props.fetchUserReviews()
+                            }}
+                        />
+
                     </Grid.Column>
                 </Grid.Row>
                 {this.renderPagination()}
@@ -127,6 +142,7 @@ const mapStateToProps = ({ organization, organizationTasks }) => ({
     currentPageNumber: organizationTasks.currentPageNumber,
     videos: organizationTasks.videos,
     totalPagesCount: organizationTasks.totalPagesCount,
+    fetchFromAllOrganizations: organizationTasks.fetchFromAllOrganizations,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -135,6 +151,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchUserReviews: () => dispatch(actions.fetchUserReviews()),
     setVideoStatusFilter: statuses => dispatch(actions.setVideoStatusFilter(statuses)),
     rereviewVideo: video => dispatch(actions.rereviewVideo(video)),
+    setFetchFromAllOrganizations: fetch => dispatch(actions.setFetchFromAllOrganizations(fetch)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reviews);

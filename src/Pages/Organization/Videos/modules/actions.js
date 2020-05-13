@@ -278,7 +278,8 @@ export const transcribeVideo = video => (dispatch, getState) => {
                     NotificationService.success('Your video is being worked on by the AI!');
                 }
             } else {
-                dispatch(push(routes.convertProgressV2(video._id)));
+                window.location.href = routes.convertProgressV2(video._id) 
+                // dispatch(push());
             }
         })
         .catch((err) => {

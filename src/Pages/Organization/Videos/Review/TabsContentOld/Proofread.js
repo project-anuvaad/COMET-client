@@ -38,7 +38,8 @@ class Proofread extends React.Component {
     }
 
     navigateToConvertProgresss = videoId => {
-        this.props.history.push(routes.convertProgressV2(videoId));
+        // this.props.history.push();
+        window.location.href  = routes.convertProgressV2(videoId)
     }
 
     onSaveAssignedUsers = (users) => {

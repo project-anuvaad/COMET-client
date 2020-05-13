@@ -106,6 +106,7 @@ class VideoCard extends React.Component {
             selected,
             titleRoute,
             rounded,
+            subTitle
         } = this.props;
 
         const isHovering = this.isHovering();
@@ -143,6 +144,9 @@ class VideoCard extends React.Component {
                                         <h3 className="video-card__header">
                                             <ShowMore length={55} text={title} />
                                         </h3>
+                                    )}
+                                    {subTitle && (
+                                        <small className="video-card__header">{subTitle}</small>
                                     )}
                             </Grid.Column>
                             {showOptions && (

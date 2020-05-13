@@ -8,6 +8,7 @@ const INITIAL_STATE = {
     currentPageNumber: 0,
     totalPagesCount: 1,
     videoStatusFilter: ['proofreading', 'converting'],
+    fetchFromAllOrganizations: false,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -26,6 +27,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, videos: action.payload };
         case actionTypes.SET_VIDEO_STATUS_FILTER:
             return { ...state, videoStatusFilter: action.payload };
+        case actionTypes.SET_FETCH_FROM_ALL_ORGANIZATIONS:
+            return { ...state, fetchFromAllOrganizations: action.payload };
         default:
             return state;
     }

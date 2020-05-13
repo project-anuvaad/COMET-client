@@ -26,6 +26,10 @@ const setVideos = videos => ({
     type: actionTypes.SET_VIDEOS,
     payload: videos,
 })
+export const setFetchFromAllOrganizations = fetch => ({
+    type: actionTypes.SET_FETCH_FROM_ALL_ORGANIZATIONS,
+    payload: fetch,
+})
 
 export const setSearchFilter = searchFilter => ({
     type: actionTypes.SET_SEARCH_FILTER,
@@ -78,16 +82,20 @@ export const fetchUserReviews = () => (dispatch, getState) => {
     const {
         searchFilter,
         currentPageNumber,
-        videoStatusFilter
+        videoStatusFilter,
+        fetchFromAllOrganizations
     } = getState()[moduleName];
+    const query = {
+        page: currentPageNumber,
+        search: searchFilter,
+        reviewers: authentication.user._id,
+        status: videoStatusFilter.join(',')
+    }
+    if (!fetchFromAllOrganizations) {
+        query.organization = organization.organization._id;
+    }
     requestAgent
-        .get(Api.video.getVideos({
-            organization: organization.organization._id,
-            page: currentPageNumber,
-            search: searchFilter,
-            reviewers: authentication.user._id,
-            status: videoStatusFilter.join(',')
-        }))
+        .get(Api.video.getVideos(query))
         .then((res) => {
             const { videos, pagesCount } = res.body;
             dispatch(setVideos(videos));
@@ -110,7 +118,8 @@ export const rereviewVideo = video => (dispatch, getState) => {
         .post(Api.video.transcribeVideo(video._id), { organization: organization._id })
         .then((res) => {
             console.log(res);
-            dispatch(push(routes.convertProgress(video._id)));
+            // dispatch(push());
+            window.location.href = routes.convertProgress(video._id);
         })
         .catch((err) => {
             NotificationService.responseError(err);
