@@ -216,6 +216,7 @@ class Review extends React.Component {
 
     onSkipTranscribe = (cuttingBy) => {
         const { selectedVideo } = this.props;
+        this.setState({ isSelectCutterModalOpen: false });
         this.props.skipTranscribe(selectedVideo, cuttingBy);
     }
 
