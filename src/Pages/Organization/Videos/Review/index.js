@@ -304,12 +304,14 @@ class Review extends React.Component {
             </Modal.Content>
             <Modal.Actions>
                 <Button
+                    circular
                     primary
                     onClick={() => this.onSkipTranscribe('videowiki')}
                 >
                     Let Videowiki's Team do it
                 </Button>
                 <Button
+                    circular
                     primary
                     onClick={() => this.onSkipTranscribe('self')}
 
