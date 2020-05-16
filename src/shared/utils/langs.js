@@ -1459,6 +1459,10 @@ export const TTSLangs = [
   {
     code: 'hi-tts',
     name: 'Hindi < TTS >'
+  },
+  {
+    code: 'fr-tts',
+    name: 'French < TTS >'
   }
 ]
 
