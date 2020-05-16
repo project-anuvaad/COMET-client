@@ -38,22 +38,15 @@ langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every(
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
 
 
-const tabsIndexMap = {
-    0: 'transcribe',
-    1: 'proofread',
-    2: 'completed'
-}
 const TABS = {
-    TRANSCRIBE: 'transcribe',
     CUT_VIDEO: 'cut_video',
     PROOFREAD: 'proofread',
     COMPLETED: 'completed'
 }
 
 const videoStatusMap = {
-    [TABS.TRANSCRIBE]: ['uploaded', 'uploading', 'transcriping'],
+    [TABS.CUT_VIDEO]: ['uploaded', 'uploading', 'transcriping', 'cutting'],
     [TABS.PROOFREAD]: ['proofreading', 'converting'],
-    [TABS.CUT_VIDEO]: ['cutting'],
     [TABS.COMPLETED]: ['done'],
 }
 
@@ -71,7 +64,7 @@ function Separator() {
 
 class Review extends React.Component {
     state = {
-        activeTab: TABS.TRANSCRIBE,
+        activeTab: TABS.CUT_VIDEO,
         deletedVideo: null,
         deleteVideoModalVisible: false,
         selectedVideo: null,
@@ -110,7 +103,7 @@ class Review extends React.Component {
         this.props.setSearchFilter('');
         this.props.fetchUsers(this.props.organization._id);
         this.props.setCurrentPageNumber(1);
-        this.props.setVideoStatusFilter(videoStatusMap[activeTab || TABS.TRANSCRIBE]);
+        this.props.setVideoStatusFilter(videoStatusMap[activeTab || TABS.CUT_VIDEO]);
         this.props.fetchVideos();
         this.props.fetchVideosCount(this.props.organization._id);
         this.videoUploadedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_UPLOADED, (data) => {
@@ -471,38 +464,39 @@ class Review extends React.Component {
             onSelectChange: (selected) => this.onSelectChange(video, selected),
 
         })
-        if (this.state.activeTab === TABS.TRANSCRIBE) {
-            renderedComp = (
-                this.props.videos && this.props.videos.length === 0 ? (
-                    <div style={{ margin: 50 }}>No videos requires preview</div>
-                ) : this.props.videos && this.props.videos.map((video) => {
-                    const loading = ['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1;
-                    const props = commonProps(video);
-                    const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.transcribe === 1);
-                    const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
-                    return (
-                        <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
-                            <VideoCard
-                                {...props}
-                                {...video}
-                                showSkip={!loading}
-                                loading={loading}
-                                disabled={loading}
-                                buttonTitle="Transcribe"
-                                onButtonClick={() => this.onSkipTranscribeClick(video)}
-                                onSkipClick={() => this.onSkipTranscribeClick(video)}
-                                focused={animate}
-                                // Animate if it's not loading and there's only 1 video uploaded and it's in AI Transcribe stage
-                                animateButton={animate}
-                                showWhatsappIcon={!loading}
-                                whatsappIconTarget={whatsappIconTarget}
-                                whatsappIconContent={'Transcribe on WhatsApp'}
-                            />
-                        </Grid.Column>
-                    )
-                })
-            )
-        } else if (this.state.activeTab === TABS.CUT_VIDEO) {
+        // if (this.state.activeTab === TABS.TRANSCRIBE) {
+        //     renderedComp = (
+        //         this.props.videos && this.props.videos.length === 0 ? (
+        //             <div style={{ margin: 50 }}>No videos requires preview</div>
+        //         ) : this.props.videos && this.props.videos.map((video) => {
+        //             const loading = ['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1;
+        //             const props = commonProps(video);
+        //             const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.transcribe === 1);
+        //             const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
+        //             return (
+        //                 <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
+        //                     <VideoCard
+        //                         {...props}
+        //                         {...video}
+        //                         showSkip={!loading}
+        //                         loading={loading}
+        //                         disabled={loading}
+        //                         buttonTitle="Transcribe"
+        //                         onButtonClick={() => this.onSkipTranscribeClick(video)}
+        //                         onSkipClick={() => this.onSkipTranscribeClick(video)}
+        //                         focused={animate}
+        //                         // Animate if it's not loading and there's only 1 video uploaded and it's in AI Transcribe stage
+        //                         animateButton={animate}
+        //                         showWhatsappIcon={!loading}
+        //                         whatsappIconTarget={whatsappIconTarget}
+        //                         whatsappIconContent={'Transcribe on WhatsApp'}
+        //                     />
+        //                 </Grid.Column>
+        //             )
+        //         })
+        //     )
+        // } else 
+        if (this.state.activeTab === TABS.CUT_VIDEO) {
             renderedComp = (
                 this.props.videos && this.props.videos.length === 0 ? (
                     <div style={{ margin: 50 }}>No videos requires proofreading</div>
@@ -519,14 +513,20 @@ class Review extends React.Component {
                                 {...video}
                                 loading={loading}
                                 disabled={loading}
-                                onButtonClick={() => this.navigateToConvertProgresss(video._id)}
+                                onButtonClick={() => {
+                                    if (video.status === 'cutting') {
+                                        this.navigateToConvertProgresss(video._id);
+                                    } else {
+                                        this.onSkipTranscribeClick(video)
+                                    }
+                                }}
                                 buttonTitle="Break Video"
                                 focused={animate}
                                 animateButton={animate}
 
-                                // showWhatsappIcon
-                                // whatsappIconTarget={whatsappIconTarget}
-                                // whatsappIconContent={'Proofread on WhatsApp'}
+                                showWhatsappIcon={!loading}
+                                whatsappIconTarget={whatsappIconTarget}
+                                whatsappIconContent={'Break video on WhatsApp'}
                             />
                         </Grid.Column>
                     )
@@ -599,8 +599,7 @@ class Review extends React.Component {
 
     render() {
         const SUBTABS = [
-            { title: `AI Transcribe (${formatCount(this.props.videosCounts.transcribe)})`, value: TABS.TRANSCRIBE },
-            { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting)})`, value: TABS.CUT_VIDEO },
+            { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting + this.props.videosCounts.transcribe)})`, value: TABS.CUT_VIDEO },
             { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
             { title: `Completed (${formatCount(this.props.videosCounts.completed)})`, value: TABS.COMPLETED }
         ];
