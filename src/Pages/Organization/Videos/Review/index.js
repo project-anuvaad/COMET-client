@@ -489,7 +489,7 @@ class Review extends React.Component {
                                 loading={loading}
                                 disabled={loading}
                                 buttonTitle="Transcribe"
-                                onButtonClick={() => this.onTranscribeVideoClick(video)}
+                                onButtonClick={() => this.onSkipTranscribeClick(video)}
                                 onSkipClick={() => this.onSkipTranscribeClick(video)}
                                 focused={animate}
                                 // Animate if it's not loading and there's only 1 video uploaded and it's in AI Transcribe stage
