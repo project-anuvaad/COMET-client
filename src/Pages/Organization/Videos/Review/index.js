@@ -392,7 +392,7 @@ class Review extends React.Component {
 
     renderAssignVerifiers = () => (
         <AssignReviewUsers
-            title="Assign Verifiers"
+            title="Assign Approvers"
             open={this.state.assignVerifiersModalOpen}
             value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
