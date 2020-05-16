@@ -36,13 +36,13 @@ const NAV_LINKS = [
     {
         title: 'My Translations',
         route: routes.organziationTasksTranslations(),
-        roles: ['translate'],
+        roles: ['admin', 'translate'],
         icon: 'translate',
     },
     {
-        title: 'My Reviews',
+        title: 'My Transcriptions',
         route: routes.organziationTasksReview(),
-        roles: ['review'],
+        roles: ['admin', 'review'],
         icon: 'pencil alternate',
     },
     {
