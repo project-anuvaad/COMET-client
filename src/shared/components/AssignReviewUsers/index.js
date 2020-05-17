@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Dropdown, Button } from 'semantic-ui-react';
 import { getUserName } from '../../utils/helpers';
 import './style.scss';
@@ -40,6 +41,23 @@ export default class AssignReviewUsers extends React.Component {
                     />
                 </Modal.Header>
                 <Modal.Content>
+                    <div className={'assign-review-users__user-list'}>
+                        {this.props.value.map((userId, index) => (
+                            <div className={'assign-review-users__user-item'} key={`assign-user-modal-user-${index}`}>
+                                <span>
+                                    {getUserName(this.props.users.find(u => u._id === userId))}
+                                </span>
+                                <Button
+                                    basic
+                                    circular
+                                    primary
+                                    onClick={() => this.props.onResendEmail(userId)}
+                                >
+                                    Resend email
+                            </Button>
+                            </div>
+                        ))}
+                    </div>
                     <Dropdown
                         className="review-users-dropdown"
                         clearable
@@ -68,4 +86,18 @@ export default class AssignReviewUsers extends React.Component {
             </Modal>
         )
     }
+}
+
+AssignReviewUsers.propTypes = {
+    value: PropTypes.array,
+    users: PropTypes.array,
+    onResendEmail: PropTypes.func,
+    onSave: PropTypes.func,
+}
+
+AssignReviewUsers.defaultProps = {
+    value: [],
+    users: [],
+    onResendEmail: () => {},
+    onSave: () => {},
 }

@@ -17,7 +17,9 @@ export default {
         deleteBackgroundMusic: id => `${API_ROOT}/video/${id}/backgroundMusic`,
         extractVideoBackgroundMusic: id => `${API_ROOT}/video/${id}/backgroundMusic/extract`,
         updateReviewers: id => `${API_ROOT}/video/${id}/reviewers`,
+        resendEmailToReviewer: id => `${API_ROOT}/video/${id}/reviewers/resendEmail`,
         updateVerifiers: id => `${API_ROOT}/video/${id}/verifiers`,
+        resendEmailToVerifier: id => `${API_ROOT}/video/${id}/verifiers/resendEmail`,
         refreshMedia: (id) => `${API_ROOT}/video/${id}/refreshMedia`,
     },
     noiseCancellationVideos: {

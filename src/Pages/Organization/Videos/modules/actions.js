@@ -446,6 +446,17 @@ export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState)
         })
 }
 
+export const resendEmailToReviewer = (videoId, userId) => () => {
+    requestAgent
+        .post(Api.video.resendEmailToReviewer(videoId), { userId })
+        .then(() => {
+            NotificationService.success('Email sent successfully!');
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        })
+}
+
 export const updateVideoVerifiers = (videoId, verifiers) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));
     requestAgent
@@ -463,6 +474,18 @@ export const updateVideoVerifiers = (videoId, verifiers) => (dispatch, getState)
             dispatch(setVideoLoading(false))
         })
 }
+
+export const resendEmailToVerifier = (videoId, userId) => () => {
+    requestAgent
+        .post(Api.video.resendEmailToVerifier(videoId), { userId })
+        .then(() => {
+            NotificationService.success('Email sent successfully!');
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        })
+}
+
 
 export const generateTranslatableArticle = (originalArticleId, langCode, langName, translators = [], verifiers = [], mode = 'single') => (dispatch, getState) => {
     const params = {}

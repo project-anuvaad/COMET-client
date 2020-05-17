@@ -254,6 +254,13 @@ class Review extends React.Component {
     onSelectChange = (video, selected) => {
         this.props.setVideoSelected(video._id, selected);
     }
+    onResendEmail = (userRole, videoId, userId) => {
+        if (userRole === 'verifier') {
+            this.props.resendEmailToVerifier(videoId, userId)
+        } else if (userRole === 'reviewer') {
+            this.props.resendEmailToReviewer(videoId, userId);
+        }
+    }
 
     renderEditVideoModal = () => (
         <EditVideoModal
@@ -387,6 +394,7 @@ class Review extends React.Component {
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
             onClose={() => this.setState({ assignUsersModalOpen: false, selectedVideo: null })}
             onSave={this.onSaveAssignedUsers}
+            onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
         />
     )
 
@@ -398,6 +406,7 @@ class Review extends React.Component {
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
             onClose={() => this.setState({ assignVerifiersModalOpen: false, selectedVideo: null })}
             onSave={this.onSaveVerifiers}
+            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
         />
     )
 
@@ -786,7 +795,9 @@ const mapDispatchToProps = (dispatch) => ({
     transcribeVideo: video => dispatch(videoActions.transcribeVideo(video)),
     skipTranscribe: (video, cuttingBy) => dispatch(videoActions.skipTranscribe(video, cuttingBy)),
     updateVideoReviewers: (videoId, users) => dispatch(videoActions.updateVideoReviewers(videoId, users)),
+    resendEmailToReviewer: (videoId, userId) => dispatch(videoActions.resendEmailToVerifier(videoId, userId)),
     updateVideoVerifiers: (videoId, users) => dispatch(videoActions.updateVideoVerifiers(videoId, users)),
+    resendEmailToVerifier: (videoId, userId) => dispatch(videoActions.resendEmailToVerifier(videoId, userId)),
     setVideoSelected: (videoId, selected) => dispatch(videoActions.setVideoSelected(videoId, selected)),
     setAllVideoSelected: (selected) => dispatch(videoActions.setAllVideoSelected(selected)),
     trancibeSelectedVideos: () => dispatch(videoActions.transcribeSelectedVideos()),
