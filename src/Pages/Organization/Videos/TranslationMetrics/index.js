@@ -2,27 +2,24 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { Link, withRouter } from 'react-router-dom';
-import { Grid, Card, Button, Icon, Modal, Input, Popup, Label } from 'semantic-ui-react';
+import { Grid,  Button, Icon, Popup, Label } from 'semantic-ui-react';
 
 import routes from '../../../../shared/routes';
-import { isoLangs } from '../../../../shared/constants/langs';
 
 import ArticleSummaryCard from '../../../../shared/components/ArticleSummaryCard';
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
-import VideosTabs from '../VideosTabs';
 import DeleteTranslationModal from './DeleteTranslationModal';
 import AssignUsersSpeakersModal from '../../../../shared/components/AssignUsersSpeakersModal';
 
 import * as videoActions from '../modules/actions';
 import * as organizationActions from '../../../../actions/organization';
+
 import { getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
-import ShowMore from '../../../../shared/components/ShowMore';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
 import DeleteBackgroundMusicModal from './DeleteBackgroundMusicModal';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import websockets from '../../../../websockets';
 import AssignReviewUsers from '../../../../shared/components/AssignReviewUsers';
-import VideoPlayer from '../../../../shared/components/VideoPlayer';
 import VideoCard from '../../../../shared/components/VideoCard';
 
 
@@ -116,6 +113,14 @@ class Translation extends React.Component {
         this.setState({ deleteBackgroundMusicModalVisible: true });
     }
 
+    onResendEmail = (userRole, articleId, userId) => {
+        if (userRole === 'verifier') {
+            this.props.resendEmailToArticleVerifiers(articleId, userId)
+        } else if (userRole === 'reviewer') {
+            // this.props.resendEmailToReviewer(articleId, userId);
+        }
+    }
+
     getTranslationArticleUrl = (articleId, langCode, langName) => {
         const parts = [];
         if (langCode) {
@@ -194,6 +199,7 @@ class Translation extends React.Component {
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'translate', 'review'])}
             onClose={() => this.setState({ assignVerifiersModalVisible: false, selectedArticle: null })}
             onSave={this.onSaveVerifiers}
+            onResendEmail={(userId) => this.onResendEmail( 'verifier', this.state.selectedArticle._id, userId)}
         />
     )
 
@@ -447,6 +453,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     updateTranslators: (articleId, translators) => dispatch(videoActions.updateTranslators(articleId, translators)),
     updateVerifiers: (articleId, verifiers) => dispatch(videoActions.updateVerifiers(articleId, verifiers)),
+    resendEmailToArticleVerifiers: (articleId, userId) => dispatch(videoActions.resendEmailToArticleVerifiers(articleId, userId)),
     generateTranslatableArticle: (originalArticleId, langCode, langName, translators, verifiers) => dispatch(videoActions.generateTranslatableArticle(originalArticleId, langCode, langName, translators, verifiers, 'single')),
     deleteVideoBackgroundMusic: (videoId) => dispatch(videoActions.deleteVideoBackgroundMusic(videoId)),
     extractVideoBackgroundMusic: (videoId) => dispatch(videoActions.extractVideoBackgroundMusic(videoId)),

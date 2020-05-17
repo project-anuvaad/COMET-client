@@ -428,6 +428,19 @@ export const updateVerifiers = (articleId, verifiers) => (dispatch, getState) =>
         })
 }
 
+
+export const resendEmailToArticleVerifiers = (articleId, userId) => () => {
+    requestAgent
+        .post(Api.article.resendEmailToVerifier(articleId), { userId })
+        .then(() => {
+            NotificationService.success('Email sent successfully!');
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        })
+}
+
+
 export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));
     requestAgent
@@ -446,7 +459,7 @@ export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState)
         })
 }
 
-export const resendEmailToReviewer = (videoId, userId) => () => {
+export const resendEmailToVideoReviewer = (videoId, userId) => () => {
     requestAgent
         .post(Api.video.resendEmailToReviewer(videoId), { userId })
         .then(() => {
@@ -475,7 +488,7 @@ export const updateVideoVerifiers = (videoId, verifiers) => (dispatch, getState)
         })
 }
 
-export const resendEmailToVerifier = (videoId, userId) => () => {
+export const resendEmailToVideoVerifier = (videoId, userId) => () => {
     requestAgent
         .post(Api.video.resendEmailToVerifier(videoId), { userId })
         .then(() => {

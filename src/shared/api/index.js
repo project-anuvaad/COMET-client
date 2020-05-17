@@ -37,9 +37,12 @@ export default {
         updateSpeakers: (articleId) => `${API_ROOT}/article/${articleId}/speakersProfile`,
         updateToEnglish: (articleId) => `${API_ROOT}/article/${articleId}/toEnglish`,
         markVideoAsDone: (articleId) => `${API_ROOT}/article/${articleId}/reviewCompleted`,
-        updateTranslators: (articleId) => `${API_ROOT}/article/${articleId}/translators`,
         updateTranslatorsFinishDate: (articleId) => `${API_ROOT}/article/${articleId}/translators/finishDate`,
+        updateTranslators: (articleId) => `${API_ROOT}/article/${articleId}/translators`,
+        // resendEmailToTranslator: (articleId) => `${API_ROOT}/article/${articleId}/translators/resendEmail`,
         updateVerifiers: (articleId) => `${API_ROOT}/article/${articleId}/verifiers`,
+        resendEmailToVerifier: (articleId) => `${API_ROOT}/article/${articleId}/verifiers/resendEmail`,
+        
         updateVolume: (articleId) => `${API_ROOT}/article/${articleId}/volume`,
         updateNormalizeAudio: (articleId) => `${API_ROOT}/article/${articleId}/normalizeAudio`,
         getTranslatedArticles: (params) => `${API_ROOT}/article/translations?${querystring.encode(params)}`,

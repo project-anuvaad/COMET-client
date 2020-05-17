@@ -254,11 +254,12 @@ class Review extends React.Component {
     onSelectChange = (video, selected) => {
         this.props.setVideoSelected(video._id, selected);
     }
+    
     onResendEmail = (userRole, videoId, userId) => {
         if (userRole === 'verifier') {
-            this.props.resendEmailToVerifier(videoId, userId)
+            this.props.resendEmailToVideoVerifier(videoId, userId)
         } else if (userRole === 'reviewer') {
-            this.props.resendEmailToReviewer(videoId, userId);
+            this.props.resendEmailToVideoReviewer(videoId, userId);
         }
     }
 
@@ -795,9 +796,9 @@ const mapDispatchToProps = (dispatch) => ({
     transcribeVideo: video => dispatch(videoActions.transcribeVideo(video)),
     skipTranscribe: (video, cuttingBy) => dispatch(videoActions.skipTranscribe(video, cuttingBy)),
     updateVideoReviewers: (videoId, users) => dispatch(videoActions.updateVideoReviewers(videoId, users)),
-    resendEmailToReviewer: (videoId, userId) => dispatch(videoActions.resendEmailToVerifier(videoId, userId)),
+    resendEmailToVideoReviewer: (videoId, userId) => dispatch(videoActions.resendEmailToVideoReviewer(videoId, userId)),
     updateVideoVerifiers: (videoId, users) => dispatch(videoActions.updateVideoVerifiers(videoId, users)),
-    resendEmailToVerifier: (videoId, userId) => dispatch(videoActions.resendEmailToVerifier(videoId, userId)),
+    resendEmailToVideoVerifier: (videoId, userId) => dispatch(videoActions.resendEmailToVideoVerifier(videoId, userId)),
     setVideoSelected: (videoId, selected) => dispatch(videoActions.setVideoSelected(videoId, selected)),
     setAllVideoSelected: (selected) => dispatch(videoActions.setAllVideoSelected(selected)),
     trancibeSelectedVideos: () => dispatch(videoActions.transcribeSelectedVideos()),
