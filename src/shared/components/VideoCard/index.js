@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Button, Icon, Input, Dropdown, Popup, Grid, Progress } from 'semantic-ui-react';
+import { Card, Button, Icon, Input, Dropdown, Popup, Grid, Progress, Label } from 'semantic-ui-react';
 import './style.scss';
 import moment from 'moment';
 import RoleRenderer from '../../containers/RoleRenderer';
@@ -106,7 +106,8 @@ class VideoCard extends React.Component {
             selected,
             titleRoute,
             rounded,
-            subTitle
+            subTitle,
+            cuttingBy,
         } = this.props;
 
         const isHovering = this.isHovering();
@@ -145,9 +146,9 @@ class VideoCard extends React.Component {
                                             <ShowMore length={55} text={title} />
                                         </h3>
                                     )}
-                                    {subTitle && (
-                                        <small className="video-card__header">{subTitle}</small>
-                                    )}
+                                {subTitle && (
+                                    <small className="video-card__header">{subTitle}</small>
+                                )}
                             </Grid.Column>
                             {showOptions && (
                                 <Grid.Column width={2}>
@@ -173,25 +174,35 @@ class VideoCard extends React.Component {
                         <div style={{ margin: 20 }}>
                             {reviewers && reviewers.length > 0 && (
                                 <div>
-                                    Review: {reviewers.map((reviewer) => (
-                                        <Popup
-                                            trigger={
-                                                <span>
-                                                    <ReactAvatar
-                                                        name={getUserNamePreview(reviewer)}
-                                                        style={{ margin: '0 10px', display: 'inline-block' }}
-                                                        size={30}
-                                                        round
+                                    {cuttingBy === 'videowiki' ? (
+
+                                        <React.Fragment>
+                                            Transcribers: <span style={{ color: 'green', fontWeight: 'bold' }}>Videowiki's Team</span>
+                                        </React.Fragment>
+                                    ) : (
+                                            <React.Fragment>
+                                                Transcribers: {reviewers.map((reviewer) => (
+                                                    <Popup
+                                                        trigger={
+                                                            <span>
+                                                                <ReactAvatar
+                                                                    name={getUserNamePreview(reviewer)}
+                                                                    style={{ margin: '0 10px', display: 'inline-block' }}
+                                                                    size={30}
+                                                                    round
+                                                                />
+                                                            </span>
+                                                        }
+                                                        content={getUserNamePreview(reviewer)}
                                                     />
-                                                </span>
-                                            }
-                                            content={getUserNamePreview(reviewer)}
-                                        />
-                                    ))}</div>
+                                                ))}
+                                            </React.Fragment>
+                                        )}
+                                </div>
                             )}
                             {verifiers && verifiers.length > 0 && (
                                 <div style={{ marginTop: reviewers && reviewers.length > 0 ? 10 : 0 }}>
-                                    Verify: &nbsp;&nbsp;{verifiers.map((reviewer) => (
+                                    Approvers: &nbsp;&nbsp;{verifiers.map((reviewer) => (
                                         <Popup
                                             trigger={
                                                 <span>
