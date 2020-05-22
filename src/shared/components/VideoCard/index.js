@@ -108,10 +108,14 @@ class VideoCard extends React.Component {
             rounded,
             subTitle,
             cuttingBy,
+            cuttingStartTime,
+            cuttingEndTime,
         } = this.props;
 
         const isHovering = this.isHovering();
-
+        const remainingMs = cuttingEndTime ? (cuttingEndTime - Date.now()) : 0;
+        const cuttingEndTimePercentage = parseInt(remainingMs > 0 ? 100 - (remainingMs / (cuttingEndTime - cuttingStartTime) * 100) : 99);
+        
         return (
             <div className={`video-card ${rounded ? 'rounded' : ''} ${selected ? 'selected' : ''}`} style={{
                 boxShadow: isHovering ? '0 2px 34px 0 rgba(0, 0, 0, 0.2)' : 'none'
@@ -121,14 +125,18 @@ class VideoCard extends React.Component {
                     onMouseEnter={() => this.setState({ hovering: true })}
                     onMouseLeave={() => this.setState({ hovering: false })}
                 >
-                    <div className="video-container">
-                        <VideoPlayer
-                            thumbnail={thumbnailUrl}
-                            duration={duration}
-                            src={url}
-                            videoProps={{ width: '100%', height: '150px' }}
-                        />
-                        {isHovering && this.renderTopBar()}
+                    <div>
+                        <div
+                            className="video-container"
+                        >
+                            <VideoPlayer
+                                thumbnail={thumbnailUrl}
+                                duration={duration}
+                                src={url}
+                                videoProps={{ width: '100%', height: '150px' }}
+                            />
+                            {isHovering && this.renderTopBar()}
+                        </div>
                     </div>
                     <Grid style={{ marginTop: 0, marginBottom: 0 }}>
                         <Grid.Row style={{ alignItems: 'center' }}>
@@ -177,7 +185,20 @@ class VideoCard extends React.Component {
                                     {cuttingBy === 'videowiki' ? (
 
                                         <React.Fragment>
-                                            Transcribers: <span style={{ color: 'green', fontWeight: 'bold' }}>Videowiki's Team</span>
+                                            <p>
+                                                Transcribers: <span style={{ color: 'green', fontWeight: 'bold' }}>Videowiki's Team</span>
+                                            </p>
+                                            {remainingMs > 0 && (
+                                                <React.Fragment>
+                                                    <p>
+                                                        Will be done in: <span style={{ color: 'green', fontWeight: 'bold' }}> {moment().to(cuttingEndTime, true)}</span>
+                                                    </p>
+                                                    <p>
+                                                        <Progress progress percent={cuttingEndTimePercentage} indicating />
+                                                    </p>
+                                                </React.Fragment>
+                                            )}
+                                            {/* cuttingEndTime */}
                                         </React.Fragment>
                                     ) : (
                                             <React.Fragment>
@@ -255,24 +276,26 @@ class VideoCard extends React.Component {
                     </Grid>
                     {this.props.showWhatsappIcon && (
                         <Card.Content extra style={{ backgroundColor: '#ecf5fe' }}>
-                            <p>
-                                {typeof this.props.whatsappIconContent === 'string' ? (
-                                    <a style={{ paddingLeft: 10, paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
-                                        <div>
-                                            <Icon name="whatsapp" color="green" size="large" />
-                                            <span>
-                                                {this.props.whatsappIconContent || ''}
-                                            </span>
-                                        </div>
-                                        <Icon name="chevron right" className="pull-right" />
-                                    </a>
-                                ) : (
-                                        <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} >
-                                            {this.props.whatsappIconContent || ''}
+                            <div>
+                                <p>
+                                    {typeof this.props.whatsappIconContent === 'string' ? (
+                                        <a style={{ paddingLeft: 10, paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} target="_blank" rel="noopener noreferrer" href={this.props.whatsappIconTarget || ''} >
+                                            <div>
+                                                <Icon name="whatsapp" color="green" size="large" />
+                                                <span>
+                                                    {this.props.whatsappIconContent || ''}
+                                                </span>
+                                            </div>
+                                            <Icon name="chevron right" className="pull-right" />
                                         </a>
-                                    )}
-                                {/* <Icon name="whatsapp" /> */}
-                            </p>
+                                    ) : (
+                                            <a style={{ paddingLeft: 10, paddingRight: 10, display: 'block' }} >
+                                                {this.props.whatsappIconContent || ''}
+                                            </a>
+                                        )}
+                                    {/* <Icon name="whatsapp" /> */}
+                                </p>
+                            </div>
                         </Card.Content>
                     )}
                 </Card>

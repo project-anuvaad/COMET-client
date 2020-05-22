@@ -16,10 +16,15 @@ export default class DefaultNotification extends React.Component {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={3}>
-                            {this.props.from && (
-
+                            {this.props.from ? (
                                 <ReactAvatar
                                     name={`${from.firstname} ${from.lastname}`}
+                                    round
+                                    size={50}
+                                />
+                            ) : (
+                                <ReactAvatar
+                                    name={'V W'}
                                     round
                                     size={50}
                                 />
