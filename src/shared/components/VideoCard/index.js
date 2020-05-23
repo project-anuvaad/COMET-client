@@ -115,7 +115,7 @@ class VideoCard extends React.Component {
         const isHovering = this.isHovering();
         const remainingMs = cuttingEndTime ? (cuttingEndTime - Date.now()) : 0;
         const cuttingEndTimePercentage = parseInt(remainingMs > 0 ? 100 - (remainingMs / (cuttingEndTime - cuttingStartTime) * 100) : 99);
-        
+
         return (
             <div className={`video-card ${rounded ? 'rounded' : ''} ${selected ? 'selected' : ''}`} style={{
                 boxShadow: isHovering ? '0 2px 34px 0 rgba(0, 0, 0, 0.2)' : 'none'
@@ -194,7 +194,11 @@ class VideoCard extends React.Component {
                                                         Will be done in: <span style={{ color: 'green', fontWeight: 'bold' }}> {moment().to(cuttingEndTime, true)}</span>
                                                     </p>
                                                     <p>
-                                                        <Progress progress percent={cuttingEndTimePercentage} indicating />
+
+                                                        <Progress style={{ marginBottom: 10 }} color="blue" size="tiny" percent={cuttingEndTimePercentage} />
+                                                        <div style={{ color: '#0e7ceb', fontWeight: 'bold', textAlign: 'center'}}>
+                                                            {cuttingEndTimePercentage}%
+                                                        </div>
                                                     </p>
                                                 </React.Fragment>
                                             )}
