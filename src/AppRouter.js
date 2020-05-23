@@ -178,7 +178,7 @@ class AppRouter extends React.Component {
               exact
               path={routes.organziationTasksTranslations()}
               isPrivateRoute={true}
-              authorize={['translate']}
+              authorize={['admin', 'translate']}
               title="Organziation: My Translations"
               loader={OrganzaitionTasksTranslations}
               layout={DashboardLayout}
@@ -188,7 +188,7 @@ class AppRouter extends React.Component {
               exact
               path={routes.organziationTasksReview()}
               isPrivateRoute={true}
-              authorize={['review']}
+              authorize={['admin', 'review']}
               title="Organziation: My Reviews"
               loader={OrganzaitionTasksReviews}
               layout={DashboardLayout}
