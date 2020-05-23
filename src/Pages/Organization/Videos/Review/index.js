@@ -22,7 +22,8 @@ import {
     getUsersByRoles,
     formatTime,
     generateWhatsappTranscribeLink,
-    generateWhatsappProofreadLink
+    generateWhatsappProofreadLink,
+    getWhatsappNotifyOnProofreadingReady
 } from '../../../../shared/utils/helpers';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import AssignReviewUsers from '../../../../shared/components/AssignReviewUsers';
@@ -74,6 +75,7 @@ class Review extends React.Component {
         isSelectCutterModalOpen: false,
         editVideoModalOpen: false,
         tmpEditVideo: null,
+        isNotifyWithWhatsappModalOpen: false,
     }
 
     constructor(props) {
@@ -209,7 +211,7 @@ class Review extends React.Component {
 
     onSkipTranscribe = (cuttingBy) => {
         const { selectedVideo } = this.props;
-        this.setState({ isSelectCutterModalOpen: false });
+        this.setState({ isSelectCutterModalOpen: false, isNotifyWithWhatsappModalOpen: true });
         this.props.skipTranscribe(selectedVideo, cuttingBy);
     }
 
@@ -254,7 +256,7 @@ class Review extends React.Component {
     onSelectChange = (video, selected) => {
         this.props.setVideoSelected(video._id, selected);
     }
-    
+
     onResendEmail = (userRole, videoId, userId) => {
         if (userRole === 'verifier') {
             this.props.resendEmailToVideoVerifier(videoId, userId)
@@ -331,6 +333,58 @@ class Review extends React.Component {
 
     )
 
+    renderNotifyWithWhatsappModal = () => (
+        <Modal
+            size="tiny"
+            open={this.state.isNotifyWithWhatsappModalOpen}
+            onClose={() => this.setState({ isNotifyWithWhatsappModalOpen: false })}
+        >
+            <Modal.Header>
+                Get notified through whatsapp? <br />
+                <Button
+                    circular
+                    icon="close"
+                    style={{ position: 'absolute', right: '1rem', top: '1rem' }}
+                    onClick={() => this.setState({ isNotifyWithWhatsappModalOpen: false })}
+                />
+            </Modal.Header>
+            <Modal.Content>
+                <p>
+                    We'll send you an email once the video is ready for proofreading
+                </p>
+                <p>
+                    Would you like to get a notification through WhatsApp too?
+                </p>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button
+                    circular
+                    onClick={() => this.setState({ isNotifyWithWhatsappModalOpen: false })}
+                >
+                    No, just send me an email
+                </Button>
+                {this.props.selectedVideo && (
+
+                    <a
+                        href={getWhatsappNotifyOnProofreadingReady(this.props.selectedVideo._id)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => this.setState({ isNotifyWithWhatsappModalOpen: false })}
+                    >
+
+                        <Button
+                            circular
+                            primary
+                        >
+                            Yes, notify me on WhatsApp too
+                        </Button>
+                    </a>
+                )}
+            </Modal.Actions>
+        </Modal>
+
+
+    )
     _renderDeleteVideoModal = () => (
         <Modal
             open={this.state.deleteVideoModalVisible}
@@ -756,6 +810,7 @@ class Review extends React.Component {
                             {this.renderConfirmReviewModal()}
                             {this.renderEditVideoModal()}
                             {this.renderSelectCutterModal()}
+                            {this.renderNotifyWithWhatsappModal()}
                         </RoleRenderer>
                     </Grid>
                 </div>

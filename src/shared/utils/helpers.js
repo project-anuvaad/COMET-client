@@ -235,3 +235,7 @@ export function generateWhatsappProofreadLink(videoId) {
 export function generateWhatsappTranslateLink(videoId, langTo) {
   return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
 }
+
+export function getWhatsappNotifyOnProofreadingReady(videoId) {
+  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
+}
