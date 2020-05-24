@@ -211,8 +211,11 @@ class Review extends React.Component {
 
     onSkipTranscribe = (cuttingBy) => {
         const { selectedVideo } = this.props;
-        this.setState({ isSelectCutterModalOpen: false, isNotifyWithWhatsappModalOpen: true });
+        this.setState({ isSelectCutterModalOpen: false });
         this.props.skipTranscribe(selectedVideo, cuttingBy);
+        if (cuttingBy === 'videowiki') {
+            this.setState({ isNotifyWithWhatsappModalOpen: true })
+        }
     }
 
     onSaveAssignedUsers = (users) => {
