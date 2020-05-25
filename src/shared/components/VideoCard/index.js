@@ -22,20 +22,27 @@ class VideoCard extends React.Component {
     }
 
     renderTopBar = () => {
+        const isHovering = this.isHovering();
+
         return (
             <div className="topbar-container">
                 <div>
-                    {this.props.selectable && (
+                    {this.props.selectable && (isHovering || this.props.selected) && (
                         <input type="checkbox" checked={this.props.selected || false} onChange={() => this.props.onSelectChange(!this.props.selected)} className="select-checkbox" />
                     )}
                 </div>
                 <div>
-                    <a href={this.props.url} target="_blank">
-                        <Button circular size="tiny" icon="download" />
-                    </a>
-                    {this.props.deleteable && (
-                        <Button circular size="tiny" icon="trash alternate" onClick={this.props.onDeleteVideoClick} />
-                    )}
+                    {isHovering ? (
+                        <React.Fragment>
+                            <a href={this.props.url} target="_blank">
+
+                                <Button circular size="tiny" icon="download" />
+                            </a>
+                            {this.props.deleteable && (
+                                <Button circular size="tiny" icon="trash alternate" onClick={this.props.onDeleteVideoClick} />
+                            )}
+                        </React.Fragment>
+                    ) : <span></span>}
                 </div>
             </div>
         )
@@ -135,7 +142,7 @@ class VideoCard extends React.Component {
                                 src={url}
                                 videoProps={{ width: '100%', height: '150px' }}
                             />
-                            {isHovering && this.renderTopBar()}
+                            {this.renderTopBar()}
                         </div>
                     </div>
                     <Grid style={{ marginTop: 0, marginBottom: 0 }}>
@@ -196,7 +203,7 @@ class VideoCard extends React.Component {
                                                     <p>
 
                                                         <Progress style={{ marginBottom: 10 }} color="blue" size="tiny" percent={cuttingEndTimePercentage} />
-                                                        <div style={{ color: '#0e7ceb', fontWeight: 'bold', textAlign: 'center'}}>
+                                                        <div style={{ color: '#0e7ceb', fontWeight: 'bold', textAlign: 'center' }}>
                                                             {cuttingEndTimePercentage}%
                                                         </div>
                                                     </p>

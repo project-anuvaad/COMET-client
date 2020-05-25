@@ -2,6 +2,10 @@
     transition: transform 0.2s, box-shadow 0.2s;
     // overflow: hidden;
     border: 2px solid transparent;
+    > .card {
+        border-radius: 16px !important;
+        overflow: hidden;
+    }
     &.rounded {
         border-radius: 16px;
     }
@@ -45,6 +49,7 @@
         right: 0;
         left: 0;
         margin: 1rem;
+        min-height: 30px;
         button {
             margin-left: 10px;
             background-color: black;
