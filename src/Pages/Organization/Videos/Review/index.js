@@ -573,7 +573,7 @@ class Review extends React.Component {
                     const props = commonProps(video);
                     const loading = video.status === 'converting'
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.cutting === 1);
-                    const whatsappIconTarget = generateWhatsappProofreadLink(video._id);
+                    const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
 
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
