@@ -10,6 +10,7 @@ import VideoTranscribeCard from './VideoTranscribeCard';
 import VideoProofreadCard from './VideoProofreadCard';
 import VideoCompletedCard from './VideoCompletedCard';
 import websockets from '../../../websockets';
+import routes from '../../routes';
 
 class UploadProgressBox extends React.Component {
     state = {
@@ -67,9 +68,15 @@ class UploadProgressBox extends React.Component {
         this.onCloseModal();
     }
 
+
     onTranscribeVideo = (video) => {
+        if (video.status === 'cutting') {
+            window.location.href = routes.convertProgressV2(video._id)
+        } else {
+            this.props.skipTranscribe(video, 'self')
+        }
         this.props.transcribeVideo(video);
-        video.status = 'transcriping';
+        video.status = 'cutting';
         this.updateUploadedVideos({ ...video });
     }
 
@@ -250,6 +257,7 @@ const mapDispatchToProps = (dispatch) => ({
     abortVideoUpload: videoIndex => dispatch(videoActions.abortVideoUpload(videoIndex)),
     abortAllVideoUploads: () => dispatch(videoActions.abortAllVideoUploads()),
     transcribeVideo: video => dispatch(organizationVideosActions.transcribeVideo(video)),
+    skipTranscribe: (video, cuttingBy) => dispatch(organizationVideosActions.skipTranscribe(video, cuttingBy)),
     setUploadVideoForm: form => dispatch(videoActions.setUploadVideoForm(form)),
     setUploadedVideos: videos => dispatch(videoActions.setUploadedVideos(videos)),
     fetchUploadedVideos: () => dispatch(videoActions.fetchUploadedVideos())

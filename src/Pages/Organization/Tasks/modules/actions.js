@@ -119,7 +119,7 @@ export const rereviewVideo = video => (dispatch, getState) => {
         .then((res) => {
             console.log(res);
             // dispatch(push());
-            window.location.href = routes.convertProgress(video._id);
+            window.location.href = routes.convertProgressV2(video._id);
         })
         .catch((err) => {
             NotificationService.responseError(err);
