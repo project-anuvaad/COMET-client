@@ -166,6 +166,7 @@ export default class FAQ extends React.Component {
                                     </div>
                                     <div className="play-icon">
                                         <img
+                                            alt="play button"
                                             onClick={() => this.setState({ guidingModalOpen: true })}
                                             src="/img/onboarding/play-button.png"
                                         />
@@ -234,16 +235,38 @@ export default class FAQ extends React.Component {
                                             <Grid.Row className="center-space-content">
                                                 <Grid.Column width={5} className="video-tutorial-item">
                                                     <h3>Proofreading Tutorial</h3>
-                                                    <iframe width="80%"
+                                                    <iframe title="Proofreading Tutorial"
+                                                        width="80%"
                                                         height="315" src="https://www.youtube.com/embed/ERofQfGRjNo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                                 </Grid.Column>
                                                 <Grid.Column width={5} className="video-tutorial-item">
                                                     <h3>Translating Tutorial</h3>
-                                                    <iframe width="80%" height="315" src="https://www.youtube.com/embed/gydSz1_QwrY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                    <iframe title="Translating Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/gydSz1_QwrY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                                 </Grid.Column>
                                                 <Grid.Column width={5} className="video-tutorial-item">
                                                     <h3>Generate Subtitles Tutorial</h3>
-                                                    <iframe width="80%" height="315" src="https://www.youtube.com/embed/eJ78_Q29rG0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                    <iframe title="Generate Subtitles Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/eJ78_Q29rG0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                </Grid.Column>
+
+                                                <Grid.Column width={5} className="video-tutorial-item">
+                                                    <h3>Proofread on WhatsApp Tutorial</h3>
+                                                    <iframe title="Proofread on WhatsApp Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/83YcCBzglbc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                </Grid.Column>
+                                                <Grid.Column width={5} className="video-tutorial-item">
+                                                    <h3>Translate text on WhatsApp Tutorial</h3>
+                                                    <iframe title="Translate text on WhatsApp Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/gbZOkxNAljM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                </Grid.Column>
+                                                <Grid.Column width={5} className="video-tutorial-item">
+                                                    <h3>Add voice over on WhatsApp Tutorial</h3>
+                                                    <iframe title="Add voice over on WhatsApp Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/GqhBFL2zyVE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                </Grid.Column>
+                                                <Grid.Column width={5} className="video-tutorial-item">
+                                                    <h3>Translate text and add voice over on WhatsApp Tutorial</h3>
+                                                    <iframe title="Translate text and add voice over on WhatsApp Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/5_pi2JBTH48" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                </Grid.Column>
+                                                <Grid.Column width={5} className="video-tutorial-item">
+                                                    <h3>Add Subtitles on WhatsApp Tutorial</h3>
+                                                    <iframe title="Add Subtitles on WhatsApp Tutorial" width="80%" height="315" src="https://www.youtube.com/embed/JZJPLWloNqo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                                 </Grid.Column>
                                                 {this.state.videos.map(v => (
                                                     <Grid.Column width={5} key={v._id} className="video-tutorial-item">
