@@ -3,6 +3,9 @@ import { Grid, Dropdown, Progress, Input, Button, Popup, Icon, Form } from 'sema
 import Dropzone from 'react-dropzone';
 import VideoPlayer from '../VideoPlayer';
 import { removeExtension } from '../../utils/helpers';
+import SuccessLottie from '../../lottie/success-animation.json';
+import Lottie from 'react-lottie';
+const FILE_PREVIEW_SIZE_LIMIT = 10 * 1024 * 1024;
 
 const INFO_ICON_TEXT = {
     TITLE: 'What is the "Title" of the video?',
@@ -49,9 +52,27 @@ class SingleUpload extends React.Component {
 
     onVideoDrop = (accpetedFiles) => {
         if (accpetedFiles.length > 0) {
-            this.props.onChange({ content: accpetedFiles[0], name: removeExtension(accpetedFiles[0].name) });
-            this.onVideoChange(accpetedFiles[0]);
+            const file = accpetedFiles[0];
+            const fileSize = file.size;
+            this.props.onChange({ content: file, name: removeExtension(accpetedFiles[0].name) });
+            if (fileSize < FILE_PREVIEW_SIZE_LIMIT) {
+                this.onVideoChange(accpetedFiles[0]);
+            } else {
+                this.props.onChange({ base64: '' })
+            }
         }
+    }
+
+    renderSuccessLottie = () => {
+        const defaultOptions = {
+            loop: false,
+            autoplay: true, 
+            animationData: SuccessLottie,
+            rendererSettings: {
+              preserveAspectRatio: 'xMidYMid slice'
+            }
+          }
+          return <Lottie width={150} height={150} options={defaultOptions} />
     }
 
     renderInfoPopup = (text) => {
@@ -67,6 +88,7 @@ class SingleUpload extends React.Component {
     }
 
     renderDropzone = () => {
+        const { content, base64 } = this.props.value;
         return (
             <Dropzone
                 multiple={false}
@@ -77,22 +99,38 @@ class SingleUpload extends React.Component {
                     <section>
                         <div {...getRootProps()}>
                             <input {...getInputProps()} />
-                            {this.props.value.base64 ? (
-                                <VideoPlayer src={this.props.value.base64} width={'100%'} videoProps={{ width: '100%' }} />
-                            ) : (
-                                    <div className="dropbox">
-                                        <img src="/img/upload-cloud.png" />
-                                        <p className="description">Drag and drop a video file here to upload</p>
-                                        <p className="extra">or just click here to choose a video file</p>
+                            {!content && !base64 && (
+                                <div className="dropbox">
+                                    <img src="/img/upload-cloud.png" />
+                                    <p className="description">Drag and drop a video file here to upload</p>
+                                    <p className="extra">or just click here to choose a video file</p>
+                                </div>
+                            )}
+                            {base64 && (
+                                <VideoPlayer src={base64} width={'100%'} videoProps={{ width: '100%' }} />
+                            )}
+                            {content && !base64 && (
+                                <div
+                                    style={{ height: 400, position: 'relative' }}
+                                >
+                                    <img alt="video thumbnail" style={{ width: '100%', height: '100%' }} src="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/video-placeholder.jpg" />
+                                    <div style={{ position: 'absolute', top: '20%', left: 0, right: 0, textAlign: 'center' }} >
+                                        <p>
+                                           {this.renderSuccessLottie()} 
+                                        </p>
+                                        <p>
+                                           Your file has been uploaded. Click on "Upload" Button
+                                        </p>
                                     </div>
-                                )}
+                                </div>
+                            )}
                             <p style={{ textAlign: 'center' }}>
                                 {this.props.value.content ? (
                                     <div
                                         style={{ color: '#999999' }}
                                     >
                                         You can
-                                    <Button
+                                        <Button
                                             primary
                                             basic
                                             circular
