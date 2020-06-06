@@ -1,7 +1,25 @@
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const staticFiles = ['js', 'css', 'img']
 const app = express();
+
+// Add the environment variables of the deployment to a json file in the build/public folder for the build to fetch it
+
+const {
+    API_ROOT,
+    WEBSOCKET_SERVER_URL,
+    VIDEOWIKI_WHATSAPP_NUMBER,
+} = process.env;
+
+const jsonContent = JSON.stringify({
+    API_ROOT,
+    WEBSOCKET_SERVER_URL,
+    VIDEOWIKI_WHATSAPP_NUMBER
+});
+
+fs.writeFileSync('./build/app_env.json', jsonContent);
+
 
 app.use(express.static(path.join(__dirname, 'build')))
 // frontend routes =========================================================

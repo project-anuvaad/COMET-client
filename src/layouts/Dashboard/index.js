@@ -9,7 +9,7 @@ import Avatar from 'react-avatar';
 import fileUtils from '../../shared/utils/fileUtils';
 import websockets from '../../websockets';
 
-import { WEBSOCKET_SERVER_URL } from '../../shared/constants';
+import { APP_ENV } from '../../shared/constants';
 
 import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
@@ -109,7 +109,7 @@ class Dashboard extends React.Component {
         if (this.props.organization) {
             this.props.fetchOrganization(this.props.organization._id)
         }
-        this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL, {
+        this.websocketConnection = websockets.createWebsocketConnection(APP_ENV.WEBSOCKET_SERVER_URL, {
             path: '/socket.io',
             transports: ['websocket'],
             secure: true,

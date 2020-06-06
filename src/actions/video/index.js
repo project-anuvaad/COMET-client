@@ -128,7 +128,7 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
         uploadVideoFuncArray.push((cb) => {
             const { numberOfSpeakers, langCode, content, name } = video;
             const req = requestAgent
-            .post(Api.video.uploadVideo)
+            .post(Api.video.uploadVideo())
             .field('title', name)
             .field('numberOfSpeakers', numberOfSpeakers)
             .field('langCode', langCode)
@@ -188,7 +188,7 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organiza
     const { uploadVideoForm } = getState().video;
     dispatch(uploadVideoLoading());
     const req = requestAgent
-        .post(Api.video.uploadVideo)
+        .post(Api.video.uploadVideo())
         .field('title', title)
         .field('numberOfSpeakers', numberOfSpeakers)
         .field('langCode', langCode)

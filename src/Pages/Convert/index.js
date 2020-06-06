@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import querstring from 'query-string';
 import { fetchUserApiKey } from '../../actions/authentication';
 import routes from '../../shared/routes';
-import { API_ROOT } from '../../shared/constants';
+import { APP_ENV } from '../../shared/constants';
 import LoadingComponent from '../../shared/components/LoaderComponent';
 
 class Convert extends React.Component {
@@ -39,7 +39,7 @@ class Convert extends React.Component {
                 {this.props.apiKey && this.props.apiKey.key && (
                     <vw-proofread
                         apiKey={this.props.apiKey.key}
-                        apiRoot={API_ROOT}
+                        apiRoot={APP_ENV.API_ROOT}
                         videoId={video}
                         backRoute={`${routes.organizationVideos()}?activeTab=proofread`}
                         finishRedirectRoute={`${routes.organziationReview()}?activeTab=proofread`}

@@ -1,3 +1,5 @@
+// import env from '/assets/app_env.json';
+
 export const IMAGE_EXTENSIONS = ['jpeg', 'jpg', 'png', 'svg', 'tif', 'tiff', 'webp', 'jif', 'jfif', 'jp2', 'jpx', 'j2k', 'j2c', 'fpx', 'pcd'];
 export const VIDEOS_EXTESION = ['webm', 'mp4', 'ogg', 'ogv'];
 export const GIF_EXTESIONS = ['gif'];
@@ -36,3 +38,28 @@ export const VIDEOWIKI_WHATSAPP_NUMBER = process.env.NODE_ENV === 'production' ?
 
 export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'https://api.videowiki.org/api');
 export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://localhost:4010' : 'wss://api.videowiki.org';
+
+export function populateAppEnv() {
+    return new Promise((resolve, reject) => {
+        fetch('/app_env.json')
+            .then(response => response.json())
+            .then(data => {
+                resolve(data);
+                const {
+                    API_ROOT,
+                    VIDEOWIKI_WHATSAPP_NUMBER,
+                    WEBSOCKET_SERVER_URL,
+                } = data;
+                APP_ENV.API_ROOT = API_ROOT;
+                APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER = VIDEOWIKI_WHATSAPP_NUMBER;
+                APP_ENV.WEBSOCKET_SERVER_URL = WEBSOCKET_SERVER_URL;
+            })
+            .catch(reject)
+    })
+}
+
+export const APP_ENV = {
+    API_ROOT: '',
+    VIDEOWIKI_WHATSAPP_NUMBER: '',
+    WEBSOCKET_SERVER_URL: '',
+}
