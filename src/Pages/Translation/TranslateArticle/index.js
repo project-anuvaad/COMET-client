@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { fetchUserApiKey } from '../../../actions/authentication';
 import * as articleActions from '../../../actions/article'
-import { API_ROOT } from '../../../shared/constants';
+import { APP_ENV } from '../../../shared/constants';
 import LoadingComponent from '../../../shared/components/LoaderComponent';
 import routes from '../../../shared/routes';
 
@@ -44,7 +44,7 @@ class TranslateArticle extends React.Component {
                     <vw-translate
                         articleId={articleId}
                         apiKey={this.props.apiKey.key}
-                        apiRoot={API_ROOT}
+                        apiRoot={APP_ENV.API_ROOT}
                         backRoute={this.props.article ? routes.organziationTranslationMetrics(this.props.article.video) : ''}
                     ></vw-translate>
                 )}

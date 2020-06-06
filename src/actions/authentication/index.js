@@ -81,7 +81,7 @@ export const redirectToSwitchOrganization = (token, organization, redirectTo = '
 }
 
 export const authenticateWithToken = (token, organizationId, redirectTo = '') => dispatch => {
-    requestAgent.post(Api.authentication.refreshToken, {
+    requestAgent.post(Api.authentication.refreshToken(), {
         token,
     }).then(result => {
         const { success, token, user } = result.body;
@@ -128,7 +128,7 @@ const loginSuccess = (user, token) => (dispatch) => {
 }
 
 export const login = ({ email, password }) => dispatch => {
-    requestAgent.post(Api.authentication.login, {
+    requestAgent.post(Api.authentication.login(), {
         email,
         password,
         temp: true,
@@ -149,7 +149,7 @@ export const login = ({ email, password }) => dispatch => {
 
 export const signUp = ({ orgName, email, password, logo, firstname, lastname }) => dispatch => {
     dispatch(setSignupLoading(true))
-    const req = requestAgent.post(Api.authentication.register)
+    const req = requestAgent.post(Api.authentication.register())
     .field('email', email)
     .field('firstname', firstname)
     .field('lastname', lastname)
@@ -182,7 +182,7 @@ export const emailResetPassword = (email) => (dispatch) => {
     dispatch(setResetPasswordLoading(true));
 
     requestAgent
-    .post(Api.authentication.resetPassword, { email })
+    .post(Api.authentication.resetPassword(), { email })
     .then((res) => {
         NotificationService.success('Please check your email for reset instructions');
         dispatch(setResetPasswordLoading(false));
@@ -215,7 +215,7 @@ export const resetPassword = (email, resetCode, password, passwordConfirm) => (d
 }
 
 export const isValidToken = () => (dispatch, getState) => {
-    requestAgent.get(Api.user.isValidToken).then(({ body }) => {
+    requestAgent.get(Api.user.isValidToken()).then(({ body }) => {
         const { isValid, user } = body;
         dispatch(validateToken(isValid))
         console.log('isvalid token')

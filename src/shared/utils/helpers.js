@@ -1,4 +1,4 @@
-import { IMAGE_EXTENSIONS, VIDEOS_EXTESION, GIF_EXTESIONS, VIDEOWIKI_WHATSAPP_NUMBER } from '../constants';
+import { IMAGE_EXTENSIONS, VIDEOS_EXTESION, GIF_EXTESIONS, APP_ENV } from '../constants';
 import routes from '../routes';
 import { isoLangs, supportedLangs } from '../constants/langs'
 import { signLangsArray } from './langs';
@@ -224,18 +224,18 @@ export function getUserName(user) {
 }
 
 export function generateWhatsappTranscribeLink(videoId) {
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
+  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
 }
 
 export function generateWhatsappProofreadLink(videoId) {
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
+  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
 }
 
 
 export function generateWhatsappTranslateLink(videoId, langTo) {
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
+  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
 }
 
 export function getWhatsappNotifyOnProofreadingReady(videoId) {
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
+  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
 }
