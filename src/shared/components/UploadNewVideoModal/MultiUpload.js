@@ -37,28 +37,6 @@ class MultipleUpload extends React.Component {
             .concat(accpetedFiles.map((f) => ({ content: f, name: removeExtension(f.name), selected: false, hasSubtitle: false, numberOfSpeakers: 1, langCode: DEFAULT_LANG_CODE })));
 
         this.props.onChange({ videos: newAcceptedFiles });
-        // Load preview
-        // if (newAcceptedFiles.length > 0) {
-        //     const readFuncArray = [];
-        //     newAcceptedFiles.filter(v => !v.base64).forEach((v) => {
-        //         readFuncArray.push(cb => {
-        //             const reader = new FileReader()
-        //             reader.onabort = () => cb()
-        //             reader.onerror = () => cb()
-        //             reader.onload = () => {
-        //                 v.base64 = reader.result;
-        //                 setTimeout(() => {
-        //                     this.props.onChange({ videos: newAcceptedFiles.slice() })
-        //                     cb();
-        //                 }, 5000);
-        //             }
-        //             reader.readAsDataURL(v.content)
-        //         })
-        //     })
-
-        //     async.series(readFuncArray, () => {
-        //     })   
-        // }
     }
     onMultiSubtitlesDrop = (accpetedFiles) => {
         let { videos } = this.props.value;
@@ -147,7 +125,6 @@ class MultipleUpload extends React.Component {
                         <Table.Row key={`multi-videos-table-${index}`} className="video-row">
                             <Table.Cell className="centered-cell">
                                 <Checkbox checked={video.selected} onChange={(e, { checked }) => this.onMultiVideoItemChange(index, 'selected', checked)} />
-                                {/* <video src={video.base64} width={150} /> */}
                             </Table.Cell>
                             {/* View/Edit video name */}
                             <Table.Cell width="4">

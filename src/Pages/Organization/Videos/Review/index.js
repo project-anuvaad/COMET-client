@@ -46,7 +46,7 @@ const TABS = {
 }
 
 const videoStatusMap = {
-    [TABS.CUT_VIDEO]: ['uploaded', 'uploading', 'transcriping', 'cutting'],
+    [TABS.CUT_VIDEO]: ['uploaded', 'uploading', 'cutting'],
     [TABS.PROOFREAD]: ['proofreading', 'converting'],
     [TABS.COMPLETED]: ['done'],
 }
@@ -668,7 +668,7 @@ class Review extends React.Component {
 
     render() {
         const SUBTABS = [
-            { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting + this.props.videosCounts.transcribe)})`, value: TABS.CUT_VIDEO },
+            { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting )})`, value: TABS.CUT_VIDEO },
             { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
             { title: `Completed (${formatCount(this.props.videosCounts.completed)})`, value: TABS.COMPLETED }
         ];

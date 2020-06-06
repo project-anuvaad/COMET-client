@@ -1471,7 +1471,7 @@ export const supportedLangs = [
   {
     code: 'gd-GB',
     name: 'Scottish Gaelic',
-    nativeName: 'Gàidhlig' 
+    nativeName: 'Gàidhlig'
   },
   {
     code: 'id-ID',
@@ -1481,7 +1481,7 @@ export const supportedLangs = [
   {
     code: 'nl-NL',
     name: "Dutch",
-    nativeName: "Nederlands, Vlaams" 
+    nativeName: "Nederlands, Vlaams"
   },
   {
     code: 'es-ES',
@@ -1491,7 +1491,7 @@ export const supportedLangs = [
   {
     code: 'pt-PT',
     name: "Portuguese",
-    nativeName: "Português" 
+    nativeName: "Português"
   },
   {
     code: 'ru-RU',
@@ -1501,7 +1501,7 @@ export const supportedLangs = [
   {
     code: 'it-IT',
     name: "Italian",
-    nativeName: "Italiano" 
+    nativeName: "Italiano"
   },
   {
     code: 'fr-FR',
@@ -1521,32 +1521,32 @@ export const supportedLangs = [
   {
     code: 'af-ZA',
     name: "Afrikaans",
-    nativeName: "Afrikaans"    
+    nativeName: "Afrikaans"
   },
   {
     code: 'ko-KR',
     name: "Korean",
-    nativeName: "한국어 (韓國語), 조선말 (朝鮮語)" 
+    nativeName: "한국어 (韓國語), 조선말 (朝鮮語)"
   },
   {
     code: 'de-CH',
     name: "German",
-    nativeName: "Deutsch" 
+    nativeName: "Deutsch"
   },
   {
     code: 'hi-IN',
     name: "Hindi",
-    nativeName: "हिन्दी, हिंदी" 
+    nativeName: "हिन्दी, हिंदी"
   },
   {
     code: 'cy-GB',
     name: "Welsh",
-    nativeName: "Cymraeg" 
+    nativeName: "Cymraeg"
   },
   {
     code: 'ms-MY',
     name: "Malay",
-    nativeName: "bahasa Melayu, بهاس ملايو‎" 
+    nativeName: "bahasa Melayu, بهاس ملايو‎"
   },
   {
     code: 'he-IL',
@@ -1566,12 +1566,12 @@ export const supportedLangs = [
   {
     code: 'pt-BR',
     name: "Portuguese",
-    nativeName: "Português" 
+    nativeName: "Português"
   },
   {
     code: 'ja-JP',
     name: "Japanese",
-    nativeName: "日本語 (にほんご／にっぽんご)", 
+    nativeName: "日本語 (にほんご／にっぽんご)",
   },
   {
     code: 'es-US',
@@ -1586,6 +1586,61 @@ export const supportedLangs = [
   {
     code: 'fr-CA',
     name: "French",
-    nativeName: "français, langue française" 
+    nativeName: "français, langue française"
+  },
+  
+  {
+    code: 'gu-IN',
+    name: 'Gujarati',
+    vendor: 'gcp',
+    nativeName: 'Gujarati'
+  },
+  {
+    code: 'ta-IN',
+    name: 'Tamil',
+    vendor: 'gcp',
+    nativeName: 'Tamil'
+  },
+  {
+    code: 'te-IN',
+    name: 'Telugu',
+    vendor: 'gcp',
+    nativeName: 'Telugu'
+  },
+  {
+    code: 'mr-IN',
+    name: 'Marathi',
+    vendor: 'gcp',
+    nativeName: 'Marathi'
+  },
+  {
+    code: 'ml-IN',
+    name: 'Malayalam',
+    vendor: 'gcp',
+    nativeName: 'Malayalam'
+  },
+  {
+    code: 'ur-IN',
+    name: 'Urdu',
+    vendor: 'gcp',
+    nativeName: 'Urdu'
+  },
+  {
+    code: 'kn-IN',
+    name: 'Kannada',
+    vendor: 'gcp',
+    nativeName: 'Kannada'
+  },
+  {
+    code: 'bn-IN',
+    name: 'Bengali',
+    vendor: 'gcp',
+    nativeName: 'Bengali'
+  },
+  {
+    code: 'pa-guru-IN',
+    name: 'Punjabi',
+    vendor: 'gcp',
+    nativeName: 'Punjabi'
   },
 ];
