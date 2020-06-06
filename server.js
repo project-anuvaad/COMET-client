@@ -10,12 +10,14 @@ const {
     API_ROOT,
     WEBSOCKET_SERVER_URL,
     VIDEOWIKI_WHATSAPP_NUMBER,
+    FRONTEND_HOST_NAME,
 } = process.env;
 
 const jsonContent = JSON.stringify({
     API_ROOT,
     WEBSOCKET_SERVER_URL,
-    VIDEOWIKI_WHATSAPP_NUMBER
+    VIDEOWIKI_WHATSAPP_NUMBER,
+    FRONTEND_HOST_NAME
 });
 
 fs.writeFileSync('./build/app_env.json', jsonContent);

@@ -44,18 +44,18 @@ class LandingPage extends React.Component {
         loginModalVisible: false,
     }
     componentWillMount = () => {
-        const { hostname, protocol, search } = window.location;
+        // const { hostname, protocol, search } = window.location;
 
-        const hostnameParts = hostname.split('.');
-        console.log('hostname parts', hostnameParts)
-        if (hostnameParts.length > 2 && hostnameParts[0] !== 'www' && (hostnameParts.indexOf('videowiki') !== -1)) {
-            window.location.href = `${protocol}//${hostnameParts[hostnameParts.length - 2]}.${hostnameParts[hostnameParts.length - 1]}/${search || ''}`;
-        }
+        // const hostnameParts = hostname.split('.');
+        // console.log('hostname parts', hostnameParts)
+        // if (hostnameParts.length > 2 && hostnameParts[0] !== 'www' && (hostnameParts.indexOf('videowiki') !== -1)) {
+        //     window.location.href = `${protocol}//${hostnameParts[hostnameParts.length - 2]}.${hostnameParts[hostnameParts.length - 1]}/${search || ''}`;
+        // }
     }
 
     componentDidMount = () => {
 
-        const { hostname, protocol, search } = window.location;
+        const { search } = window.location;
         const { login } = queryString.parse(search);
         if (login) {
             this.setState({ loginModalVisible: true }, () => {
