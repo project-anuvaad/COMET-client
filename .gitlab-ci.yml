@@ -52,10 +52,9 @@ release-version:
   script:
     - apk add --update curl
     - apk upgrade -f
-    # - curl -o deploy.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/release.sh
-    # - chmod +X deploy.sh
-    # - source deploy.sh $AWS_ECR_ACCOUNT_URL videowiki client 
-    - source scripts/release.sh $AWS_ECR_ACCOUNT_URL videowiki client $RELEASE_VERSION_NUMBER
+    - curl -o release.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/release.sh
+    - chmod +X release.sh
+    - source release.sh $AWS_ECR_ACCOUNT_URL videowiki client $RELEASE_VERSION_NUMBER
   when: manual
   only:
     - master
