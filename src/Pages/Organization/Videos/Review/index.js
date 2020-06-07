@@ -70,7 +70,9 @@ class Review extends React.Component {
         deleteVideoModalVisible: false,
         selectedVideo: null,
         assignUsersModalOpen: false,
+        assignUsersToMultipleVideosModalOpen: false,
         assignVerifiersModalOpen: false,
+        assignVerifiersToMultipleVideosModalOpen: false,
         confirmReviewModalVisible: false,
         isSelectCutterModalOpen: false,
         editVideoModalOpen: false,
@@ -225,7 +227,7 @@ class Review extends React.Component {
 
     onMultipleVideosSaveAssignedUsers = (users) => {
         this.props.updateVideosReviewers(users);
-        this.setState({ selectedVideo: null, assignUsersModalOpen: false });
+        this.setState({ selectedVideo: null, assignUsersToMultipleVideosModalOpen: false });
     }
 
     onSaveVerifiers = (users) => {
@@ -235,7 +237,7 @@ class Review extends React.Component {
 
     onMultipleVideosSaveVerifiers = (users) => {
         this.props.updateVideosVerifiers(users);
-        this.setState({ selectedVideo: null, assignVerifiersModalOpen: false });
+        this.setState({ selectedVideo: null, assignVerifiersToMultipleVideosModalOpen: false });
     }
 
     onSaveEditedVideo = (originalVideo, editedVideo) => {
@@ -461,7 +463,19 @@ class Review extends React.Component {
             value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
             onClose={() => this.setState({ assignUsersModalOpen: false, selectedVideo: null })}
-            onSave={ this.props.selectedCount > 0 ? this.onMultipleVideosSaveAssignedUsers : this.onSaveAssignedUsers }
+            onSave={this.onSaveAssignedUsers}
+            onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
+        />
+    )
+
+    renderAssignUsersToMultipleVideos = () => (
+        <AssignReviewUsers
+            title="Assign Transcribers To The Selected Videos"
+            open={this.state.assignUsersToMultipleVideosModalOpen}
+            value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
+            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
+            onClose={() => this.setState({ assignUsersToMultipleVideosModalOpen: false, selectedVideo: null })}
+            onSave={this.onMultipleVideosSaveAssignedUsers}
             onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
         />
     )
@@ -473,7 +487,19 @@ class Review extends React.Component {
             value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
             onClose={() => this.setState({ assignVerifiersModalOpen: false, selectedVideo: null })}
-            onSave={ this.props.selectedCount > 0 ? this.onMultipleVideosSaveVerifiers : this.onSaveVerifiers}
+            onSave={this.onSaveVerifiers}
+            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
+        />
+    )
+
+    renderAssignVerifiersToMultipleVideos = () => (
+        <AssignReviewUsers
+            title="Assign Approvers To The Selected Videos"
+            open={this.state.assignVerifiersToMultipleVideosModalOpen}
+            value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
+            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
+            onClose={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: false, selectedVideo: null })}
+            onSave={this.onMultipleVideosSaveVerifiers}
             onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
         />
     )
@@ -668,7 +694,9 @@ class Review extends React.Component {
         return (
             <LoaderComponent active={this.props.videosLoading}>
                 {this.renderAssignUsers()}
+                {this.renderAssignUsersToMultipleVideos()}
                 {this.renderAssignVerifiers()}
+                {this.renderAssignVerifiersToMultipleVideos()}
                 <Grid.Row>
                     {this.renderVideosCards()}
                 </Grid.Row>
@@ -798,7 +826,7 @@ class Review extends React.Component {
                                         {this.props.selectedCount > 0 && (
                                             <React.Fragment>
                                                 <Separator />
-                                                <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersModalOpen: true })}>
+                                                <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersToMultipleVideosModalOpen: true })}>
                                                 <Icon name="add" size="small" color="blue" /> Add Transcribers To Selected Videos
                                                 </span>
                                             </React.Fragment>
@@ -806,7 +834,7 @@ class Review extends React.Component {
                                         {this.props.selectedCount > 0 && (
                                             <React.Fragment>
                                                 <Separator />
-                                                <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignVerifiersModalOpen: true })}>
+                                                <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: true })}>
                                                 <Icon name="add" size="small" color="blue" /> Add Verifiers To Selected Videos
                                                 </span>
                                             </React.Fragment>

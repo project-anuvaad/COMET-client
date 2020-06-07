@@ -446,12 +446,13 @@ export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState)
     requestAgent
         .put(Api.video.updateReviewers(videoId), { reviewers })
         .then((res) => {
-            const { reviewers } = res.body;
-            const { videos } = getState()[moduleName];
-            videos.find((v) => v._id === videoId).reviewers = reviewers.slice();
-            dispatch(setVideos(videos.slice()));
+            // const { reviewers } = res.body;
+            // const { videos } = getState()[moduleName];
+            // videos.find((v) => v._id === videoId).reviewers = reviewers.slice();
+            // dispatch(setVideos(videos.slice()));
             dispatch(setVideoLoading(false));
             NotificationService.success('Updated Successfully!');
+            dispatch(fetchVideos());
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -503,12 +504,13 @@ export const updateVideoVerifiers = (videoId, verifiers) => (dispatch, getState)
     requestAgent
         .put(Api.video.updateVerifiers(videoId), { verifiers })
         .then((res) => {
-            const { verifiers } = res.body;
-            const { videos } = getState()[moduleName];
-            videos.find((v) => v._id === videoId).verifiers = verifiers.slice();
-            dispatch(setVideos(videos.slice()));
+            // const { verifiers } = res.body;
+            // const { videos } = getState()[moduleName];
+            // videos.find((v) => v._id === videoId).verifiers = verifiers.slice();
+            // dispatch(setVideos(videos.slice()));
             dispatch(setVideoLoading(false));
             NotificationService.success('Updated Successfully!');
+            dispatch(fetchVideos());
         })
         .catch((err) => {
             NotificationService.responseError(err);
