@@ -7,15 +7,6 @@ if ["$1" = ""]; then
         echo "Usage: source build.sh docker-repo service-namespace service-name"
         exit 1
 else
-        echo "Building image..."
-        docker build \
-                -f Dockerfile \
-                -t $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA} \
-                -t $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:master \
-                .
-
-        echo "PUSHING IMAGE"
-        echo "REPO NAME = " + $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME
         # Install AWS CLI
         echo " INSTALLING AWS CLI "
         apk add --update python python-dev py-pip jq
@@ -40,9 +31,12 @@ else
         $LOGIN_COMMAND
         echo " Pulling image " + $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:master
         docker pull $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA}
+        echo " TAGGING WITH VERSION NUMBER " + $CI_REGISTRY/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:$VERSION_NUMBER
         docker tag  $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA} $CI_REGISTRY/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:$VERSION_NUMBER
         # LOGIN TO GITLAB REGISTERY
+        echo " LOGGING IN GITLAB REGISTERY"
         docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        echo "PUSHING TAGGED IMAGE"
         docker push $CI_REGISTRY/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:$VERSION_NUMBER
 
 fi
