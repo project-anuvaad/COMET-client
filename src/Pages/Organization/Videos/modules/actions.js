@@ -442,6 +442,8 @@ export const resendEmailToArticleVerifiers = (articleId, userId) => () => {
 
 
 export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState) => {
+    console.log('================================== updated video reviewers called =====================================');
+    console.log(reviewers);
     dispatch(setVideoLoading(true));
     requestAgent
         .put(Api.video.updateReviewers(videoId), { reviewers })
@@ -457,6 +459,38 @@ export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState)
             NotificationService.responseError(err);
             dispatch(setVideoLoading(false))
         })
+}
+
+export const updateVideosReviewers = (reviewers) => (dispatch, getState) => {
+    console.log('================================== updated videos reviewers called =====================================');
+    console.log(reviewers);
+    
+    
+    dispatch(setVideoLoading(true));
+    const { videos } = getState()[moduleName];
+    const updateVideosReviewersFuncArray = [];
+    const selectedVideos = videos.filter(v => v.selected);
+
+    selectedVideos.forEach(v => {
+        updateVideosReviewersFuncArray.push(cb => {
+            console.log('The video is ', v);
+            
+            requestAgent
+                .put(Api.video.updateReviewers(v._id), { reviewers })
+                .then(res => {
+                    cb()
+                })
+                .catch(err => {
+                    cb();
+                })
+        })        
+    })
+
+    async.series(updateVideosReviewersFuncArray, () => {
+        dispatch(setVideoLoading(false));
+        NotificationService.success('Updated Successfully!');
+        dispatch(fetchVideos());
+    })
 }
 
 export const resendEmailToVideoReviewer = (videoId, userId) => () => {

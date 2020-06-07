@@ -223,6 +223,11 @@ class Review extends React.Component {
         this.setState({ selectedVideo: null, assignUsersModalOpen: false });
     }
 
+    onMultipleVideosSaveAssignedUsers = (users) => {
+        this.props.updateVideosReviewers(users);
+        this.setState({ selectedVideo: null, assignUsersModalOpen: false });
+    }
+
     onSaveVerifiers = (users) => {
         this.props.updateVideoVerifiers(this.state.selectedVideo._id, users);
         this.setState({ selectedVideo: null, assignVerifiersModalOpen: false });
@@ -451,7 +456,7 @@ class Review extends React.Component {
             value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
             users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
             onClose={() => this.setState({ assignUsersModalOpen: false, selectedVideo: null })}
-            onSave={this.onSaveAssignedUsers}
+            onSave={ this.props.selectedCount > 0 ? this.onMultipleVideosSaveAssignedUsers : this.onSaveAssignedUsers }
             onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
         />
     )
@@ -667,6 +672,8 @@ class Review extends React.Component {
     }
 
     render() {
+        console.log('selected count prop is ',this.props.selectedCount);
+        
         const SUBTABS = [
             { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting )})`, value: TABS.CUT_VIDEO },
             { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
@@ -785,6 +792,14 @@ class Review extends React.Component {
                                                 </span>
                                             </React.Fragment>
                                         )}
+                                        {this.props.selectedCount > 0 && (
+                                            <React.Fragment>
+                                                <Separator />
+                                                <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersModalOpen: true })}>
+                                                <Icon name="add" size="small" color="blue" /> Add Transcribers To Selected Videos
+                                                </span>
+                                            </React.Fragment>
+                                        )}
                                     </div>
                                 </Grid.Column>
                                 <Grid.Column width={3}>
@@ -854,6 +869,7 @@ const mapDispatchToProps = (dispatch) => ({
     transcribeVideo: video => dispatch(videoActions.transcribeVideo(video)),
     skipTranscribe: (video, cuttingBy) => dispatch(videoActions.skipTranscribe(video, cuttingBy)),
     updateVideoReviewers: (videoId, users) => dispatch(videoActions.updateVideoReviewers(videoId, users)),
+    updateVideosReviewers: (users) => dispatch(videoActions.updateVideosReviewers(users)),
     resendEmailToVideoReviewer: (videoId, userId) => dispatch(videoActions.resendEmailToVideoReviewer(videoId, userId)),
     updateVideoVerifiers: (videoId, users) => dispatch(videoActions.updateVideoVerifiers(videoId, users)),
     resendEmailToVideoVerifier: (videoId, userId) => dispatch(videoActions.resendEmailToVideoVerifier(videoId, userId)),
