@@ -1,6 +1,7 @@
 import * as actionTypes from './types';
 import * as orgActionTypes from '../organization/types';
 
+import { APP_ENV } from '../../shared/constants';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 import { push } from 'connected-react-router';
@@ -71,12 +72,12 @@ export const getUserDetails = () => (dispatch) => {
 }
 
 export const redirectToSwitchOrganization = (token, organization, redirectTo = '') => dispatch => {
-    const { protocol, hostname } = window.location;
-    const hostParts = hostname.split('.')
-    let targetLocation = `${protocol}//${organization.name.replace(/\s/g, '-')}.${hostParts[hostParts.length - 2]}.${hostParts[hostParts.length - 1]}${routes.loginRedirect()}?t=${token}&o=${organization._id}`;
+    const { protocol } = window.location;
+    let targetLocation = `${protocol}//${organization.name.replace(/\s/g, '-')}.${APP_ENV.FRONTEND_HOST_NAME}${routes.loginRedirect()}?t=${token}&o=${organization._id}`;
     if (redirectTo) {
         targetLocation += `&redirectTo=${redirectTo}`;
     }
+    alert('redicting to ' + targetLocation)
     window.location.href = targetLocation;
 }
 

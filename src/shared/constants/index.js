@@ -34,25 +34,20 @@ export const SPEAKER_TEXT_COLORS = {
     10: 'white',
 }
 
-export const VIDEOWIKI_WHATSAPP_NUMBER = process.env.NODE_ENV === 'production' ? '912250323236' : '27600136875'
-
-export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'https://api.videowiki.org/api');
-export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'ws://localhost:4010' : 'wss://api.videowiki.org';
-
 export function populateAppEnv() {
     return new Promise((resolve, reject) => {
         fetch('/app_env.json')
             .then(response => response.json())
             .then(data => {
                 resolve(data);
-                const {
-                    API_ROOT,
-                    VIDEOWIKI_WHATSAPP_NUMBER,
-                    WEBSOCKET_SERVER_URL,
-                } = data;
-                APP_ENV.API_ROOT = API_ROOT;
-                APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER = VIDEOWIKI_WHATSAPP_NUMBER;
-                APP_ENV.WEBSOCKET_SERVER_URL = WEBSOCKET_SERVER_URL;
+                // SET ENV VARIABLES ON APP_ENV
+                try {
+                    Object.keys(data).forEach(key => {
+                        APP_ENV[key] = data[key];
+                    })
+                } catch(err) {
+                    console.log(err);
+                }
             })
             .catch(reject)
     })
@@ -62,4 +57,5 @@ export const APP_ENV = {
     API_ROOT: '',
     VIDEOWIKI_WHATSAPP_NUMBER: '',
     WEBSOCKET_SERVER_URL: '',
+    FRONTEND_HOST_NAME: '',
 }

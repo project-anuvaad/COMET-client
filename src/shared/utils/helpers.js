@@ -162,9 +162,8 @@ export function getTranslationArticleUrl(articleId)  {
 
 
 export const redirectToSwitchOrganization = (token, organization, redirectTo = '') => {
-  const { protocol, hostname } = window.location;
-  const hostParts = hostname.split('.')
-  let targetLocation = `${protocol}//${organization.name.replace(/\s/g, '-')}.${hostParts[hostParts.length - 2]}.${hostParts[hostParts.length - 1]}${routes.loginRedirect()}?t=${token}&o=${organization._id}`;
+  const { protocol } = window.location;
+  let targetLocation = `${protocol}//${organization.name.replace(/\s/g, '-')}.${APP_ENV.FRONTEND_HOST_NAME}${routes.loginRedirect()}?t=${token}&o=${organization._id}`;
   if (redirectTo) {
       targetLocation += `&redirectTo=${redirectTo}`;
   }
