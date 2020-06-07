@@ -77,7 +77,6 @@ export const redirectToSwitchOrganization = (token, organization, redirectTo = '
     if (redirectTo) {
         targetLocation += `&redirectTo=${redirectTo}`;
     }
-    alert('redicting to ' + targetLocation)
     window.location.href = targetLocation;
 }
 
