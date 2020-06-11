@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Grid, Button, Input, Icon } from 'semantic-ui-react';
+import { Grid, Button, Input, Icon, Dropdown } from 'semantic-ui-react';
 import querystring from 'query-string';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
@@ -17,6 +17,12 @@ import { debounce, getUsersByRoles, displayArticleLanguage } from '../../../../s
 import ClearPagination from '../../../../shared/components/ClearPagination';
 import VideoCard from '../../../../shared/components/VideoCard';
 import TranslateOnWhatsappDropdown from './TranslateOnWhatsappDropdown';
+
+function Separator() {
+    return (
+        <span style={{ display: 'inline-block', margin: '0 10px', color: 'gray' }} >|</span>
+    )
+}
 
 class Translated extends React.Component {
     constructor(props) {
@@ -65,6 +71,9 @@ class Translated extends React.Component {
         this.props.generateTranslatableArticle(video.article, langCode, langName, translators, verifiers);
     }
 
+    onSelectChange = (video, selected) => {
+        this.props.setTranslatedArticleVideoSelected(video._id, selected);
+    }
 
     getTranslators = () => {
         return getUsersByRoles(this.props.organizationUsers, this.props.organization, ['translate', 'admin', 'owner']);
@@ -106,6 +115,8 @@ class Translated extends React.Component {
     }
 
     render() {
+        const allSelected = this.props.translatedArticles && this.props.translatedArticles.length > 0 && this.props.selectedCount === this.props.translatedArticles.length;
+
         return (
             <div>
                 <VideosTabs />
@@ -135,11 +146,34 @@ class Translated extends React.Component {
                                 </div>
                             </Grid.Column>
                         </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column width={13}>
+                                <div
+                                    style={{ display: 'flex', alignItems: 'center', color: '#999999' }}
+                                >
+                                    <label>
+                                        <input type="checkbox" style={{ marginRight: 5 }} checked={allSelected} onClick={() => this.props.setAllTranslatedArticleVideoSelected(!allSelected)} />
+                                        Select all videos
+                                    </label>
+                                    {this.props.selectedCount > 0 && (
+                                        <React.Fragment>
+                                            <Separator />
+                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersToMultipleVideosModalOpen: true })}>
+                                            <Icon name="add" size="small" color="blue" /> Add Voice Over To Selected Videos
+                                            </span>
+                                        </React.Fragment>
+                                    )}
+                                </div>
+                            </Grid.Column>
+                        </Grid.Row>
                         <LoaderComponent active={this.props.videosLoading}>
                             <Grid.Row>
                                 {this.props.translatedArticles.map((translatedArticle) => (
                                     <Grid.Column width={4} key={`translated-article-container-${translatedArticle.video._id}`}>
                                         <VideoCard
+                                            selectable={true}
+                                            selected={translatedArticle.video.selected}
+                                            onSelectChange={(selected) => this.onSelectChange(translatedArticle.video, selected)}
                                             rounded
                                             url={translatedArticle.video.url}
                                             thumbnailUrl={translatedArticle.video.thumbnailUrl}
@@ -206,7 +240,7 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     currentPageNumber: organizationVideos.currentPageNumber,
     searchFilter: organizationVideos.searchFilter,
     organizationUsers: organization.users,
-
+    selectedCount: organizationVideos.selectedCount,
 })
 const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
@@ -217,6 +251,8 @@ const mapDispatchToProps = (dispatch) => ({
     generateTranslatableArticle: (originalArticleId, langCode, langName, translators, verifiers) => dispatch(videoActions.generateTranslatableArticle(originalArticleId, langCode, langName, translators, verifiers, 'multi')),
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
+    setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
+    setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));

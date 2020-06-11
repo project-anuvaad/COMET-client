@@ -224,6 +224,7 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
             const { videos, pagesCount } = res.body;
             dispatch(setTranslatedArticles(videos));
             dispatch(setTotalPagesCount(pagesCount || 1));
+            dispatch(setSelectedCount(0));
             cb()
             dispatch(setVideoLoading(false))
         })
@@ -657,6 +658,7 @@ export const setVideoSelected = (videoId, selected) => (dispatch, getState) => {
     dispatch(setVideos(videos.slice()));
     dispatch(setSelectedCount(videos.filter(v => v.selected).length));
 }
+
 export const setAllVideoSelected = (selected) => (dispatch, getState) => {
     const { videos } = getState()[moduleName];
     videos.forEach((video) => {
@@ -665,6 +667,29 @@ export const setAllVideoSelected = (selected) => (dispatch, getState) => {
     dispatch(setVideos(videos.slice()));
     if (selected) {
         dispatch(setSelectedCount(videos.length));
+    } else {
+        dispatch(setSelectedCount(0));
+    }
+}
+
+export const setTranslatedArticleVideoSelected = (videoId, selected) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    const translatedArticleIndex = translatedArticles.findIndex(ta => ta.video._id === videoId);
+    if (translatedArticleIndex !== -1) {
+        translatedArticles[translatedArticleIndex].video.selected = selected;
+    }
+    dispatch(setTranslatedArticles(translatedArticles.slice()));
+    dispatch(setSelectedCount(translatedArticles.filter(ta => ta.video.selected).length));
+}
+
+export const setAllTranslatedArticleVideoSelected = (selected) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    translatedArticles.forEach((ta) => {
+        ta.video.selected = selected
+    })
+    dispatch(setTranslatedArticles(translatedArticles.slice()));
+    if (selected) {
+        dispatch(setSelectedCount(translatedArticles.length));
     } else {
         dispatch(setSelectedCount(0));
     }

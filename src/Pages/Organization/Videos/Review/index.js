@@ -835,7 +835,7 @@ class Review extends React.Component {
                                             <React.Fragment>
                                                 <Separator />
                                                 <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: true })}>
-                                                <Icon name="add" size="small" color="blue" /> Add Verifiers To Selected Videos
+                                                <Icon name="add" size="small" color="blue" /> Add Approvers To Selected Videos
                                                 </span>
                                             </React.Fragment>
                                         )}
