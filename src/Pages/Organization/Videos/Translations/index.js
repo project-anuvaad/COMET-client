@@ -175,7 +175,10 @@ class Translated extends React.Component {
                                             selected={translatedArticle.video.selected}
                                             onSelectChange={(selected) => this.onSelectChange(translatedArticle.video, selected)}
                                             rounded
-                                            url={translatedArticle.video.url}
+                                            url={
+                                              translatedArticle.video.compressedVideoUrl ||
+                                              translatedArticle.video.url
+                                            }
                                             thumbnailUrl={translatedArticle.video.thumbnailUrl}
                                             duration={translatedArticle.video.duration}
                                             title={translatedArticle.video.title}

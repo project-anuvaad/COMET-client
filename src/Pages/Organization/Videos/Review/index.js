@@ -557,7 +557,7 @@ class Review extends React.Component {
             selectable: true,
             deleteable: true,
             rounded: true,
-            url: video.url,
+            url: video.compressedVideoUrl || video.url,
             thumbnailUrl: video.thumbnailUrl,
             title: video.title,
             reviewers: video.reviewers,
