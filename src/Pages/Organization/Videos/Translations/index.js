@@ -10,7 +10,7 @@ import routes from '../../../../shared/routes';
 
 import * as videoActions from '../modules/actions';
 import * as organizationActions from '../../../../actions/organization';
-import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
+import AddMultipleHumanVoiceModal from '../../../../shared/components/AddMultipleHumanVoiceModal/index';
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import { debounce, getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
@@ -65,10 +65,10 @@ class Translated extends React.Component {
 
 
 
-    onAddHumanVoice = (langCode, langName, translators, verifiers) => {
+    onAddHumanVoice = (data) => {
         const { video } = this.props.selectedVideo;
-        this.props.setAddHumanVoiceModalVisible(false);
-        this.props.generateTranslatableArticle(video.article, langCode, langName, translators, verifiers);
+        this.props.setAddMultipleHumanVoiceModalVisible(false);
+        this.props.generateTranslatableArticles(video._id, video.article, data);
     }
 
     onSelectChange = (video, selected) => {
@@ -101,15 +101,15 @@ class Translated extends React.Component {
         const disabledLanguages = this.props.selectedVideo && this.props.selectedVideo.articles ? this.props.selectedVideo.articles.map(a => a.langCode) : [];
         console.log('disabled are', disabledLanguages)
         return (
-            <AddHumanVoiceModal
-                open={this.props.addHumanVoiceModalVisible}
-                onClose={() => this.props.setAddHumanVoiceModalVisible(false)}
+            <AddMultipleHumanVoiceModal
+                open={this.props.addMultipleHumanVoiceModalVisible}
+                onClose={() => this.props.setAddMultipleHumanVoiceModalVisible(false)}
                 users={users}
                 verifiers={verifiers}
                 speakersProfile={selectedVideo && selectedVideo.originalArticle ? selectedVideo.originalArticle.speakersProfile : []}
                 disabledLanguages={disabledLanguages}
                 skippable={false}
-                onSubmit={(langCode, langName, translators, verifiers) => this.onAddHumanVoice(langCode, langName, translators, verifiers)}
+                onSubmit={(data) => this.onAddHumanVoice(data)}
             />
         )
     }
@@ -186,7 +186,7 @@ class Translated extends React.Component {
                                             buttonTitle="Add Voiceover"
                                             onButtonClick={() => {
                                                 this.props.setSelectedVideo(translatedArticle);
-                                                this.props.setAddHumanVoiceModalVisible(true);
+                                                this.props.setAddMultipleHumanVoiceModalVisible(true);
                                             }}
                                             showWhatsappIcon
                                             whatsappIconContent={(
@@ -240,6 +240,7 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     totalPagesCount: organizationVideos.totalPagesCount,
     selectedVideo: organizationVideos.selectedVideo,
     addHumanVoiceModalVisible: organizationVideos.addHumanVoiceModalVisible,
+    addMultipleHumanVoiceModalVisible: organizationVideos.addMultipleHumanVoiceModalVisible,
     currentPageNumber: organizationVideos.currentPageNumber,
     searchFilter: organizationVideos.searchFilter,
     organizationUsers: organization.users,
@@ -248,10 +249,11 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
 const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
     setAddHumanVoiceModalVisible: visible => dispatch(videoActions.setAddHumanVoiceModalVisible(visible)),
+    setAddMultipleHumanVoiceModalVisible: visible => dispatch(videoActions.setAddMultipleHumanVoiceModalVisible(visible)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
     fetchTranslatedArticles: () => dispatch(videoActions.fetchTranslatedArticles()),
     deleteArticle: (articleId) => dispatch(videoActions.deleteArticle(articleId)),
-    generateTranslatableArticle: (originalArticleId, langCode, langName, translators, verifiers) => dispatch(videoActions.generateTranslatableArticle(originalArticleId, langCode, langName, translators, verifiers, 'multi')),
+    generateTranslatableArticles: (videoId, originalArticleId, data) => dispatch(videoActions.generateTranslatableArticles(videoId, originalArticleId, data, 'multi')),
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),

@@ -60,6 +60,11 @@ export const setAddHumanVoiceModalVisible = visible => ({
     payload: visible,
 })
 
+export const setAddMultipleHumanVoiceModalVisible = visible => ({
+    type: actionTypes.SET_ADD_MULTIPLE_HUMAN_VOICE_MODAL_VISIBLE,
+    payload: visible,
+})
+
 export const setTranslateOnWhatsappActive = active => ({
     type: actionTypes.SET_TRANSLATE_ON_WHATSAPP_ACTIVE,
     payload: active,
@@ -642,6 +647,115 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
             console.log(err);
             NotificationService.responseError(err);
         })
+}
+
+export const generateTranslatableArticles = (videoId, originalArticleId, data, mode = 'single') => (dispatch, getState) => {
+    console.log(originalArticleId, data);
+    
+    const funcArray = []
+
+    data.forEach(d => {
+        funcArray.push(cb => {
+            const langCode = d.language
+            const langName = d.languageName
+            const voiceTranslators = d.voiceTranslators
+            const textTranslators = d.textTranslators
+            const verifiers = d.verifiers
+            const params = {}
+            
+            if (langCode) {
+                const langCodeParts = langCode.split('-');
+                if (langCodeParts.length === 1) {
+                    // Check to see if it's sign language
+                    if (signLangsArray.find(l => l.code === langCode)) {
+                        params.signLang = true;
+                    } 
+                    params.lang = langCode;
+                } else {
+                    params.lang = langCodeParts[0];
+                    if (langCodeParts[1] === 'tts') {
+                        params.tts = true;
+                    }
+                }
+            }
+            if (langName) {
+                params.langName = langName;
+            }
+            let createdArtcile;
+            requestAgent
+                .post(Api.translate.generateTranslatableArticle(originalArticleId), params)
+                .then((res) => {
+                    const { article } = res.body;
+                    createdArtcile = article;
+                    // Update translators if any
+                    return new Promise((resolve, reject) => {
+        
+                        if (!voiceTranslators || voiceTranslators.length === 0) {
+                            return resolve();
+                        }
+                        requestAgent
+                            .put(Api.article.updateTranslators(article._id), { translators: voiceTranslators })
+                            .then((res) => {
+                                return resolve();
+                            })
+                            .catch((err) => {
+                                NotificationService.responseError(err);
+                                return resolve();
+                            })
+                    })
+                })
+                // .then((res) => {
+                //     // Update text translators if any
+                //     return new Promise((resolve, reject) => {
+        
+                //         if (!textTranslators || textTranslators.length === 0) {
+                //             return resolve();
+                //         }
+                //         requestAgent
+                //             .put(Api.article.updateTextTranslators(createdArtcile._id), { textTranslators })
+                //             .then((res) => {
+                //                 return resolve();
+                //             })
+                //             .catch((err) => {
+                //                 NotificationService.responseError(err);
+                //                 return resolve();
+                //             })
+                //     })
+                // })
+                .then(() => {
+                    // Update verifiers if any
+                    return new Promise((resolve) => {
+                        if (!verifiers || verifiers.length === 0) {
+                            // return resolve();
+                            cb();
+                            return;
+                        }
+                        requestAgent
+                            .put(Api.article.updateVerifiers(createdArtcile._id), { verifiers })
+                            .then((res) => {
+                                cb()
+                                // return resolve();
+                            })
+                            .catch((err) => {
+                                console.log('error updating verifiers', err);
+                                cb()
+                                // return resolve();
+                            })
+                    })
+                })
+                .catch((err) => {
+                    cb()
+                    console.log(err);
+                    NotificationService.responseError(err);
+                })
+        })
+    })
+
+    async.series(funcArray, () => {
+        dispatch(fetchTranslatedArticles({ softLoad: true, cb: () => {
+            window.location.href = routes.organziationTranslationMetrics(videoId);
+        }}))
+    })
 }
 
 export const setSelectedCount = count => ({
