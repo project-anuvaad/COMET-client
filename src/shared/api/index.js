@@ -103,7 +103,8 @@ export default {
     },
     invitations: {
         respondToOrganizationInvitation: (organizationId) => `${APP_ENV.API_ROOT}/invitations/organization/${organizationId}/invitations/respond`,
-        respondToTranslationInvitation: (articleId) => `${APP_ENV.API_ROOT}/invitations/article/${articleId}/translators/invitation/respond`
+        respondToTranslationInvitation: (articleId) => `${APP_ENV.API_ROOT}/invitations/article/${articleId}/translators/invitation/respond`,
+        respondToTextTranslationInvitation: (articleId) => `${APP_ENV.API_ROOT}/invitations/article/${articleId}/textTranslators/invitation/respond`,
     },
     notification: {
         getNotifications: (params) => `${APP_ENV.API_ROOT}/notification?${querystring.encode(params)}`,

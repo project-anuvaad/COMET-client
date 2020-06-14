@@ -38,6 +38,8 @@ class NotificationsDropdown extends React.Component {
     onNotificationActionClick = (notification, action) => {
         if (notification.type === 'invited_to_translate') {
             this.props.respondToTranslationInvitation(notification._id, this.props.organization._id, notification.resource, action, notification.inviteToken, this.props.user.email);
+        } else if (notification.type === 'invited_to_translate_text') {
+            this.props.respondToTextTranslationInvitation(notification._id, this.props.organization._id, notification.resource, action, notification.inviteToken, this.props.user.email);
         }
     }
 
