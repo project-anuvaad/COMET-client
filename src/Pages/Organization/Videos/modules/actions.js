@@ -704,24 +704,24 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
                             })
                     })
                 })
-                // .then((res) => {
-                //     // Update text translators if any
-                //     return new Promise((resolve, reject) => {
+                .then((res) => {
+                    // Update text translators if any
+                    return new Promise((resolve, reject) => {
         
-                //         if (!textTranslators || textTranslators.length === 0) {
-                //             return resolve();
-                //         }
-                //         requestAgent
-                //             .put(Api.article.updateTextTranslators(createdArtcile._id), { textTranslators })
-                //             .then((res) => {
-                //                 return resolve();
-                //             })
-                //             .catch((err) => {
-                //                 NotificationService.responseError(err);
-                //                 return resolve();
-                //             })
-                //     })
-                // })
+                        if (!textTranslators || textTranslators.length === 0) {
+                            return resolve();
+                        }
+                        requestAgent
+                            .put(Api.article.updateTextTranslators(createdArtcile._id), { textTranslators })
+                            .then((res) => {
+                                return resolve();
+                            })
+                            .catch((err) => {
+                                NotificationService.responseError(err);
+                                return resolve();
+                            })
+                    })
+                })
                 .then(() => {
                     // Update verifiers if any
                     return new Promise((resolve) => {
