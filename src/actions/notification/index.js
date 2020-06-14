@@ -126,3 +126,24 @@ export const respondToTranslationInvitation = (notificationId, organizationId, a
         // dispatch(push(routes.home()))
     })
 }
+
+export const respondToTextTranslationInvitation = (notificationId, organizationId, articleId, status, inviteToken, email) => (dispatch, getState) => {
+    requestAgent.post(Api.invitations.respondToTextTranslationInvitation(articleId), { inviteToken, status, email })
+    .then((res) => {
+        const { speakerNumber } = res.body;
+        const { notifications } = getState()[moduleName];
+        notifications.find((n) => n._id === notificationId).status = status;
+        dispatch(setNotifications(notifications.slice()))
+        if (status === 'accepted') {
+            NotificationService.success(`You can start now translating the video`);
+            dispatch(push(routes.translationArticle(articleId) + `?speakerNumber=${speakerNumber}&finishDateOpen=true`));
+        } else {
+            NotificationService.success(`Your response has been recorded`);
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        NotificationService.responseError(err);
+        // dispatch(push(routes.home()))
+    })
+}

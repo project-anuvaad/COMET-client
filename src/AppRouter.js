@@ -47,6 +47,7 @@ const TranslateArticle = () => import('./Pages/Translation/TranslateArticle');
 
 const Invitations = () => import('./Pages/Invitations');
 const TranslationInvitation = () => import('./Pages/Invitations/TranslationInvitation');
+const TextTranslationInvitation = () => import('./Pages/Invitations/TextTranslationInvitation');
 
 class AppRouter extends React.Component {
   state = {
@@ -273,6 +274,11 @@ class AppRouter extends React.Component {
                 loader={TranslationInvitation}
               />
 
+              <LazyRoute
+                path={routes.textTranslationInvitation()}
+                title="Invitation To Translate Text"
+                loader={TextTranslationInvitation}
+              />
               <LazyRoute
                 path={routes.invitationsRoute()}
                 title="Invitation"

@@ -43,6 +43,35 @@ const setShowPasswordForm = show => ({
 })
 
 
+export const respondToTextTranslationInvitation = (organizationId, articleId, status, inviteToken, email) => (dispatch) => {
+    dispatch(setLoading(true))
+    requestAgent.post(Api.invitations.respondToTextTranslationInvitation(articleId), { inviteToken, status, email })
+    .then((res) => {
+        const { user, token } = res.body;
+        console.log(res.body)
+        dispatch(authActions.authenticationSuccess({ user, token }))
+        dispatch(setUser(user));
+        const organization = user.organizationRoles.find(role => role.organization._id === organizationId).organization;
+        dispatch(organizationActions.setOrganization(organization))
+
+        if (status === 'accepted') {
+            NotificationService.success(`You can start now translating the video`);
+            dispatch(push(routes.translationArticle(articleId)));
+        } else {
+            NotificationService.success(`Your response has been recorded`);
+            dispatch(push(routes.organizationHome()));
+        }
+
+
+        dispatch(setLoading(false))
+    })
+    .catch((err) => {
+        console.log(err);
+        NotificationService.responseError(err);
+        // dispatch(push(routes.home()))
+    })
+}
+
 export const respondToTranslationInvitation = (organizationId, articleId, status, inviteToken, email) => (dispatch) => {
     dispatch(setLoading(true))
     requestAgent.post(Api.invitations.respondToTranslationInvitation(articleId), { inviteToken, status, email })
