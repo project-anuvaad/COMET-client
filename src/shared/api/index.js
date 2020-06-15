@@ -39,6 +39,7 @@ export default {
         markVideoAsDone: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/reviewCompleted`,
         updateTranslatorsFinishDate: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/translators/finishDate`,
         updateTranslators: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/translators`,
+        updateTextTranslators: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/textTranslators`,
         // resendEmailToTranslator: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/translators/resendEmail`,
         updateVerifiers: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/verifiers`,
         resendEmailToVerifier: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/verifiers/resendEmail`,

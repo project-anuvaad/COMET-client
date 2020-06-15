@@ -23,7 +23,7 @@ export default class AssignTranslateUsersForm extends React.Component {
      
         return (
             <Grid style={{}}>
-                <Grid.Row>
+                {/* <Grid.Row>
                     <Grid.Column width={8}>
                         <h3>
                             Speaker(s)
@@ -35,13 +35,13 @@ export default class AssignTranslateUsersForm extends React.Component {
                             Translator(s)
                         </h3>
                     </Grid.Column>
-                </Grid.Row>
+                </Grid.Row> */}
                 {tts && (
                     <Grid.Row key={`assign-speaker-text`}>
-                        <Grid.Column width={8}>
+                        <Grid.Column width={4}>
                             Text
                         </Grid.Column>
-                        <Grid.Column width={8} style={{ textAlign: 'left' }}>
+                        <Grid.Column width={12} style={{ textAlign: 'left' }}>
                             <div>
                                 <Dropdown
                                     fluid
@@ -72,10 +72,10 @@ export default class AssignTranslateUsersForm extends React.Component {
                     const assignedTranslator = this.props.translators.find((t) => speaker.speakerNumber === t.speakerNumber);
                     return (
                         <Grid.Row key={`assign-speaker-${speaker.speakerNumber}`}>
-                            <Grid.Column width={8}>
+                            <Grid.Column width={4}>
                                 Speaker {speaker.speakerNumber} ({speaker.speakerGender})
                             </Grid.Column>
-                            <Grid.Column width={8} style={{ textAlign: 'left' }}>
+                            <Grid.Column width={12} style={{ textAlign: 'left' }}>
                                 <div>
                                     <Dropdown
                                         fluid

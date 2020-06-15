@@ -60,6 +60,11 @@ export const setAddHumanVoiceModalVisible = visible => ({
     payload: visible,
 })
 
+export const setAddMultipleHumanVoiceModalVisible = visible => ({
+    type: actionTypes.SET_ADD_MULTIPLE_HUMAN_VOICE_MODAL_VISIBLE,
+    payload: visible,
+})
+
 export const setTranslateOnWhatsappActive = active => ({
     type: actionTypes.SET_TRANSLATE_ON_WHATSAPP_ACTIVE,
     payload: active,
@@ -224,6 +229,7 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
             const { videos, pagesCount } = res.body;
             dispatch(setTranslatedArticles(videos));
             dispatch(setTotalPagesCount(pagesCount || 1));
+            dispatch(setSelectedCount(0));
             cb()
             dispatch(setVideoLoading(false))
         })
@@ -643,6 +649,172 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
         })
 }
 
+export const generateTranslatableArticles = (videoId, originalArticleId, data, mode = 'single') => (dispatch, getState) => {
+    console.log(originalArticleId, data);
+    
+    const funcArray = []
+    const createdArticles = []
+
+    data.forEach(d => {
+        funcArray.push(cb => {
+            const langCode = d.language
+            const langName = d.languageName
+            const voiceTranslators = d.voiceTranslators
+            const textTranslators = d.textTranslators
+            const verifiers = d.verifiers
+            const params = {}
+
+            if (langCode) {
+                const langCodeParts = langCode.split('-');
+                if (langCodeParts.length === 1) {
+                    // Check to see if it's sign language
+                    if (signLangsArray.find(l => l.code === langCode)) {
+                        params.signLang = true;
+                    } 
+                    params.lang = langCode;
+                } else {
+                    params.lang = langCodeParts[0];
+                    if (langCodeParts[1] === 'tts') {
+                        params.tts = true;
+                    }
+                }
+            }
+            if (langName) {
+                params.langName = langName;
+            }
+            let createdArtcile;
+            requestAgent
+                .post(Api.translate.generateTranslatableArticle(originalArticleId), params)
+                .then((res) => {
+                    const { article } = res.body;
+                    createdArtcile = article;
+                    createdArticles.push(createdArtcile)
+                    // Update translators if any
+                    return new Promise((resolve, reject) => {
+        
+                        if (!voiceTranslators || voiceTranslators.length === 0) {
+                            return resolve();
+                        }
+                        requestAgent
+                            .put(Api.article.updateTranslators(article._id), { translators: voiceTranslators })
+                            .then((res) => {
+                                return resolve();
+                            })
+                            .catch((err) => {
+                                NotificationService.responseError(err);
+                                return resolve();
+                            })
+                    })
+                })
+                .then((res) => {
+                    // Update text translators if any
+                    return new Promise((resolve, reject) => {
+        
+                        if (!textTranslators || textTranslators.length === 0) {
+                            return resolve();
+                        }
+                        requestAgent
+                            .put(Api.article.updateTextTranslators(createdArtcile._id), { textTranslators })
+                            .then((res) => {
+                                return resolve();
+                            })
+                            .catch((err) => {
+                                NotificationService.responseError(err);
+                                return resolve();
+                            })
+                    })
+                })
+                .then(() => {
+                    // Update verifiers if any
+                    return new Promise((resolve) => {
+                        if (!verifiers || verifiers.length === 0) {
+                            // return resolve();
+                            cb();
+                            return;
+                        }
+                        requestAgent
+                            .put(Api.article.updateVerifiers(createdArtcile._id), { verifiers })
+                            .then((res) => {
+                                cb()
+                                // return resolve();
+                            })
+                            .catch((err) => {
+                                console.log('error updating verifiers', err);
+                                cb()
+                                // return resolve();
+                            })
+                    })
+                })
+                .catch((err) => {
+                    cb()
+                    console.log(err);
+                    NotificationService.responseError(err);
+                })
+        })
+    })
+
+    async.series(funcArray, () => {
+        dispatch(fetchTranslatedArticles({ softLoad: true, cb: () => {
+            if (data.length > 1 || createdArticles.length > 1) {
+                window.location.href = routes.organziationTranslationMetrics(videoId);
+            } else if (createdArticles.length > 0) {
+                window.location.href = routes.translationArticle(createdArticles[0]._id);
+            } else {
+                NotificationService.error('Something went wrong');
+            }
+        }}))
+    })
+}
+
+export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    const selectedTranslatedArticles = translatedArticles.filter(ta => ta.video.selected)
+    const articlesFuncArray = []
+    
+    console.log(codes, selectedTranslatedArticles);
+
+    selectedTranslatedArticles.forEach(selectedTranslatedArticle => {
+        articlesFuncArray.push(cb => {
+            const langsFuncArray = []
+            const existedCodes = selectedTranslatedArticle.articles.map(a => a.langCode)
+            const filteredCodes = codes.filter(code => !existedCodes.includes(code))
+
+            filteredCodes.forEach(filteredCode => {
+                const params = {}
+                const langCodeParts = filteredCode.split('-');
+                if (langCodeParts.length === 1) {
+                    if (signLangsArray.find(l => l.code === filteredCode)) {
+                        params.signLang = true;
+                    } 
+                    params.lang = filteredCode;
+                } else {
+                    params.lang = langCodeParts[0];
+                    if (langCodeParts[1] === 'tts') {
+                        params.tts = true;
+                    }
+                }
+                langsFuncArray.push(cb => {
+                    requestAgent
+                        .post(Api.translate.generateTranslatableArticle(selectedTranslatedArticle.originalArticle._id), params)
+                        .then((res) => {cb()})
+                        .catch(err => {
+                            cb()
+                            console.log(err);
+                        })
+                })
+            })
+
+            async.series(langsFuncArray, () => {
+                cb()
+            })
+        })
+    })
+
+    async.series(articlesFuncArray, () => {
+        window.location.href = routes.organziationTranslations();
+    })
+}
+
 export const setSelectedCount = count => ({
     type: actionTypes.SET_SELECTED_COUNT,
     payload: count,
@@ -657,6 +829,7 @@ export const setVideoSelected = (videoId, selected) => (dispatch, getState) => {
     dispatch(setVideos(videos.slice()));
     dispatch(setSelectedCount(videos.filter(v => v.selected).length));
 }
+
 export const setAllVideoSelected = (selected) => (dispatch, getState) => {
     const { videos } = getState()[moduleName];
     videos.forEach((video) => {
@@ -665,6 +838,29 @@ export const setAllVideoSelected = (selected) => (dispatch, getState) => {
     dispatch(setVideos(videos.slice()));
     if (selected) {
         dispatch(setSelectedCount(videos.length));
+    } else {
+        dispatch(setSelectedCount(0));
+    }
+}
+
+export const setTranslatedArticleVideoSelected = (videoId, selected) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    const translatedArticleIndex = translatedArticles.findIndex(ta => ta.video._id === videoId);
+    if (translatedArticleIndex !== -1) {
+        translatedArticles[translatedArticleIndex].video.selected = selected;
+    }
+    dispatch(setTranslatedArticles(translatedArticles.slice()));
+    dispatch(setSelectedCount(translatedArticles.filter(ta => ta.video.selected).length));
+}
+
+export const setAllTranslatedArticleVideoSelected = (selected) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    translatedArticles.forEach((ta) => {
+        ta.video.selected = selected
+    })
+    dispatch(setTranslatedArticles(translatedArticles.slice()));
+    if (selected) {
+        dispatch(setSelectedCount(translatedArticles.length));
     } else {
         dispatch(setSelectedCount(0));
     }

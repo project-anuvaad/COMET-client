@@ -16,6 +16,7 @@ import * as organizationActions from '../../../../actions/organization';
 
 import { getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
+import AddMultipleHumanVoiceModal from '../../../../shared/components/AddMultipleHumanVoiceModal/index';
 import DeleteBackgroundMusicModal from './DeleteBackgroundMusicModal';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import websockets from '../../../../websockets';
@@ -134,10 +135,10 @@ class Translation extends React.Component {
         return url;
     }
 
-    onAddHumanVoice = (langCode, langName, translators, verifiers) => {
+    onAddHumanVoice = (data) => {
         const { video } = this.props.singleTranslatedArticle;
-        this.props.setAddHumanVoiceModalVisible(false);
-        this.props.generateTranslatableArticle(video.article, langCode, langName, translators, verifiers);
+        this.props.setAddMultipleHumanVoiceModalVisible(false);
+        this.props.generateTranslatableArticles(video._id, video.article, data);
     }
 
     renderDeleteArticleModal = () => (
@@ -159,19 +160,20 @@ class Translation extends React.Component {
     _renderAddHumanVoiceModal() {
         const users = this.getTranslators();
         const verifiers = this.getVerifiers();
-
         const { singleTranslatedArticle } = this.props;
-        console.log(singleTranslatedArticle);
-
+        if (!singleTranslatedArticle) return null;
+        const disabledLanguages = this.props.singleTranslatedArticle && this.props.singleTranslatedArticle.articles ? this.props.singleTranslatedArticle.articles.map(a => a.langCode) : [];
+        console.log('disabled are', disabledLanguages)
         return (
-            <AddHumanVoiceModal
-                open={this.props.addHumanVoiceModalVisible}
-                onClose={() => this.props.setAddHumanVoiceModalVisible(false)}
+            <AddMultipleHumanVoiceModal
+                open={this.props.addMultipleHumanVoiceModalVisible}
+                onClose={() => this.props.setAddMultipleHumanVoiceModalVisible(false)}
                 users={users}
                 verifiers={verifiers}
                 speakersProfile={singleTranslatedArticle && singleTranslatedArticle.originalArticle ? singleTranslatedArticle.originalArticle.speakersProfile : []}
+                disabledLanguages={disabledLanguages}
                 skippable={false}
-                onSubmit={(langCode, langName, translators, verifiers) => this.onAddHumanVoice(langCode, langName, translators, verifiers)}
+                onSubmit={(data) => this.onAddHumanVoice(data)}
             />
         )
     }
@@ -249,7 +251,7 @@ class Translation extends React.Component {
                                         titleRoute={routes.organizationArticle(singleTranslatedArticle.video.article)}
                                         url={singleTranslatedArticle.video.url}
                                         onButtonClick={() => {
-                                            this.props.setAddHumanVoiceModalVisible(true);
+                                            this.props.setAddMultipleHumanVoiceModalVisible(true);
                                         }}
                                     />
 
@@ -441,10 +443,12 @@ const mapStateToProps = ({ organizationVideos, organization }) => ({
     organization: organization.organization,
     addHumanVoiceModalVisible: organizationVideos.addHumanVoiceModalVisible,
     organizationUsers: organization.users,
+    addMultipleHumanVoiceModalVisible: organizationVideos.addMultipleHumanVoiceModalVisible,
 })
 const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
     setAddHumanVoiceModalVisible: visible => dispatch(videoActions.setAddHumanVoiceModalVisible(visible)),
+    setAddMultipleHumanVoiceModalVisible: visible => dispatch(videoActions.setAddMultipleHumanVoiceModalVisible(visible)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
     fetchSigleTranslatedArticle: (videoId) => dispatch(videoActions.fetchSigleTranslatedArticle(videoId)),
     uploadBackgroundMusic: (videoId, blob) => dispatch(videoActions.uploadBackgroundMusic(videoId, blob)),
@@ -457,6 +461,7 @@ const mapDispatchToProps = (dispatch) => ({
     generateTranslatableArticle: (originalArticleId, langCode, langName, translators, verifiers) => dispatch(videoActions.generateTranslatableArticle(originalArticleId, langCode, langName, translators, verifiers, 'single')),
     deleteVideoBackgroundMusic: (videoId) => dispatch(videoActions.deleteVideoBackgroundMusic(videoId)),
     extractVideoBackgroundMusic: (videoId) => dispatch(videoActions.extractVideoBackgroundMusic(videoId)),
+    generateTranslatableArticles: (videoId, originalArticleId, data) => dispatch(videoActions.generateTranslatableArticles(videoId, originalArticleId, data, 'multi')),
 
 })
 
