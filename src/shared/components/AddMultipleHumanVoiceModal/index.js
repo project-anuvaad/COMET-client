@@ -161,7 +161,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
   };
 
   onSubmit = () => {
-    this.props.onSubmit(this.state.data);
+    this.props.onSubmit(this.state.data.filter(d => d.language || d.languageName));
   };
 
   addNewRow = () => {

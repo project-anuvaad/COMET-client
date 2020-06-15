@@ -653,6 +653,7 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
     console.log(originalArticleId, data);
     
     const funcArray = []
+    const createdArticles = []
 
     data.forEach(d => {
         funcArray.push(cb => {
@@ -662,7 +663,7 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
             const textTranslators = d.textTranslators
             const verifiers = d.verifiers
             const params = {}
-            
+
             if (langCode) {
                 const langCodeParts = langCode.split('-');
                 if (langCodeParts.length === 1) {
@@ -687,6 +688,7 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
                 .then((res) => {
                     const { article } = res.body;
                     createdArtcile = article;
+                    createdArticles.push(createdArtcile)
                     // Update translators if any
                     return new Promise((resolve, reject) => {
         
@@ -753,8 +755,63 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
 
     async.series(funcArray, () => {
         dispatch(fetchTranslatedArticles({ softLoad: true, cb: () => {
-            window.location.href = routes.organziationTranslationMetrics(videoId);
+            if (data.length > 1 || createdArticles.length > 1) {
+                window.location.href = routes.organziationTranslationMetrics(videoId);
+            } else if (createdArticles.length > 0) {
+                window.location.href = routes.translationArticle(createdArticles[0]._id);
+            } else {
+                NotificationService.error('Something went wrong');
+            }
         }}))
+    })
+}
+
+export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    const selectedTranslatedArticles = translatedArticles.filter(ta => ta.video.selected)
+    const articlesFuncArray = []
+    
+    console.log(codes, selectedTranslatedArticles);
+
+    selectedTranslatedArticles.forEach(selectedTranslatedArticle => {
+        articlesFuncArray.push(cb => {
+            const langsFuncArray = []
+            const existedCodes = selectedTranslatedArticle.articles.map(a => a.langCode)
+            const filteredCodes = codes.filter(code => !existedCodes.includes(code))
+
+            filteredCodes.forEach(filteredCode => {
+                const params = {}
+                const langCodeParts = filteredCode.split('-');
+                if (langCodeParts.length === 1) {
+                    if (signLangsArray.find(l => l.code === filteredCode)) {
+                        params.signLang = true;
+                    } 
+                    params.lang = filteredCode;
+                } else {
+                    params.lang = langCodeParts[0];
+                    if (langCodeParts[1] === 'tts') {
+                        params.tts = true;
+                    }
+                }
+                langsFuncArray.push(cb => {
+                    requestAgent
+                        .post(Api.translate.generateTranslatableArticle(selectedTranslatedArticle.originalArticle._id), params)
+                        .then((res) => {cb()})
+                        .catch(err => {
+                            cb()
+                            console.log(err);
+                        })
+                })
+            })
+
+            async.series(langsFuncArray, () => {
+                cb()
+            })
+        })
+    })
+
+    async.series(articlesFuncArray, () => {
+        window.location.href = routes.organziationTranslations();
     })
 }
 

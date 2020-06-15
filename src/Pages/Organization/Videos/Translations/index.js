@@ -11,6 +11,7 @@ import routes from '../../../../shared/routes';
 import * as videoActions from '../modules/actions';
 import * as organizationActions from '../../../../actions/organization';
 import AddMultipleHumanVoiceModal from '../../../../shared/components/AddMultipleHumanVoiceModal/index';
+import SelectMultipleLanguagesModal from '../../../../shared/components/SelectMultipleLanguagesModal/index';
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import { debounce, getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
@@ -25,6 +26,10 @@ function Separator() {
 }
 
 class Translated extends React.Component {
+    state = {
+        selectMultipleLanguagesModalOpen: false
+    }
+
     constructor(props) {
         super(props);
         this.debouncedSearch = debounce((searchTerm) => {
@@ -71,6 +76,11 @@ class Translated extends React.Component {
         this.props.generateTranslatableArticles(video._id, video.article, data);
     }
 
+    onSelectMultipleLanguages = (codes) => {
+        this.setState({selectMultipleLanguagesModalOpen: false});
+        this.props.submitMultipleLanguages(codes)
+    }
+
     onSelectChange = (video, selected) => {
         this.props.setTranslatedArticleVideoSelected(video._id, selected);
     }
@@ -110,6 +120,16 @@ class Translated extends React.Component {
                 disabledLanguages={disabledLanguages}
                 skippable={false}
                 onSubmit={(data) => this.onAddHumanVoice(data)}
+            />
+        )
+    }
+    
+    _renderSelectMultipleLanguagesModal() {
+        return (
+            <SelectMultipleLanguagesModal 
+                open={this.state.selectMultipleLanguagesModalOpen}
+                onClose={() => this.setState({selectMultipleLanguagesModalOpen: false})}
+                onSubmit={(codes) => this.onSelectMultipleLanguages(codes)}
             />
         )
     }
@@ -158,8 +178,8 @@ class Translated extends React.Component {
                                     {this.props.selectedCount > 0 && (
                                         <React.Fragment>
                                             <Separator />
-                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersToMultipleVideosModalOpen: true })}>
-                                            <Icon name="add" size="small" color="blue" /> Add Voice Over To Selected Videos
+                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ selectMultipleLanguagesModalOpen: true })}>
+                                            <Icon name="add" size="small" color="blue" /> Assign Multiple Languages To Selected Videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -222,6 +242,7 @@ class Translated extends React.Component {
                             </Grid.Row>
 
                             {this._renderAddHumanVoiceModal()}
+                            {this._renderSelectMultipleLanguagesModal()}
                         </LoaderComponent>
                     </RoleRenderer>
                 </Grid>
@@ -254,6 +275,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchTranslatedArticles: () => dispatch(videoActions.fetchTranslatedArticles()),
     deleteArticle: (articleId) => dispatch(videoActions.deleteArticle(articleId)),
     generateTranslatableArticles: (videoId, originalArticleId, data) => dispatch(videoActions.generateTranslatableArticles(videoId, originalArticleId, data, 'multi')),
+    submitMultipleLanguages: (codes) => dispatch(videoActions.submitMultipleLanguages(codes)),
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
