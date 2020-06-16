@@ -46,7 +46,7 @@ export default class GiveFeedbackModal extends React.Component {
                             target="_blank"
                         >
                             <div style={{ marginRight: 30 }}>
-                                <Icon name="info circular" color="green" size="large" />
+                                <Icon name="info" circular color="green" size="large" />
                             </div>
 
                             <div>
@@ -63,9 +63,10 @@ export default class GiveFeedbackModal extends React.Component {
                         <a
                             href="https://support.videowiki.org"
                             target="_blank"
+                            rel="noopener noreferrer"
                         >
                             <div style={{ marginRight: 30 }}>
-                                <Icon name="warning sign circular" color="red" size="large" />
+                                <Icon name="warning sign" circular color="red" size="large" />
                             </div>
 
                             <div>

@@ -59,7 +59,7 @@ class NotificationsDropdown extends React.Component {
         return (
             <Dropdown
                 trigger={this.renderDropdownTrigger()}
-                icon="none"
+                icon=""
                 floating
                 direction="left"
                 onOpen={() => this.onDropdownOpen()}

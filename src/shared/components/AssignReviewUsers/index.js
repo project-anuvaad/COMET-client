@@ -35,7 +35,6 @@ export default class AssignReviewUsers extends React.Component {
                         onClick={this.props.onClose}
                         className="pull-right"
                         color="white"
-                        color="gray"
                         circular
                         icon="close"
                     />

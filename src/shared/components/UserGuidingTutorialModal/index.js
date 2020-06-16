@@ -95,8 +95,8 @@ export default class UserGuidingTutorialModal extends React.Component {
 
                                     </div>
                                     <div>
-                                        {[...Array(NUMBER_OF_STEPS).keys()].map(s => (
-                                            <span className={classnames({ 'rectangle': true, 'active': s + 1 === this.state.currentStep })} ></span>
+                                        {[...Array(NUMBER_OF_STEPS).keys()].map((s, i) => (
+                                            <span key={`step-flag-${i}`} className={classnames({ 'rectangle': true, 'active': s + 1 === this.state.currentStep })} ></span>
                                         ))}
                                     </div>
                                 </div>

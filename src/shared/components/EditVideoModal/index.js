@@ -59,8 +59,6 @@ export default class EditVideoModal extends React.Component {
                         // basic
                         onClick={onClose}
                         className="pull-right"
-                        color="white"
-                        color="gray"
                         circular
                         icon="close"
                     />

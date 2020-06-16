@@ -154,8 +154,6 @@ class UploadProgressBox extends React.Component {
                 <Button
                     onClick={this.onCloseModal}
                     className="pull-right"
-                    color="white"
-                    color="gray"
                     circular
                     icon="close"
                 />

@@ -413,7 +413,6 @@ class Review extends React.Component {
                     onClick={() => this.setState({ deleteVideoModalVisible: false, deletedVideo: null })}
                     className="pull-right"
                     color="white"
-                    color="gray"
                     circular
                     icon="close"
                 />
@@ -516,7 +515,6 @@ class Review extends React.Component {
                     }}
                     className="pull-right"
                     color="white"
-                    color="gray"
                     circular
                     icon="close"
                 />
