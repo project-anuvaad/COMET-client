@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { Link, withRouter } from 'react-router-dom';
-import { Grid,  Button, Icon, Popup, Label } from 'semantic-ui-react';
+import { Grid, Button, Icon, Popup, Label } from 'semantic-ui-react';
 
 import routes from '../../../../shared/routes';
 
@@ -15,7 +15,6 @@ import * as videoActions from '../modules/actions';
 import * as organizationActions from '../../../../actions/organization';
 
 import { getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
-import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
 import AddMultipleHumanVoiceModal from '../../../../shared/components/AddMultipleHumanVoiceModal/index';
 import DeleteBackgroundMusicModal from './DeleteBackgroundMusicModal';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
@@ -58,11 +57,27 @@ class Translation extends React.Component {
     }
 
     getTranslators = () => {
-        return getUsersByRoles(this.props.organizationUsers, this.props.organization, ['translate', 'admin', 'owner']);
+        return getUsersByRoles(this.props.organizationUsers, this.props.organization, [
+            'admin',
+            'project_leader',
+            'owner',
+            'translate',
+            'voice_over_artist',
+            'translate_text',
+            'approve_translations',
+        ]);
     }
 
     getVerifiers = () => {
-        return getUsersByRoles(this.props.organizationUsers, this.props.organization, ['translate', 'review', 'admin', 'owner']);
+        return getUsersByRoles(this.props.organizationUsers, this.props.organization, [
+            'admin',
+            'project_leader',
+            'owner',
+            'translate',
+            'voice_over_artist',
+            'translate_text',
+            'approve_translations',
+        ]);
     }
 
     isAdmin = () => {
@@ -198,10 +213,10 @@ class Translation extends React.Component {
             title="Assign Verifiers"
             open={this.state.assignVerifiersModalVisible}
             value={this.state.selectedArticle && this.state.selectedArticle.verifiers ? this.state.selectedArticle.verifiers : []}
-            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'translate', 'review'])}
+            users={this.getVerifiers()}
             onClose={() => this.setState({ assignVerifiersModalVisible: false, selectedArticle: null })}
             onSave={this.onSaveVerifiers}
-            onResendEmail={(userId) => this.onResendEmail( 'verifier', this.state.selectedArticle._id, userId)}
+            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedArticle._id, userId)}
         />
     )
 
@@ -360,7 +375,7 @@ class Translation extends React.Component {
                                                                 onClick={() => this.props.extractVideoBackgroundMusic(this.props.singleTranslatedArticle.video._id)}
                                                             >
                                                                 Automatically Import
-                                                                        </Button>
+                                                            </Button>
                                                         )}
                                                     />
                                                 </div>
@@ -394,7 +409,7 @@ class Translation extends React.Component {
 
                                 </Grid.Column>
                                 <Grid.Column width={1} />
-                                <Grid.Column 
+                                <Grid.Column
                                     width={11}
                                     style={{ marginTop: '-1.2rem' }}
                                 >

@@ -290,6 +290,17 @@ class Review extends React.Component {
         }
     }
 
+    getReviewersUsers = () => {
+        return getUsersByRoles(this.props.organizationUsers, this.props.organization, [
+            'admin',
+            'project_leader',
+            'owner',
+            'review',
+            'break_videos',
+            'transcribe_text',
+            'approve_transcriptions',
+        ])
+    }
     renderEditVideoModal = () => (
         <EditVideoModal
             open={this.state.editVideoModalOpen}
@@ -470,7 +481,7 @@ class Review extends React.Component {
             title="Assign Transcribers"
             open={this.state.assignUsersModalOpen}
             value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
-            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
+            users={this.getReviewersUsers()}
             onClose={() => this.setState({ assignUsersModalOpen: false, selectedVideo: null })}
             onSave={this.onSaveAssignedUsers}
             onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
@@ -482,7 +493,7 @@ class Review extends React.Component {
             title="Assign Transcribers To The Selected Videos"
             open={this.state.assignUsersToMultipleVideosModalOpen}
             value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
-            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
+            users={this.getReviewersUsers()}
             onClose={() => this.setState({ assignUsersToMultipleVideosModalOpen: false, selectedVideo: null })}
             onSave={this.onMultipleVideosSaveAssignedUsers}
             onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
@@ -494,7 +505,7 @@ class Review extends React.Component {
             title="Assign Approvers"
             open={this.state.assignVerifiersModalOpen}
             value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
-            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
+            users={this.getReviewersUsers()}
             onClose={() => this.setState({ assignVerifiersModalOpen: false, selectedVideo: null })}
             onSave={this.onSaveVerifiers}
             onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
@@ -506,7 +517,7 @@ class Review extends React.Component {
             title="Assign Approvers To The Selected Videos"
             open={this.state.assignVerifiersToMultipleVideosModalOpen}
             value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
-            users={getUsersByRoles(this.props.organizationUsers, this.props.organization, ['admin', 'owner', 'review'])}
+            users={this.getReviewersUsers()}
             onClose={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: false, selectedVideo: null })}
             onSave={this.onMultipleVideosSaveVerifiers}
             onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}

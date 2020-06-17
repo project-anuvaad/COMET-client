@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Grid, Button, Input, Icon, Dropdown } from 'semantic-ui-react';
+import { Grid, Button, Input, Icon } from 'semantic-ui-react';
 import querystring from 'query-string';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
@@ -95,7 +95,6 @@ class Translated extends React.Component {
             'voice_over_artist',
             'translate_text',
             'approve_translations',
-
             'admin',
             'project_leader',
             'owner'
