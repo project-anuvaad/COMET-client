@@ -7,6 +7,7 @@ import NotificationService from '../../../../shared/utils/NotificationService';
 import routes from '../../../../shared/routes';
 import { setUploadVideoForm } from '../../../../actions/video';
 import { signLangsArray } from '../../../../shared/utils/langs';
+import * as utils from './utils';
 
 const moduleName = 'organizationVideos';
 
@@ -452,10 +453,6 @@ export const updateVideoReviewers = (videoId, reviewers) => (dispatch, getState)
     requestAgent
         .put(Api.video.updateReviewers(videoId), { reviewers })
         .then((res) => {
-            // const { reviewers } = res.body;
-            // const { videos } = getState()[moduleName];
-            // videos.find((v) => v._id === videoId).reviewers = reviewers.slice();
-            // dispatch(setVideos(videos.slice()));
             dispatch(setVideoLoading(false));
             NotificationService.success('Updated Successfully!');
             dispatch(fetchVideos());
@@ -510,10 +507,6 @@ export const updateVideoVerifiers = (videoId, verifiers) => (dispatch, getState)
     requestAgent
         .put(Api.video.updateVerifiers(videoId), { verifiers })
         .then((res) => {
-            // const { verifiers } = res.body;
-            // const { videos } = getState()[moduleName];
-            // videos.find((v) => v._id === videoId).verifiers = verifiers.slice();
-            // dispatch(setVideos(videos.slice()));
             dispatch(setVideoLoading(false));
             NotificationService.success('Updated Successfully!');
             dispatch(fetchVideos());
@@ -650,10 +643,8 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
 }
 
 export const generateTranslatableArticles = (videoId, originalArticleId, data, mode = 'single') => (dispatch, getState) => {
-    console.log(originalArticleId, data);
-    
     const funcArray = []
-    const createdArticles = []
+    // const createdArticles = []
 
     data.forEach(d => {
         funcArray.push(cb => {
@@ -662,106 +653,29 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
             const voiceTranslators = d.voiceTranslators
             const textTranslators = d.textTranslators
             const verifiers = d.verifiers
-            const params = {}
 
-            if (langCode) {
-                const langCodeParts = langCode.split('-');
-                if (langCodeParts.length === 1) {
-                    // Check to see if it's sign language
-                    if (signLangsArray.find(l => l.code === langCode)) {
-                        params.signLang = true;
-                    } 
-                    params.lang = langCode;
-                } else {
-                    params.lang = langCodeParts[0];
-                    if (langCodeParts[1] === 'tts') {
-                        params.tts = true;
-                    }
-                }
-            }
-            if (langName) {
-                params.langName = langName;
-            }
-            let createdArtcile;
-            requestAgent
-                .post(Api.translate.generateTranslatableArticle(originalArticleId), params)
-                .then((res) => {
-                    const { article } = res.body;
-                    createdArtcile = article;
-                    createdArticles.push(createdArtcile)
-                    // Update translators if any
-                    return new Promise((resolve, reject) => {
-        
-                        if (!voiceTranslators || voiceTranslators.length === 0) {
-                            return resolve();
-                        }
-                        requestAgent
-                            .put(Api.article.updateTranslators(article._id), { translators: voiceTranslators })
-                            .then((res) => {
-                                return resolve();
-                            })
-                            .catch((err) => {
-                                NotificationService.responseError(err);
-                                return resolve();
-                            })
-                    })
-                })
-                .then((res) => {
-                    // Update text translators if any
-                    return new Promise((resolve, reject) => {
-        
-                        if (!textTranslators || textTranslators.length === 0) {
-                            return resolve();
-                        }
-                        requestAgent
-                            .put(Api.article.updateTextTranslators(createdArtcile._id), { textTranslators })
-                            .then((res) => {
-                                return resolve();
-                            })
-                            .catch((err) => {
-                                NotificationService.responseError(err);
-                                return resolve();
-                            })
-                    })
-                })
+            utils.addHumanVoiceOver(originalArticleId, langCode, langName, voiceTranslators, textTranslators, verifiers)
                 .then(() => {
-                    // Update verifiers if any
-                    return new Promise((resolve) => {
-                        if (!verifiers || verifiers.length === 0) {
-                            // return resolve();
-                            cb();
-                            return;
-                        }
-                        requestAgent
-                            .put(Api.article.updateVerifiers(createdArtcile._id), { verifiers })
-                            .then((res) => {
-                                cb()
-                                // return resolve();
-                            })
-                            .catch((err) => {
-                                console.log('error updating verifiers', err);
-                                cb()
-                                // return resolve();
-                            })
-                    })
+                    cb();
                 })
                 .catch((err) => {
-                    cb()
+                    cb();
                     console.log(err);
                     NotificationService.responseError(err);
-                })
-        })
+                });
+        });
     })
 
     async.series(funcArray, () => {
         dispatch(fetchTranslatedArticles({ softLoad: true, cb: () => {
-            if (data.length > 1 || createdArticles.length > 1) {
-                window.location.href = routes.organziationTranslationMetrics(videoId);
-            } else if (createdArticles.length > 0) {
-                window.location.href = routes.translationArticle(createdArticles[0]._id);
-            } else {
-                NotificationService.error('Something went wrong');
-            }
+            window.location.href = routes.organziationTranslationMetrics(videoId);
+            // if (data.length > 1 || createdArticles.length > 1) {
+            //     window.location.href = routes.organziationTranslationMetrics(videoId);
+            // } else if (createdArticles.length > 0) {
+            //     window.location.href = routes.translationArticle(createdArticles[0]._id);
+            // } else {
+            //     NotificationService.error('Something went wrong');
+            // }
         }}))
     })
 }
@@ -771,8 +685,6 @@ export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
     const selectedTranslatedArticles = translatedArticles.filter(ta => ta.video.selected)
     const articlesFuncArray = []
     
-    console.log(codes, selectedTranslatedArticles);
-
     selectedTranslatedArticles.forEach(selectedTranslatedArticle => {
         articlesFuncArray.push(cb => {
             const langsFuncArray = []
@@ -814,6 +726,126 @@ export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
         window.location.href = routes.organziationTranslations();
     })
 }
+
+export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    const selectedTranslatedArticles = translatedArticles.filter(
+      (sta) => sta.video.selected
+    );
+    let updateArticlesData = data
+      .filter((d) => !d.new)
+      .map((filtered) => ({ ...filtered, articlesToUpdate: [] }));
+    let createNewArticlesData = data.filter((d) => d.new);
+    updateArticlesData.forEach((d) => {
+      selectedTranslatedArticles.forEach((sta) => {
+        sta.articles.forEach((a) => {
+          if (
+            d.language === a.langCode ||
+            (d.languageName && d.languageName === a.langName)
+          ) {
+            d.articlesToUpdate.push(a);
+          }
+        });
+      });
+    });
+  
+    let updateArticlesDataFuncArray = [];
+    updateArticlesData.forEach((d) => {
+      updateArticlesDataFuncArray.push((cb1) => {
+        let articlesToUpdateFuncArray = [];
+        d.articlesToUpdate.forEach((a) => {
+          articlesToUpdateFuncArray.push((cb2) => {
+            utils
+              .updateTranslatedArticleUsers(
+                a._id,
+                [],
+                d.textTranslators,
+                d.verifiers
+              )
+              .then(() => {
+                cb2();
+              })
+              .catch((err) => {
+                cb2();
+                console.log(err);
+                NotificationService.responseError(err);
+              });
+          });
+        });
+  
+        async
+          .series(articlesToUpdateFuncArray)
+          .then(() => {
+            cb1();
+          })
+          .catch((err) => {
+            cb1();
+            console.log(err);
+          });
+      });
+    });
+  
+    async
+      .series(updateArticlesDataFuncArray)
+      .then(() => {
+        let selectedTranslatedArticlesFuncArray = [];
+        selectedTranslatedArticles.forEach((a) => {
+          selectedTranslatedArticlesFuncArray.push((cb3) => {
+            const createNewArticlesDataFuncArray = [];
+  
+            createNewArticlesData.forEach((d) => {
+              createNewArticlesDataFuncArray.push((cb4) => {
+                const langCode = d.language;
+                const langName = d.languageName;
+                const textTranslators = d.textTranslators;
+                const verifiers = d.verifiers;
+  
+                utils
+                  .addHumanVoiceOver(
+                    a.originalArticle._id,
+                    langCode,
+                    langName,
+                    [],
+                    textTranslators,
+                    verifiers
+                  )
+                  .then(() => {
+                    cb4();
+                  })
+                  .catch((err) => {
+                    cb4();
+                    console.log(err);
+                    NotificationService.responseError(err);
+                  });
+              });
+            });
+  
+            async
+              .series(createNewArticlesDataFuncArray)
+              .then(() => {
+                cb3();
+              })
+              .catch((err) => {
+                cb3();
+                console.log(err);
+              });
+          });
+        });
+  
+        async
+          .series(selectedTranslatedArticlesFuncArray)
+          .then(() => {
+            window.location.href = routes.organziationTranslations();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+};  
+  
 
 export const setSelectedCount = count => ({
     type: actionTypes.SET_SELECTED_COUNT,

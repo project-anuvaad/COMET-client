@@ -34,6 +34,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
     this.state = {
       dropdownOptions: languagesOptions.slice(),
       isDisabledAddLang: true,
+      selectedVideosAllLangs: [],
       data: [
         {
           language: "",
@@ -43,6 +44,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
           voiceTranslators: [],
           textTranslators: [],
           verifiers: [],
+          new: false,
         },
       ],
     };
@@ -57,6 +59,51 @@ class AddMultipleHumanVoiceModal extends React.Component {
         (lang) => this.props.disabledLanguages.indexOf(lang.value) === -1
       );
       this.setState({ dropdownOptions: availableLangs });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.selectedTranslatedArticles !==
+        this.props.selectedTranslatedArticles &&
+      nextProps.selectedTranslatedArticles &&
+      nextProps.selectedTranslatedArticles.length > 0
+    ) {
+      let data = [];
+      let languages = [];
+      nextProps.selectedTranslatedArticles.forEach((ta) => {
+        ta.articles.forEach((a) => {
+          languages.push({
+            language: a.tts ? `${a.langCode}-tts` : a.langCode,
+            languageName: a.langName,
+            tts: a.tts ? true : false,
+          });
+        });
+      });
+
+      languages = Array.from(new Set(languages.map(JSON.stringify))).map(
+        JSON.parse
+      );
+
+      languages.forEach((l) => {
+        data.push({
+          ...l,
+          searchValue: "",
+          tts: l.tts,
+          voiceTranslators: [],
+          textTranslators: [],
+          verifiers: [],
+          new: false,
+        });
+      });
+
+      if (languages.length !== 0) {
+        this.setState({
+          data,
+          isDisabledAddLang: false,
+          selectedVideosAllLangs: languages,
+        }); // selectedVideosAllLangs when multiVideos prop equals true
+      }
     }
   }
 
@@ -81,7 +128,6 @@ class AddMultipleHumanVoiceModal extends React.Component {
     const selectedLangs = this.state.data
       .map((d) => d.language)
       .filter((l) => l);
-    console.log("on change selected langs ", selectedLangs);
 
     if (searchQuery === "") {
       data[i].searchValue = "";
@@ -128,9 +174,25 @@ class AddMultipleHumanVoiceModal extends React.Component {
     data[i].languageName = languageName;
     data[i].searchValue = "";
     data[i].tts = tts;
-    this.setState({
-      data,
-    });
+
+    let langCodeExists;
+    let langNameExists;
+
+    if (langCode) {
+      langCodeExists = this.state.selectedVideosAllLangs.find(
+        (l) => langCode === l.language
+      );
+    } else if (languageName) {
+      langNameExists = this.state.selectedVideosAllLangs.find(
+        (l) => langCode === l.languageName
+      );
+    }
+
+    langCodeExists || langNameExists
+      ? (data[i].new = false)
+      : (data[i].new = true);
+
+    this.setState({ data });
     const selectedLangs = this.state.data
       .map((d) => d.language)
       .filter((l) => l);
@@ -161,7 +223,9 @@ class AddMultipleHumanVoiceModal extends React.Component {
   };
 
   onSubmit = () => {
-    this.props.onSubmit(this.state.data.filter(d => d.language || d.languageName));
+    this.props.onSubmit(
+      this.state.data.filter((d) => d.language || d.languageName)
+    );
   };
 
   addNewRow = () => {
@@ -186,14 +250,17 @@ class AddMultipleHumanVoiceModal extends React.Component {
 
   onDeleteRow = (i) => {
     let data = this.state.data.slice();
+    const removedLang = data[i].language;
     data.splice(i, 1);
     const selectedLangs = data.map((d) => d.language).filter((l) => l);
+    let disabledLangs = this.props.disabledLanguages;
+    if (this.props.multiVideos && disabledLangs.includes(removedLang)) {
+      disabledLangs.splice(disabledLangs.indexOf(removedLang), 1);
+    }
+    disabledLangs = disabledLangs.concat(selectedLangs);
     this.setState({
       data,
-      dropdownOptions: filterDisabledLangs(
-        languagesOptions,
-        this.props.disabledLanguages.concat(selectedLangs)
-      ),
+      dropdownOptions: filterDisabledLangs(languagesOptions, disabledLangs),
     });
   };
 
@@ -308,30 +375,29 @@ class AddMultipleHumanVoiceModal extends React.Component {
                                 }
                                 placeholder="Translator"
                                 onChange={(_, { value }) => {
-                                  console.log("value is", value);
-
                                   let data = this.state.data.slice();
                                   let textTranslators = [];
                                   textTranslators.push(value);
                                   data[i].textTranslators = textTranslators;
                                   this.setState({ data });
-                                  console.log(this.state.data);
                                 }}
                               />
                             </Grid.Column>
                           </Grid.Row>
                         </Grid>
-                        <AssignTranslateUsersForm
-                          users={this.props.users}
-                          speakersProfile={this.props.speakersProfile}
-                          translators={d.voiceTranslators}
-                          tts={d.tts}
-                          onChange={(translators) => {
-                            let data = this.state.data.slice();
-                            data[i].voiceTranslators = translators;
-                            this.setState({ data });
-                          }}
-                        />
+                        {!this.props.multiVideos && !d.tts && (
+                          <AssignTranslateUsersForm
+                            users={this.props.users}
+                            speakersProfile={this.props.speakersProfile}
+                            translators={d.voiceTranslators}
+                            tts={d.tts}
+                            onChange={(translators) => {
+                              let data = this.state.data.slice();
+                              data[i].voiceTranslators = translators;
+                              this.setState({ data });
+                            }}
+                          />
+                        )}
                       </Grid.Column>
                       <Grid.Column>
                         <Grid>
