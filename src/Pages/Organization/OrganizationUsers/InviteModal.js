@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import { inviteUser } from '../../../actions/organization';
+import PermissionsEditor from '../../../shared/components/PermissionsEditor';
 
 class ModalExampleSize extends Component {
     state = {
@@ -15,7 +16,7 @@ class ModalExampleSize extends Component {
         email: '',
         firstname: '',
         lastname: '',
-        role: 'l0',
+        permissions: ['admin'],
 
         errorMessage: null
     }
@@ -26,42 +27,11 @@ class ModalExampleSize extends Component {
 
     open = () => this.setState({ open: true });
 
-    roles = [
-        {
-            key: 'l0',
-            value: 'l0',
-            text: 'Admin',
-        },
-        {
-            key: 'l1',
-            value: 'l1',
-            text: 'Review'
-        }, {
-            key: 'l2',
-            value: 'l2',
-            text: 'Translate'
-        }, {
-            key: 'l3',
-            value: 'l3',
-            text: 'Review and Translate'
-        }
-    ]
 
     onFormSubmit = (e) => {
         e.preventDefault();
 
-        const { email, firstname, lastname, role } = this.state;
-        let permissions;
-        if (role === 'l0') {
-            permissions = ['admin'];
-        }
-        else if (role === 'l1') {
-            permissions = ['review'];
-        } else if (role === 'l2') {
-            permissions = ['translate'];
-        } else if (role === 'l3') {
-            permissions = ['review', 'translate'];
-        }
+        const { email, firstname, lastname, permissions } = this.state;
 
         this.props.inviteUser(this.props.organization._id, {
             email,
@@ -137,12 +107,13 @@ class ModalExampleSize extends Component {
                             </Form.Group>
 
                             <Form.Field>
-                                <label>Role</label>
-                                <Select
-                                    name="role"
-                                    onChange={this.handleChange}
-                                    value={this.state.role}
-                                    options={this.roles} />
+                                <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                    <div style={{ marginRight: 10, fontWeight: 'bold', marginTop: 5 }}>Role:</div>
+                                    <PermissionsEditor
+                                        permissions={this.state.permissions}
+                                        onChange={({ permissions }) => this.setState({ permissions })}
+                                    />
+                                </div>
                             </Form.Field>
                         </Form>
 

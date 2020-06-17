@@ -23,7 +23,9 @@ import {
     formatTime,
     generateWhatsappTranscribeLink,
     generateWhatsappProofreadLink,
-    getWhatsappNotifyOnProofreadingReady
+    getWhatsappNotifyOnProofreadingReady,
+    getUserOrganziationRole,
+    canUserAccess
 } from '../../../../shared/utils/helpers';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import AssignReviewUsers from '../../../../shared/components/AssignReviewUsers';
@@ -92,22 +94,30 @@ class Review extends React.Component {
 
     componentDidMount = () => {
         const { activeTab } = queryString.parse(this.props.location.search);
+        let acTab = null;
         if (activeTab) {
             switch (activeTab) {
-                case 'transcribe':
-                    this.setState({ activeTab: 'transcribe' }); break;
-                case 'proofread':
-                    this.setState({ activeTab: 'proofread' }); break;
-                case 'completed':
-                    this.setState({ activeTab: 'completed' }); break;
+                case TABS.CUT_VIDEO:
+                    acTab = TABS.CUT_VIDEO; break;
+                case TABS.PROOFREAD:
+                    acTab = TABS.PROOFREAD; break;
+                case TABS.COMPLETED:
+                    acTab = TABS.COMPLETED; break;
                 default:
-                    this.setState({ activeTab: 'transcribe' }); break;
+                    acTab = null; break;
             }
+        }
+        const { user, organization } = this.props;
+        const defaultTab = canUserAccess(user, organization, ['review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
+        if (!acTab) {
+            this.setState({ activeTab: defaultTab })
+        } else {
+            this.setState({ activeTab: acTab })
         }
         this.props.setSearchFilter('');
         this.props.fetchUsers(this.props.organization._id);
         this.props.setCurrentPageNumber(1);
-        this.props.setVideoStatusFilter(videoStatusMap[activeTab || TABS.CUT_VIDEO]);
+        this.props.setVideoStatusFilter(videoStatusMap[activeTab || defaultTab]);
         this.props.fetchVideos();
         this.props.fetchVideosCount(this.props.organization._id);
         this.videoUploadedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_UPLOADED, (data) => {
@@ -703,11 +713,33 @@ class Review extends React.Component {
     }
 
     render() {
-        const SUBTABS = [
-            { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting )})`, value: TABS.CUT_VIDEO },
-            { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
+        let SUBTABS = [];
+        const { user, organization } = this.props;
+        // if org owner/admin/project_leader show all tabs
+        if (canUserAccess(user, organization, ['admin', 'project_leader'])) {
+            SUBTABS = [
+                { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting)})`, value: TABS.CUT_VIDEO },
+                { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
+            ]
+        } else {
+            // if have review or break_videos permissions show break videos 
+            if (canUserAccess(user, organization, ['review', 'break_videos'])) {
+                SUBTABS.push(
+                    { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting)})`, value: TABS.CUT_VIDEO },
+                )
+            }
+            if (canUserAccess(user, organization, ['review', 'transcribe_text', 'approve_transcriptions'])) {
+
+                SUBTABS.push(
+                    { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
+                )
+            }
+
+        }
+
+        SUBTABS.push(
             { title: `Completed (${formatCount(this.props.videosCounts.completed)})`, value: TABS.COMPLETED }
-        ];
+        )
         const allSelected = this.props.videos && this.props.videos.length > 0 && this.props.selectedCount === this.props.videos.length;
 
         return (
@@ -737,7 +769,7 @@ class Review extends React.Component {
                                     >
                                         {item.title}
                                     </span>
-                                    {index !== 2 && (
+                                    {index !== SUBTABS.length - 1 && (
                                         <Icon name="chevron right" style={{ opacity: 0.5 }} />
                                     )}
                                 </React.Fragment>
@@ -755,7 +787,14 @@ class Review extends React.Component {
                 <div>
                     <Grid style={{ margin: '1rem', }}>
 
-                        <RoleRenderer roles={['admin', 'review']}>
+                        <RoleRenderer roles={[
+                            'admin',
+                            'project_leader',
+                            'review',
+                            'break_videos',
+                            'transcribe_text',
+                            'approve_transcriptions',
+                        ]}>
                             <Grid.Row>
                                 <Grid.Column width={5}>
                                     <Input
@@ -825,7 +864,7 @@ class Review extends React.Component {
                                             <React.Fragment>
                                                 <Separator />
                                                 <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersToMultipleVideosModalOpen: true })}>
-                                                <Icon name="add" size="small" color="blue" /> Add Transcribers To Selected Videos
+                                                    <Icon name="add" size="small" color="blue" /> Add Transcribers To Selected Videos
                                                 </span>
                                             </React.Fragment>
                                         )}
@@ -833,7 +872,7 @@ class Review extends React.Component {
                                             <React.Fragment>
                                                 <Separator />
                                                 <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: true })}>
-                                                <Icon name="add" size="small" color="blue" /> Add Approvers To Selected Videos
+                                                    <Icon name="add" size="small" color="blue" /> Add Approvers To Selected Videos
                                                 </span>
                                             </React.Fragment>
                                         )}

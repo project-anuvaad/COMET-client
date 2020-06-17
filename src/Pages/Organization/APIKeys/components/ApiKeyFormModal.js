@@ -1,6 +1,7 @@
 import React from 'react';
-import { Modal, Dropdown, Grid, Popup, Icon, Button, Select, Checkbox, Radio } from 'semantic-ui-react';
+import { Modal, Dropdown, Grid, Popup, Icon, Button, Radio } from 'semantic-ui-react';
 import NotificationService from '../../../../shared/utils/NotificationService';
+import PermissionsEditor from '../../../../shared/components/PermissionsEditor';
 
 function cleanOrigin(origin) {
     let newOrg = origin;
@@ -19,64 +20,12 @@ function isOriginValid(origin) {
     return origin.split('.').length >= 2;
 }
 
-function getUserRoleValue(permissions) {
-    let role = '';
-    if (permissions.length === 1) {
-        if (permissions[0] === 'admin') {
-            role = 'l0';
-        } else if (permissions[0] === 'review') {
-            role = 'l1';
-        } else if (permissions[0] === 'translate') {
-            role = 'l2'
-        }
-    } else if (permissions.length !== 0) {
-        role = 'l3';
-    }
-    return role;
-}
-
 export default class ApiKeyFormModal extends React.Component {
-    roles = [
-        {
-            key: 'l0',
-            value: 'l0',
-            text: 'Admin',
-        },
-        {
-            key: 'l1',
-            value: 'l1',
-            text: 'Review'
-        }, {
-            key: 'l2',
-            value: 'l2',
-            text: 'Translate'
-        }, {
-            key: 'l3',
-            value: 'l3',
-            text: 'Review and Translate'
-        }
-    ]
 
     canCreate = () => {
         const { permissions, origins, keyType } = this.props;
         if (keyType === 'service') return true;
         return permissions.length > 0 && origins.length > 0;
-    }
-
-    onRoleChange = (e, data) => {
-        const { value } = data;
-        let permissions = [];
-        if (value === 'l0') {
-            permissions = ['admin'];
-        }
-        else if (value === 'l1') {
-            permissions = ['review'];
-        } else if (value === 'l2') {
-            permissions = ['translate'];
-        } else if (value === 'l3') {
-            permissions = ['review', 'translate'];
-        }
-        this.props.onChange({ permissions });
     }
 
     onOriginsChange = (e, { value }) => {
@@ -173,7 +122,7 @@ export default class ApiKeyFormModal extends React.Component {
                                             >
                                                 <Icon name="plus" color="green" />
                                                 Add
-                                        </span>
+                                            </span>
                                         )}
                                     />
                                 </Grid.Column>
@@ -192,11 +141,15 @@ export default class ApiKeyFormModal extends React.Component {
                                     />
                                 </Grid.Column>
                                 <Grid.Column width={10}>
-                                    <Select
+                                    {/* <Select
                                         name="role"
                                         onChange={this.onRoleChange}
                                         value={getUserRoleValue(permissions)}
-                                        options={this.roles} />
+                                        options={this.roles} /> */}
+                                    <PermissionsEditor
+                                        permissions={this.props.permissions}
+                                        onChange={({ permissions }) => this.props.onChange({ permissions })}
+                                    />
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>

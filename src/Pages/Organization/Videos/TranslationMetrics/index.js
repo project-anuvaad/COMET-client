@@ -283,7 +283,7 @@ class Translation extends React.Component {
                                     <div
                                         style={{ marginTop: 20 }}
                                     >
-                                        <RoleRenderer roles={['admin']}>
+                                        <RoleRenderer roles={['admin', 'project_leader']}>
 
                                             <div
                                                 style={{ fontSize: '0.7rem' }}

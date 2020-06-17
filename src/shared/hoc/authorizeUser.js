@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { getUserOrganziationRole } from '../utils/helpers';
+import { getUserOrganziationRole, canUserAccess } from '../utils/helpers';
 import routes from '../routes';
 
 export default function authorizeUser(WrappedComponent, roles) {
@@ -15,16 +15,26 @@ export default function authorizeUser(WrappedComponent, roles) {
             if (!organizationRole) {
                 return this.props.history.push(routes.logout());
             }
-            if (organizationRole.permissions.indexOf('translate') !== -1) {
+            if (canUserAccess(user, organization, [
+                'translate',
+                'voice_over_artist',
+                'translate_text',
+                'approve_translations',
+            ])) {
                 return this.props.history.push(routes.organziationTranslations());
             }
-            if (organizationRole.permissions.indexOf('review') !== -1) {
+            if (canUserAccess(user, organization, [
+                'review',
+                'break_videos',
+                'transcribe_text',
+                'approve_transcriptions',
+            ])) {
                 return this.props.history.push(routes.organziationReview());
             }
-            return this.props.history.push(routes.logout());
+            // return this.props.history.push(routes.logout());
 
         }
-        
+
         render() {
             const userRole = getUserOrganziationRole(this.props.user, this.props.organization)
             let canView = false;

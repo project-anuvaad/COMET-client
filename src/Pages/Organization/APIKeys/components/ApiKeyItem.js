@@ -1,5 +1,6 @@
 import React from 'react';
 import { List, Select, Button, Icon } from 'semantic-ui-react';
+import PermissionLabel from '../../../../shared/components/PermissionLabel';
 
 function getUserRoleValue(permissions) {
     let role = 'l1';
@@ -85,14 +86,20 @@ export default class ApiKeyItem extends React.Component {
                         </div>
                         {!isOrganizationOwner && (
                             <span>
-                                <Select
+                                {/* <Select
                                     style={{ marginRight: 10 }}
                                     name="role"
                                     onChange={onRoleChange}
                                     value={getUserRoleValue(orgRole.permissions)}
                                     options={rolesOptions}
                                     disabled={!canModify}
-                                />
+                                /> */}
+                                {orgRole.permissions.map(p => (
+                                    <PermissionLabel
+                                        permission={p}
+                                        key={`api-key-item-permission-${p}`}
+                                    />
+                                ))}
                                 {canModify && (
                                     <Button onClick={onDelete} icon color="red">
                                         <Icon name='trash' />

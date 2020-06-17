@@ -1,65 +1,29 @@
 import React, { Component } from 'react'
-import { List, Select } from 'semantic-ui-react'
+import { List, Label, Button, Icon } from 'semantic-ui-react'
 import DeleteUserModal from './DeleteUserModal';
 
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import { fetchUsers, editPermissions } from '../../../actions/organization';
+import EditUserPermissionsModal from './EditUserPermissionsModal';
+import { USER_ROLES_TITLE_MAP } from '../../../shared/constants';
+import PermissionLabel from '../../../shared/components/PermissionLabel';
 
-function getUserRoleValue(permissions) {
-    let role = 'l1';
-    if (permissions.length === 1) {
-        if (permissions[0] === 'admin') {
-            role = 'l0';
-        } else if (permissions[0] === 'review') {
-            role = 'l1';
-        } else if (permissions[0] === 'translate') {
-            role = 'l2'
-        }
-    } else {
-        role = 'l3';
-    }
-    return role;
-}
 
 class UserTable extends Component {
-    roles = [
-        {
-            key: 'l0',
-            value: 'l0',
-            text: 'Admin',
-        },
-        {
-            key: 'l1',
-            value: 'l1',
-            text: 'Review'
-        }, {
-            key: 'l2',
-            value: 'l2',
-            text: 'Translate'
-        }, {
-            key: 'l3',
-            value: 'l3',
-            text: 'Review and Translate'
-        }
-    ]
+
+    state = {
+        isEditPermissionsModalVisible: false,
+        selectedUser: null,
+        selectedUserPermissions: [],
+    }
 
     componentDidMount() {
         this.props.fetchUsers(this.props.organization._id)
     }
 
-    onRoleChange = (role, user) => {
-        let permissions;
-        if (role === 'l0') {
-            permissions = ['admin']
-        } else if (role === 'l1') {
-            permissions = ['review'];
-        } else if (role === 'l2') {
-            permissions = ['translate'];
-        } else if (role === 'l3') {
-            permissions = ['review', 'translate'];
-        }
+    onRoleChange = (user, permissions) => {
         this.props.editPermissions(this.props.organization._id, user._id, permissions);
     }
 
@@ -73,27 +37,35 @@ class UserTable extends Component {
             const isOrganizationOwner = orgRole.organizationOwner;
 
             return (
-                <List.Item key={user.email}>
+                <List.Item key={`user-list-${user.email}`}>
 
                     <List.Icon name='user' size='large' verticalAlign='middle' />
 
                     <List.Content>
 
                         <div>
-                            <span className="invite-name bold-text">{user.firstname} {user.lastname}</span>  {user.email}
+                            <span className="invite-name bold-text">{user.firstname} {user.lastname}</span> <br /> {user.email}
 
                             {!isOrganizationOwner && (
                                 <div className="pull-right">
-                                    <Select
-                                        style={{ marginRight: 10 }}
-                                        name="role"
-                                        onChange={(e, { value }) => this.onRoleChange(value, user)}
-                                        value={getUserRoleValue(orgRole.permissions)}
-                                        options={this.roles}
-                                        disabled={!canModify}
-                                    />
+                                    {orgRole.permissions && orgRole.permissions.map((permission, index) => (
+                                        <PermissionLabel
+                                            permission={permission}
+                                            key={`permission-${permission}-${index}`}
+                                        />
+                                    ))}
                                     {canModify && (
-                                        <DeleteUserModal userId={user._id} />
+                                        <React.Fragment>
+                                            <Button
+                                                icon
+                                                onClick={() => {
+                                                    this.setState({ isEditPermissionsModalVisible: true, selectedUser: user, selectedUserPermissions: orgRole.permissions })
+                                                }}
+                                            >
+                                                <Icon name="edit" />
+                                            </Button>
+                                            <DeleteUserModal userId={user._id} />
+                                        </React.Fragment>
                                     )}
                                 </div>
                             )}
@@ -133,6 +105,19 @@ class UserTable extends Component {
         return (
             <List divided relaxed>
                 {template}
+                {canModify && (
+                    <EditUserPermissionsModal
+                        open={this.state.isEditPermissionsModalVisible}
+                        user={this.state.selectedUser}
+                        permissions={this.state.selectedUserPermissions}
+                        onClose={() => this.setState({ isEditPermissionsModalVisible: false })}
+                        onCofirm={({ user, permissions }) => {
+                            console.log(user, permissions);
+                            this.setState({ isEditPermissionsModalVisible: false });
+                            this.onRoleChange(user, permissions);
+                        }}
+                    />
+                )}
             </List >
         );
     }

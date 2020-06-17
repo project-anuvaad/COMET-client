@@ -47,7 +47,7 @@ class Translated extends React.Component {
 
     isVideoFocused = (video) => {
         const videoId = querystring.parse(window.location.search).video;
-        return videoId && videoId === video._id; 
+        return videoId && videoId === video._id;
     }
 
     getLanguage = langCode => {
@@ -77,7 +77,7 @@ class Translated extends React.Component {
     }
 
     onSelectMultipleLanguages = (codes) => {
-        this.setState({selectMultipleLanguagesModalOpen: false});
+        this.setState({ selectMultipleLanguagesModalOpen: false });
         this.props.submitMultipleLanguages(codes)
     }
 
@@ -86,11 +86,36 @@ class Translated extends React.Component {
     }
 
     getTranslators = () => {
-        return getUsersByRoles(this.props.organizationUsers, this.props.organization, ['translate', 'admin', 'owner']);
+        const roles = [
+            'translate',
+            'voice_over_artist',
+            'translate_text',
+            'approve_translations',
+
+            'admin',
+            'project_leader',
+            'owner'
+        ]
+        return getUsersByRoles(this.props.organizationUsers, this.props.organization, roles);
     }
 
     getVerifiers = () => {
-        return getUsersByRoles(this.props.organizationUsers, this.props.organization, ['translate', 'review', 'admin', 'owner']);
+        const roles = [
+            'translate',
+            'voice_over_artist',
+            'translate_text',
+            'approve_translations',
+
+            'review',
+            'break_videos',
+            'transcribe_text',
+            'approve_transcriptions',
+
+            'admin',
+            'project_leader',
+            'owner'
+        ];
+        return getUsersByRoles(this.props.organizationUsers, this.props.organization, roles);
     }
 
     renderPagination = () => (
@@ -123,12 +148,12 @@ class Translated extends React.Component {
             />
         )
     }
-    
+
     _renderSelectMultipleLanguagesModal() {
         return (
-            <SelectMultipleLanguagesModal 
+            <SelectMultipleLanguagesModal
                 open={this.state.selectMultipleLanguagesModalOpen}
-                onClose={() => this.setState({selectMultipleLanguagesModalOpen: false})}
+                onClose={() => this.setState({ selectMultipleLanguagesModalOpen: false })}
                 onSubmit={(codes) => this.onSelectMultipleLanguages(codes)}
             />
         )
@@ -141,7 +166,14 @@ class Translated extends React.Component {
             <div>
                 <VideosTabs />
                 <Grid style={{ margin: '1rem' }}>
-                    <RoleRenderer roles={['admin', 'translate']}>
+                    <RoleRenderer roles={[
+                        'admin',
+                        'project_leader',
+                        'translate',
+                        'voice_over_artist',
+                        'translate_text',
+                        'approve_translations',
+                    ]}>
                         <Grid.Row style={{ marginBottom: 20 }}>
                             <Grid.Column width={5}>
 
@@ -179,7 +211,7 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ selectMultipleLanguagesModalOpen: true })}>
-                                            <Icon name="add" size="small" color="blue" /> Assign Multiple Languages To Selected Videos
+                                                <Icon name="add" size="small" color="blue" /> Assign Multiple Languages To Selected Videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -196,8 +228,8 @@ class Translated extends React.Component {
                                             onSelectChange={(selected) => this.onSelectChange(translatedArticle.video, selected)}
                                             rounded
                                             url={
-                                              translatedArticle.video.compressedVideoUrl ||
-                                              translatedArticle.video.url
+                                                translatedArticle.video.compressedVideoUrl ||
+                                                translatedArticle.video.url
                                             }
                                             thumbnailUrl={translatedArticle.video.thumbnailUrl}
                                             duration={translatedArticle.video.duration}

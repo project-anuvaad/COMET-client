@@ -46,9 +46,7 @@ const subscribeToEvent = function subscribeToEvent(event, callback) {
     connection.off(event);
     console.log('============= ON =================', event)
     return connection.on(event, (...args) => {
-      console.log('emitting event', event, subs[event].length)
       subs[event].forEach(s => {
-        console.log(s);
         s(...args)
       })
     });

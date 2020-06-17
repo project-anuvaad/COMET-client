@@ -30,49 +30,64 @@ const NAV_LINKS = [
     {
         title: 'Home',
         route: routes.organizationVideos(),
-        roles: ['admin', 'translate', 'review'],
         icon: 'home',
     },
     {
         title: 'My Translations',
         route: routes.organziationTasksTranslations(),
-        roles: ['admin', 'translate'],
+        roles: [
+            'admin',
+            'project_leader',
+            'translate',
+            'voice_over_artist',
+            'translate_text',
+            'approve_translations',
+        ],
         icon: 'translate',
     },
     {
         title: 'My Transcriptions',
         route: routes.organziationTasksReview(),
-        roles: ['admin', 'review'],
+        roles: [
+            'admin',
+            'project_leader',
+            'review',
+            'break_videos',
+            'transcribe_text',
+            'approve_transcriptions',
+        ],
         icon: 'pencil alternate',
     },
     {
         title: 'Archive',
         route: routes.organizationArchive(),
-        roles: ['admin'],
+        roles: [
+            'admin',
+            'project_leader',
+        ],
         icon: 'archive',
     },
     {
         title: 'Users',
         route: routes.organizationUsers(),
-        roles: ['admin'],
+        roles: [
+            'admin',
+            'project_leader',
+        ],
         icon: 'user',
     },
-    // {
-    //     title: 'Tips',
-    //     route: routes.organizationTips(),
-    //     roles: ['admin', 'translate', 'review'],
-    //     icon: 'lightbulb',
-    // },
     {
         title: 'Noise Cancellation',
         route: routes.noiseCancellation(),
         icon: 'headphones',
-        roles: ['admin', 'translate', 'review'],
     },
     {
         title: 'API Keys',
         route: routes.organizationAPIKeys(),
-        roles: ['admin'],
+        roles: [
+            'admin',
+            'project_leader',
+        ],
         icon: 'key',
     },
 ]
@@ -443,34 +458,43 @@ class Dashboard extends React.Component {
                                 tabular
                                 style={{ color: 'white', border: 'none' }}
                             >
-                                {NAV_LINKS.map((l) => (
-                                    <RoleRenderer
-                                        roles={l.roles}
-                                        key={l.title + l.route}
-                                    >
-                                        <Link
-                                            to={l.route}
-                                            style={{
-                                                color: 'white',
-                                                opacity: this.props.location.pathname.indexOf(l.route) === 0 ? 1 : 0.5,
-                                                // backgroundColor: this.props.location.pathname.indexOf(l.route) === 0 ? '#eee' : 'transparent',
-                                                // color: this.props.location.pathname.indexOf(l.route) === 0 ? 'black' : 'white',
-                                                width: '100%',
-                                                padding: 15,
-                                                textAlign: 'center',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
+                                {NAV_LINKS.map((l) => {
+                                    const content = (
+                                        (
+                                            <Link
+                                                to={l.route}
+                                                key={`navlink-item-renderer-` + l.title + l.route}
+                                                style={{
+                                                    color: 'white',
+                                                    opacity: this.props.location.pathname.indexOf(l.route) === 0 ? 1 : 0.5,
+                                                    // backgroundColor: this.props.location.pathname.indexOf(l.route) === 0 ? '#eee' : 'transparent',
+                                                    // color: this.props.location.pathname.indexOf(l.route) === 0 ? 'black' : 'white',
+                                                    width: '100%',
+                                                    padding: 15,
+                                                    textAlign: 'center',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
 
-                                            }}
-                                            onClick={() => this.setState({ currentLocation: l.route })}
+                                                }}
+                                                onClick={() => this.setState({ currentLocation: l.route })}
+                                            >
+                                                <Icon name={l.icon} size="large" />
+                                                {l.title}
+                                            </Link>
+                                        )
+                                    )
+                                    return l.roles ? (
+
+                                        <RoleRenderer
+                                            roles={l.roles}
+                                            key={`role-renderer-` + l.title + l.route}
                                         >
-                                            <Icon name={l.icon} size="large" />
-                                            {l.title}
-                                        </Link>
-                                    </RoleRenderer>
-                                ))}
+                                            {content}
+                                        </RoleRenderer>
+                                    ) : content
+                                })}
                             </Menu>
 
                         </Grid.Column>

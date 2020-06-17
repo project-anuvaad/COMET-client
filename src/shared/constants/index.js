@@ -45,13 +45,73 @@ export function populateAppEnv() {
                     Object.keys(data).forEach(key => {
                         APP_ENV[key] = data[key];
                     })
-                } catch(err) {
+                } catch (err) {
                     console.log(err);
                 }
             })
             .catch(reject)
     })
 }
+export const USER_ROLES = [
+    {
+        name: 'Admin',
+        value: 'admin',
+        single: true,
+    },
+    {
+        name: 'Project Leader',
+        value: 'project_leader',
+        single: true,
+    },
+    {
+        name: 'Transcribe',
+        value: 'review',
+        subroles: [
+            {
+                name: 'Break Videos',
+                value: 'break_videos',
+            },
+            {
+                name: 'Transcribing Text',
+                value: 'transcribe_text',
+            },
+            {
+                name: 'Transcribing Approver',
+                value: 'approve_transcriptions',
+
+            }
+        ]
+    },
+    {
+        name: 'Translation',
+        value: 'translate',
+        subroles: [
+            {
+                name: 'Translating Text',
+                value: 'translate_text',
+            },
+            {
+                name: 'Voice-over artist',
+                value: 'voice_over_artist',
+            },
+            {
+                name: 'Translation Approver',
+                value: 'approve_translations',
+
+            }
+        ]
+    },
+]
+export const USER_ROLES_TITLE_MAP = USER_ROLES.reduce((acc, role) => {
+    acc[role.value] = role.name;
+    if (role.subroles) {
+        role.subroles.forEach(subrole => {
+            acc[subrole.value] = subrole.name;
+        })
+    }
+
+    return acc;
+}, {})
 
 export const APP_ENV = {
     API_ROOT: '',

@@ -27,14 +27,25 @@ class VideosTabs extends React.Component {
         const organizationRole = getUserOrganziationRole(user, organization);
         if (!organizationRole) return this.redirectUnauthorizedUser();
 
-        if (organizationRole.organizationOwner || (organizationRole.permissions && organizationRole.permissions.indexOf('admin') !== -1)) {
+        if (organizationRole.organizationOwner || (organizationRole.permissions && canUserAccess(user, organization, ['admin', 'project_leader']))) {
             tabItems = [...items];
         } else {
-            if (organizationRole.permissions.indexOf('review') !== -1) {
+            if (canUserAccess(user, organization,
+                [
+                    'review',
+                    'break_videos',
+                    'transcribe_text',
+                    'approve_transcriptions',
+                ])) {
                 tabItems.push({ title: 'Transcribe' })
             }
 
-            if (organizationRole.permissions.indexOf('translate') !== -1) {
+            if (canUserAccess(user, organization, [
+                'translate',
+                'voice_over_artist',
+                'translate_text',
+                'approve_translations',
+            ])) {
                 tabItems.push({ title: 'Voiceover Translations' })
             }
         }
@@ -62,7 +73,7 @@ class VideosTabs extends React.Component {
         }
         if (nextProps.videosCounts) {
             if (nextProps.videosCounts.total === 0 && !this.state.animating) {
-                    this.setState({ animating: true });
+                this.setState({ animating: true });
             } else if (this.state.animating && nextProps.videosCounts.total !== 0) {
                 this.setState({ animating: false })
             }
