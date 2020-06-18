@@ -244,7 +244,7 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ selectMultipleLanguagesModalOpen: true })}>
-                                                <Icon name="add" size="small" color="blue" /> Assign Multiple Languages To Selected Videos
+                                                <Icon name="add" size="small" color="blue" /> Assign Multiple Languages to Selected Videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -252,7 +252,7 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ addUsersToMultipleVideosModalOpen: true })}>
-                                            <Icon name="add" size="small" color="blue" /> Add Translators / Approvers To selected Videos
+                                            <Icon name="add" size="small" color="blue" /> Add Translators / Approvers to selected Videos
                                             </span>
                                         </React.Fragment>
                                     )}

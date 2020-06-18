@@ -644,7 +644,6 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
 
 export const generateTranslatableArticles = (videoId, originalArticleId, data, mode = 'single') => (dispatch, getState) => {
     const funcArray = []
-    // const createdArticles = []
 
     data.forEach(d => {
         funcArray.push(cb => {
@@ -655,8 +654,8 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
             const verifiers = d.verifiers
 
             utils.addHumanVoiceOver(originalArticleId, langCode, langName, voiceTranslators, textTranslators, verifiers)
-                .then(() => {
-                    cb();
+                .then((createdArticle) => {
+                    cb(null, createdArticle);
                 })
                 .catch((err) => {
                     cb();
@@ -666,16 +665,16 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
         });
     })
 
-    async.series(funcArray, () => {
+    async.series(funcArray, (err, createdArticles) => {
         dispatch(fetchTranslatedArticles({ softLoad: true, cb: () => {
-            window.location.href = routes.organziationTranslationMetrics(videoId);
-            // if (data.length > 1 || createdArticles.length > 1) {
-            //     window.location.href = routes.organziationTranslationMetrics(videoId);
-            // } else if (createdArticles.length > 0) {
-            //     window.location.href = routes.translationArticle(createdArticles[0]._id);
-            // } else {
-            //     NotificationService.error('Something went wrong');
-            // }
+            createdArticles = createdArticles.filter(a => a);
+            if (createdArticles.length > 1) {
+                window.location.href = routes.organziationTranslationMetrics(videoId);
+            } else if (createdArticles.length > 0) {
+                window.location.href = routes.translationArticle(createdArticles[0]._id);
+            } else {
+                NotificationService.error('Something went wrong');
+            }
         }}))
     })
 }
