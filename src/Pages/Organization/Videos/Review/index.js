@@ -867,7 +867,7 @@ class Review extends React.Component {
                                             <React.Fragment>
                                                 <Separator />
                                                 <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ deleteVideoModalVisible: true })}>
-                                                    <Icon name="trash alternate outline" color="blue" /> Delete Selected Videos
+                                                    <Icon name="trash alternate outline" color="blue" /> Delete selected videos
                                                 </span>
                                             </React.Fragment>
                                         )}
@@ -875,7 +875,7 @@ class Review extends React.Component {
                                             <React.Fragment>
                                                 <Separator />
                                                 <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignUsersToMultipleVideosModalOpen: true })}>
-                                                    <Icon name="add" size="small" color="blue" /> Add Transcribers To Selected Videos
+                                                    <Icon name="add" size="small" color="blue" /> Add transcribers to selected videos
                                                 </span>
                                             </React.Fragment>
                                         )}
@@ -883,7 +883,7 @@ class Review extends React.Component {
                                             <React.Fragment>
                                                 <Separator />
                                                 <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: true })}>
-                                                    <Icon name="add" size="small" color="blue" /> Add Approvers To Selected Videos
+                                                    <Icon name="add" size="small" color="blue" /> Add approvers to selected videos
                                                 </span>
                                             </React.Fragment>
                                         )}

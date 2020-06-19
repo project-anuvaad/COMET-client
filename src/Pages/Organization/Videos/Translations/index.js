@@ -12,6 +12,7 @@ import * as videoActions from '../modules/actions';
 import * as organizationActions from '../../../../actions/organization';
 import AddMultipleHumanVoiceModal from '../../../../shared/components/AddMultipleHumanVoiceModal/index';
 import SelectMultipleLanguagesModal from '../../../../shared/components/SelectMultipleLanguagesModal/index';
+import ExportMultipleVideosModal from "./ExportMultipleVideosModal";
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import { debounce, getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
@@ -28,7 +29,8 @@ function Separator() {
 class Translated extends React.Component {
     state = {
         selectMultipleLanguagesModalOpen: false,
-        addUsersToMultipleVideosModalOpen: false
+        addUsersToMultipleVideosModalOpen: false,
+        exportMultipleVideosModalOpen: false
     }
 
     constructor(props) {
@@ -83,6 +85,11 @@ class Translated extends React.Component {
     onSelectMultipleLanguages = (codes) => {
         this.setState({ selectMultipleLanguagesModalOpen: false });
         this.props.submitMultipleLanguages(codes)
+    }
+
+    onMultiExport = () => {
+        this.setState({exportMultipleVideosModalOpen: false});
+        this.props.exportMultipleVideos();
     }
 
     onSelectChange = (video, selected) => {
@@ -175,7 +182,6 @@ class Translated extends React.Component {
         disabledLanguages = Array.from(new Set(disabledLanguages.map(JSON.stringify))).map(
         JSON.parse
         );
-        console.log('disabled langs are ', disabledLanguages);
         
         return (
             <AddMultipleHumanVoiceModal
@@ -188,6 +194,16 @@ class Translated extends React.Component {
                 onSubmit={(data) => this.onAddUsersToMultipleVideos(data)}
                 multiVideos={true}
                 selectedTranslatedArticles={selectedTranslatedArticles}
+            />
+        )
+    }
+
+    _renderExportMultipleVideosModal() {
+        return (
+            <ExportMultipleVideosModal 
+                open={this.state.exportMultipleVideosModalOpen}
+                onClose={() => this.setState({exportMultipleVideosModalOpen: false})}
+                onSubmit={() => this.onMultiExport()}
             />
         )
     }
@@ -244,7 +260,7 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ selectMultipleLanguagesModalOpen: true })}>
-                                                <Icon name="add" size="small" color="blue" /> Assign Multiple Languages To Selected Videos
+                                                <Icon name="add" size="small" color="blue" /> Assign multiple languages to selected videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -252,7 +268,15 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ addUsersToMultipleVideosModalOpen: true })}>
-                                            <Icon name="add" size="small" color="blue" /> Add Translators / Approvers To selected Videos
+                                            <Icon name="add" size="small" color="blue" /> Add translators / approvers to selected videos
+                                            </span>
+                                        </React.Fragment>
+                                    )}
+                                    {this.props.selectedCount > 0 && (
+                                        <React.Fragment>
+                                            <Separator />
+                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ exportMultipleVideosModalOpen: true })}>
+                                            <Icon name="add" size="small" color="blue" /> Export selected videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -317,6 +341,7 @@ class Translated extends React.Component {
                             {this._renderAddHumanVoiceModal()}
                             {this._renderSelectMultipleLanguagesModal()}
                             {this._renderAddUsersToMultipleVideosModal()}
+                            {this._renderExportMultipleVideosModal()}
                         </LoaderComponent>
                     </RoleRenderer>
                 </Grid>
@@ -354,7 +379,8 @@ const mapDispatchToProps = (dispatch) => ({
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
-    setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected))
+    setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected)),
+    exportMultipleVideos: () => dispatch(videoActions.exportMultipleVideos())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));

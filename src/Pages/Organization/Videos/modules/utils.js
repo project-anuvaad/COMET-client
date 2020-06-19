@@ -12,6 +12,7 @@ export const addHumanVoiceOver = (
   verifiers
 ) => {
   return new Promise((resolve, reject) => {
+    let createdArticle;
     const params = getLangParams(langCode, langName);
     requestAgent
       .post(
@@ -20,18 +21,16 @@ export const addHumanVoiceOver = (
       )
       .then((res) => {
         const { article } = res.body;
+        createdArticle = article;
         return updateTranslatedArticleUsers(
           article._id,
           voiceTranslators,
           textTranslators,
           verifiers
-        )
-          .then()
-          .catch();
+        );
       })
-
       .then(() => {
-        return resolve();
+        return resolve(createdArticle);
       })
       .catch(reject);
   });

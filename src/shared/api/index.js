@@ -76,6 +76,7 @@ export default {
         approveExportTranslation: (id) => `${APP_ENV.API_ROOT}/translationExport/${id}/approve`,
         declineeExportTranslation: (id) => `${APP_ENV.API_ROOT}/translationExport/${id}/decline`,
         updateAudioSettings: (id) => `${APP_ENV.API_ROOT}/translationExport/${id}/audioSettings`,
+        requestExportMultipleTranslationReview: () => `${APP_ENV.API_ROOT}/translationExport/requestExportMultiple`,
     },
     authentication: {
         login: () => `${APP_ENV.API_ROOT}/auth/login`,
