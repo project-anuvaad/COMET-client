@@ -896,3 +896,25 @@ export const setAllTranslatedArticleVideoSelected = (selected) => (dispatch, get
         dispatch(setSelectedCount(0));
     }
 }
+
+export const exportMultipleVideos = () => (dispatch, getState) => {
+    const { translatedArticles } = getState()[moduleName];
+    const selectedTranslatedArticles = translatedArticles.filter(
+      (sta) => sta.video.selected
+    );
+    const ids = [];
+    selectedTranslatedArticles.forEach(sta => {
+        sta.articles.forEach(a => {
+            ids.push(a._id);
+        });
+    });
+
+    requestAgent
+        .post(Api.translationExport.requestExportMultipleTranslationReview(), {articlesIds: ids})
+        .then((res) => {
+            NotificationService.success('The videos have been queued to be exported');
+        })
+        .catch(err => {
+            NotificationService.responseError(err);
+        });
+}
