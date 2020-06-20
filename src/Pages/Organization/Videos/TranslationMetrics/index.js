@@ -96,9 +96,9 @@ class Translation extends React.Component {
         this.props.uploadBackgroundMusic(singleTranslatedArticle.video._id, file);
     }
 
-    onSaveTranslators = (translators) => {
+    onSaveTranslators = (translators, textTranslators) => {
         this.setState({ assignUsersModalVisible: false });
-        this.props.updateTranslators(this.state.selectedArticle._id, translators.filter((t) => t.user));
+        this.props.updateTranslatorsV2(this.state.selectedArticle._id, translators.filter((t) => t.user), textTranslators.filter((t) => t));
     }
 
     onSaveVerifiers = (verifiers) => {
@@ -472,6 +472,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     updateTranslators: (articleId, translators) => dispatch(videoActions.updateTranslators(articleId, translators)),
     updateVerifiers: (articleId, verifiers) => dispatch(videoActions.updateVerifiers(articleId, verifiers)),
+    updateTranslatorsV2: (articleId, translators, textTranslators) => dispatch(videoActions.updateTranslatorsV2(articleId, translators, textTranslators)),
     resendEmailToArticleVerifiers: (articleId, userId) => dispatch(videoActions.resendEmailToArticleVerifiers(articleId, userId)),
     generateTranslatableArticle: (originalArticleId, langCode, langName, translators, verifiers) => dispatch(videoActions.generateTranslatableArticle(originalArticleId, langCode, langName, translators, verifiers, 'single')),
     deleteVideoBackgroundMusic: (videoId) => dispatch(videoActions.deleteVideoBackgroundMusic(videoId)),
