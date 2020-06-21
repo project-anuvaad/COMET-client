@@ -8,7 +8,7 @@ export default class InviteToTranslateAccepted extends React.Component {
     render() {
         const { content, from, resource } = this.props;
         return (
-            <Link to={routes.translationArticle(resource)}>
+            <a href={routes.translationArticle(resource)}>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={2}>
@@ -26,7 +26,7 @@ export default class InviteToTranslateAccepted extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
-            </Link>
+            </a>
         )
     }
 }

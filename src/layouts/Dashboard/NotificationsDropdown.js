@@ -125,7 +125,9 @@ const mapDispatchToProps = (dispatch) => ({
     loadMore: () => dispatch(notificationActions.loadMore()),
     fetchUnreadCount: () => dispatch(notificationActions.fetchUnreadCount()),
     setNotificationsRead: () => dispatch(notificationActions.setNotificationsRead()),
-    respondToTranslationInvitation: (notificationId, organizationId, articleId, status, inviteToken, email) => dispatch(notificationActions.respondToTranslationInvitation(notificationId, organizationId, articleId, status, inviteToken, email))
+    respondToTranslationInvitation: (notificationId, organizationId, articleId, status, inviteToken, email) => dispatch(notificationActions.respondToTranslationInvitation(notificationId, organizationId, articleId, status, inviteToken, email)),
+    respondToTextTranslationInvitation: (notificationId, organizationId, articleId, status, inviteToken, email) => dispatch(notificationActions.respondToTextTranslationInvitation(notificationId, organizationId, articleId, status, inviteToken, email)),
+ 
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsDropdown);

@@ -9,8 +9,8 @@ export default class DefaultNotification extends React.Component {
     render() {
         const { content, from, resource, created_at, extraContent } = this.props;
         return (
-            <Link 
-                to={routes.translationArticle(resource)}
+            <a
+                href={routes.translationArticle(resource)}
                 style={{ color: 'black' }}    
             >
                 <Grid>
@@ -49,7 +49,7 @@ export default class DefaultNotification extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
-            </Link>
+            </a>
         )
     }
 }

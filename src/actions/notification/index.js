@@ -2,7 +2,6 @@ import * as actionTypes from './types';
 
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
-import { push } from 'connected-react-router';
 import routes from '../../shared/routes';
 import NotificationService from '../../shared/utils/NotificationService';
 
@@ -115,7 +114,9 @@ export const respondToTranslationInvitation = (notificationId, organizationId, a
         dispatch(setNotifications(notifications.slice()))
         if (status === 'accepted') {
             NotificationService.success(`You can start now translating the video`);
-            dispatch(push(routes.translationArticle(articleId) + `?speakerNumber=${speakerNumber}&finishDateOpen=true`));
+            setTimeout(() => {
+                window.location.href = routes.translationArticle(articleId) + `?speakerNumber=${speakerNumber}&finishDateOpen=true`;
+            }, 2000);
         } else {
             NotificationService.success(`Your response has been recorded`);
         }
@@ -123,20 +124,20 @@ export const respondToTranslationInvitation = (notificationId, organizationId, a
     .catch((err) => {
         console.log(err);
         NotificationService.responseError(err);
-        // dispatch(push(routes.home()))
     })
 }
 
 export const respondToTextTranslationInvitation = (notificationId, organizationId, articleId, status, inviteToken, email) => (dispatch, getState) => {
     requestAgent.post(Api.invitations.respondToTextTranslationInvitation(articleId), { inviteToken, status, email })
     .then((res) => {
-        const { speakerNumber } = res.body;
         const { notifications } = getState()[moduleName];
         notifications.find((n) => n._id === notificationId).status = status;
         dispatch(setNotifications(notifications.slice()))
         if (status === 'accepted') {
             NotificationService.success(`You can start now translating the video`);
-            dispatch(push(routes.translationArticle(articleId) + `?speakerNumber=${speakerNumber}&finishDateOpen=true`));
+            setTimeout(() => {
+                window.location.href = routes.translationArticle(articleId);
+            }, 2000);
         } else {
             NotificationService.success(`Your response has been recorded`);
         }
@@ -144,6 +145,5 @@ export const respondToTextTranslationInvitation = (notificationId, organizationI
     .catch((err) => {
         console.log(err);
         NotificationService.responseError(err);
-        // dispatch(push(routes.home()))
     })
 }

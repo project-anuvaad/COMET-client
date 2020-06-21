@@ -29,9 +29,9 @@ export default class AddedCommentToTranslation extends React.Component {
             onActionClick
         } = this.props;
         return (
-            <Link
+            <a
                 style={{ color: 'black' }}
-                to={this.getLinkTo()}
+                href={this.getLinkTo()}
             >
                 <Grid>
                     <Grid.Row>
@@ -77,7 +77,7 @@ export default class AddedCommentToTranslation extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
-            </Link>
+            </a>
         )
     }
 }

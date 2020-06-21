@@ -25,9 +25,9 @@ export default class InviteToTranslate extends React.Component {
             onActionClick
         } = this.props;
         return (
-            <Link
+            <a
                 style={{ color: 'black' }}
-                to={routes.translationArticle(resource)}
+                href={routes.translationArticle(resource)}
             >
                 <Grid>
                     <Grid.Row>
@@ -99,7 +99,7 @@ export default class InviteToTranslate extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
-            </Link>
+            </a>
         )
     }
 }
