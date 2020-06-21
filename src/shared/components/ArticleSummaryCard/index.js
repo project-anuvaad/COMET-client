@@ -191,7 +191,7 @@ export default class ArticleSummaryCard extends React.Component {
 
                         {article.verifiers && article.verifiers.length > 0 && (
                             <React.Fragment>
-                                <h3 style={{ marginTop: '1rem' }}>Verifiers</h3>
+                                <h3 style={{ marginTop: '1rem' }}>Approvers</h3>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     {article.verifiers.map(this.renderUserAvatar)}
                                 </div>
