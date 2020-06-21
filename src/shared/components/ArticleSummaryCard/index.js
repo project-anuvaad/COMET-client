@@ -182,8 +182,13 @@ export default class ArticleSummaryCard extends React.Component {
                                 </div>
                             )
                         })}
+
                         <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
-                        <Progress progress indicating percent={article.metrics.completed.text} />
+                        <div className="label-container">
+                            {article.textTranslators.length > 0 ? this.renderUserAvatar(article.textTranslators[0]): null}
+                        </div>
+                        <Progress progress indicating percent={article.metrics.completed.text} style={{ marginTop: '0.5rem' }} />
+
                         {article.verifiers && article.verifiers.length > 0 && (
                             <React.Fragment>
                                 <h3 style={{ marginTop: '1rem' }}>Verifiers</h3>

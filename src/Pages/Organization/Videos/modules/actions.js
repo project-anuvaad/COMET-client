@@ -414,6 +414,36 @@ export const updateTranslators = (articleId, translators) => (dispatch, getState
         })
 }
 
+export const updateTranslatorsV2 = (articleId, translators, textTranslators) => (dispatch, getState) => {
+    console.log(translators, textTranslators);
+    let updatedTranslators;
+    let updatedTextTranslators;
+    
+    console.log(translators, textTranslators);
+    requestAgent
+        .put(Api.article.updateTranslators(articleId), { translators })
+        .then((res) => {
+            updatedTranslators = res.body.translators;
+            
+            return requestAgent.put(Api.article.updateTextTranslators(articleId), { textTranslators })
+        })
+        .then((res) => {
+            updatedTextTranslators = res.body.textTranslators;
+            const { singleTranslatedArticle } = getState()[moduleName];
+
+            singleTranslatedArticle.articles.find((a) => a._id === articleId).translators = updatedTranslators.slice();
+            singleTranslatedArticle.articles.find((a) => a._id === articleId).textTranslators = updatedTextTranslators.slice();
+
+            dispatch(setSingleTranslatedArticle({ ...singleTranslatedArticle }))
+            dispatch(setVideoLoading(false));
+            NotificationService.success('Updated Successfully!');
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setVideoLoading(false))
+        })
+}
+
 
 export const updateVerifiers = (articleId, verifiers) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));

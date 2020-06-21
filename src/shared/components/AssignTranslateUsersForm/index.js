@@ -23,19 +23,6 @@ export default class AssignTranslateUsersForm extends React.Component {
      
         return (
             <Grid style={{}}>
-                {/* <Grid.Row>
-                    <Grid.Column width={8}>
-                        <h3>
-                            Speaker(s)
-                        </h3>
-                    </Grid.Column>
-
-                    <Grid.Column width={8}>
-                        <h3>
-                            Translator(s)
-                        </h3>
-                    </Grid.Column>
-                </Grid.Row> */}
                 {tts && (
                     <Grid.Row key={`assign-speaker-text`}>
                         <Grid.Column width={4}>
