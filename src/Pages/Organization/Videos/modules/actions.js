@@ -927,7 +927,7 @@ export const setAllTranslatedArticleVideoSelected = (selected) => (dispatch, get
     }
 }
 
-export const exportMultipleVideos = () => (dispatch, getState) => {
+export const exportMultipleVideos = (voiceVolume, normalizeAudio) => (dispatch, getState) => {
     const { translatedArticles } = getState()[moduleName];
     const selectedTranslatedArticles = translatedArticles.filter(
       (sta) => sta.video.selected
@@ -940,7 +940,7 @@ export const exportMultipleVideos = () => (dispatch, getState) => {
     });
 
     requestAgent
-        .post(Api.translationExport.requestExportMultipleTranslationReview(), {articlesIds: ids})
+        .post(Api.translationExport.requestExportMultipleTranslationReview(), {articlesIds: ids, voiceVolume, normalizeAudio})
         .then((res) => {
             NotificationService.success('The videos have been queued to be exported');
         })

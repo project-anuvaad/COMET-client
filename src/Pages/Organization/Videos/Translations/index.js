@@ -87,9 +87,9 @@ class Translated extends React.Component {
         this.props.submitMultipleLanguages(codes)
     }
 
-    onMultiExport = () => {
+    onMultiExport = (voiceVolume, normalizeAudio) => {
         this.setState({exportMultipleVideosModalOpen: false});
-        this.props.exportMultipleVideos();
+        this.props.exportMultipleVideos(voiceVolume, normalizeAudio);
     }
 
     onSelectChange = (video, selected) => {
@@ -203,7 +203,7 @@ class Translated extends React.Component {
             <ExportMultipleVideosModal 
                 open={this.state.exportMultipleVideosModalOpen}
                 onClose={() => this.setState({exportMultipleVideosModalOpen: false})}
-                onSubmit={() => this.onMultiExport()}
+                onSubmit={(voiceVolume, normalizeAudio) => this.onMultiExport(voiceVolume, normalizeAudio)}
             />
         )
     }
@@ -380,7 +380,7 @@ const mapDispatchToProps = (dispatch) => ({
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
     setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected)),
-    exportMultipleVideos: () => dispatch(videoActions.exportMultipleVideos())
+    exportMultipleVideos: (voiceVolume, normalizeAudio) => dispatch(videoActions.exportMultipleVideos(voiceVolume, normalizeAudio))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));
