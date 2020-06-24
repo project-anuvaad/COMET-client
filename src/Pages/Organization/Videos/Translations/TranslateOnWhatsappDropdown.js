@@ -25,7 +25,7 @@ export default class TranslateOnWhatsappDropdown extends React.Component {
     
     render() {
 
-        const { videoId } = this.props;
+        const { videoId, buttonTitle } = this.props;
 
         return (
             <Dropdown
@@ -33,7 +33,7 @@ export default class TranslateOnWhatsappDropdown extends React.Component {
                 trigger={(
                     <div>
                         <Icon name="whatsapp" color="green" />
-                        Add Voiceover on WhatsApp
+                        {buttonTitle}
                         <Icon name="chevron right" className="pull-right" />
                     </div>
                 )}
@@ -45,7 +45,7 @@ export default class TranslateOnWhatsappDropdown extends React.Component {
                 <Dropdown.Menu style={{ width: '100%', padding: '1rem' }}>
                     <h4 style={{ color: '#1b1c21' }}>
                         <span>
-                            Selec Voiceover Language
+                            Select Voiceover Language
                         </span>
                         <br />
                         <small style={{ color: '#666666' }}>to add voiceover on WhatsApp</small>

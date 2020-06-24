@@ -15,7 +15,7 @@ import SelectMultipleLanguagesModal from '../../../../shared/components/SelectMu
 import ExportMultipleVideosModal from "./ExportMultipleVideosModal";
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
-import { debounce, getUsersByRoles, displayArticleLanguage } from '../../../../shared/utils/helpers';
+import { debounce, getUsersByRoles, displayArticleLanguage, getUserOrganziationRole, canUserAccess } from '../../../../shared/utils/helpers';
 import ClearPagination from '../../../../shared/components/ClearPagination';
 import VideoCard from '../../../../shared/components/VideoCard';
 import TranslateOnWhatsappDropdown from './TranslateOnWhatsappDropdown';
@@ -78,7 +78,7 @@ class Translated extends React.Component {
     }
 
     onAddUsersToMultipleVideos = (data) => {
-        this.setState({addUsersToMultipleVideosModalOpen: false});
+        this.setState({ addUsersToMultipleVideosModalOpen: false });
         this.props.addUsersToMultipleVideos(data);
     }
 
@@ -88,7 +88,7 @@ class Translated extends React.Component {
     }
 
     onMultiExport = (voiceVolume, normalizeAudio) => {
-        this.setState({exportMultipleVideosModalOpen: false});
+        this.setState({ exportMultipleVideosModalOpen: false });
         this.props.exportMultipleVideos(voiceVolume, normalizeAudio);
     }
 
@@ -126,6 +126,31 @@ class Translated extends React.Component {
             'owner'
         ];
         return getUsersByRoles(this.props.organizationUsers, this.props.organization, roles);
+    }
+
+    getWhatsappButtonTitle = () => {
+        const { organization, user } = this.props;
+        const userRole = getUserOrganziationRole(user, organization)
+        let title = 'Add voiceover on WhatsApp'
+        let voiceover = false;
+        let text = false;
+        if (userRole && userRole.permissions && userRole.permissions.length > 0) {
+            if (canUserAccess(user, organization, ['admin', 'project_leader', 'translate'])) {
+                voiceover = true;
+                text = true;
+            }
+            if (canUserAccess(user, organization, ['translate_text'])) {
+                text = true;
+            }
+            if (canUserAccess(user, organization, ['voice_over_artist'])) {
+                voiceover = true;
+            }
+        }
+        if (voiceover) return title;
+        if (text) {
+            return 'Translate Text on WhatsApp';
+        }
+        return title;
     }
 
     renderPagination = () => (
@@ -171,7 +196,7 @@ class Translated extends React.Component {
     _renderAddUsersToMultipleVideosModal() {
         const users = this.getTranslators();
         const verifiers = this.getVerifiers();
-        const selectedTranslatedArticles = this.props.translatedArticles.filter(ta => ta.video.selected); 
+        const selectedTranslatedArticles = this.props.translatedArticles.filter(ta => ta.video.selected);
         if (selectedTranslatedArticles.length === 0) return null;
         let disabledLanguages = [];
         selectedTranslatedArticles.forEach((ta) => {
@@ -180,13 +205,13 @@ class Translated extends React.Component {
             });
         });
         disabledLanguages = Array.from(new Set(disabledLanguages.map(JSON.stringify))).map(
-        JSON.parse
+            JSON.parse
         );
-        
+
         return (
             <AddMultipleHumanVoiceModal
                 open={this.state.addUsersToMultipleVideosModalOpen}
-                onClose={() => this.setState({addUsersToMultipleVideosModalOpen: false})}
+                onClose={() => this.setState({ addUsersToMultipleVideosModalOpen: false })}
                 users={users}
                 verifiers={verifiers}
                 disabledLanguages={disabledLanguages}
@@ -200,9 +225,9 @@ class Translated extends React.Component {
 
     _renderExportMultipleVideosModal() {
         return (
-            <ExportMultipleVideosModal 
+            <ExportMultipleVideosModal
                 open={this.state.exportMultipleVideosModalOpen}
-                onClose={() => this.setState({exportMultipleVideosModalOpen: false})}
+                onClose={() => this.setState({ exportMultipleVideosModalOpen: false })}
                 onSubmit={(voiceVolume, normalizeAudio) => this.onMultiExport(voiceVolume, normalizeAudio)}
             />
         )
@@ -210,7 +235,7 @@ class Translated extends React.Component {
 
     render() {
         const allSelected = this.props.translatedArticles && this.props.translatedArticles.length > 0 && this.props.selectedCount === this.props.translatedArticles.length;
-
+        const whatsappButtonTitle = this.getWhatsappButtonTitle();
         return (
             <div>
                 <VideosTabs />
@@ -268,7 +293,7 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ addUsersToMultipleVideosModalOpen: true })}>
-                                            <Icon name="add" size="small" color="blue" /> Add translators / approvers to selected videos
+                                                <Icon name="add" size="small" color="blue" /> Add translators / approvers to selected videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -276,7 +301,7 @@ class Translated extends React.Component {
                                         <React.Fragment>
                                             <Separator />
                                             <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ exportMultipleVideosModalOpen: true })}>
-                                            <Icon name="add" size="small" color="blue" /> Export selected videos
+                                                <Icon name="add" size="small" color="blue" /> Export selected videos
                                             </span>
                                         </React.Fragment>
                                     )}
@@ -307,7 +332,10 @@ class Translated extends React.Component {
                                             }}
                                             showWhatsappIcon
                                             whatsappIconContent={(
-                                                <TranslateOnWhatsappDropdown videoId={translatedArticle.video._id} />
+                                                <TranslateOnWhatsappDropdown
+                                                    buttonTitle={whatsappButtonTitle}
+                                                    videoId={translatedArticle.video._id}
+                                                />
                                             )}
                                             focused={this.isVideoFocused(translatedArticle.video)}
                                             extra={(
