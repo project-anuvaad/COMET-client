@@ -942,7 +942,8 @@ export const exportMultipleVideos = (voiceVolume, normalizeAudio, downloadZip) =
     requestAgent
         .post(Api.translationExport.requestExportMultipleTranslationReview(), {articlesIds: ids, voiceVolume, normalizeAudio, downloadZip})
         .then((res) => {
-            NotificationService.success('The videos have been queued to be exported');
+            if (downloadZip) NotificationService.success("You'll receive an email with the download link shortly!");
+            else NotificationService.success('The videos have been queued to be exported');
         })
         .catch(err => {
             NotificationService.responseError(err);
