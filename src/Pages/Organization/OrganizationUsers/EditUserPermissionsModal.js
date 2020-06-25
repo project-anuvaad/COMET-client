@@ -16,7 +16,6 @@ export default class EditUserPermissionsModal extends React.Component {
 
     onPermissionsChange = ({ permissions }) => {
         this.setState({ permissions });
-        console.log(permissions)
     }
 
     render() {

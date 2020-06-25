@@ -104,7 +104,7 @@ export default class PermissionsEditor extends React.Component {
 
     onSubroleClick = (subrole, role) => {
         const { value } = subrole;
-        const { selectedSubroles } = this.state;
+        const { selectedSubroles, selectedRoles } = this.state;
         const stateChanges = {};
         const propChanges = { permissions: this.state.selectedRoles.filter(r => r.value === role.value).map(r => r.value) };
 
@@ -118,6 +118,11 @@ export default class PermissionsEditor extends React.Component {
             const newSubroles = selectedSubroles.filter(r => r.value !== value);
             stateChanges.selectedSubroles = newSubroles
             propChanges.permissions = propChanges.permissions.concat(newSubroles.map(r => r.value));
+            // if no more subroles for the same role, remove the role
+            const allSubroles = role.subroles;
+            if (newSubroles.map(r => r.value).every(r => allSubroles.map(r => r.value).indexOf(r) === -1)) {
+                stateChanges.selectedRoles = selectedRoles.filter(r => r.value !== role.value)
+            }
         }
         // stateChanges.selectedRoles = selectedRoles.filter(r => r.value === role.value)
         // remove review/translate roles as it's deprecated
