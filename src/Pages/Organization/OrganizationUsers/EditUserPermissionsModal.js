@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'semantic-ui-react';
 import PermissionsEditor from '../../../shared/components/PermissionsEditor';
+import { getUserName } from '../../../shared/utils/helpers';
 
 export default class EditUserPermissionsModal extends React.Component {
     state = {
@@ -33,7 +34,7 @@ export default class EditUserPermissionsModal extends React.Component {
                 </Modal.Header>
                 <Modal.Content>
                     <p>
-                        <strong>User:</strong> {user.email}
+                        <strong>User:</strong> {getUserName(user)}
                     </p>
                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                         <div style={{ marginRight: 20 }}>
