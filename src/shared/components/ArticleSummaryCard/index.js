@@ -63,6 +63,16 @@ export default class ArticleSummaryCard extends React.Component {
         )
     }
 
+    getTextPercentage = () => {
+        const { article } = this.props;
+        if (!article.stage) {
+            return article.metrics.completed.text;
+        }
+        if (article.stage === 'text_translation') {
+            return 0;
+        }
+        return 100;
+    }
     render() {
         const {
             article,
@@ -185,9 +195,9 @@ export default class ArticleSummaryCard extends React.Component {
 
                         <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
                         <div className="label-container">
-                            {article.textTranslators.length > 0 ? this.renderUserAvatar(article.textTranslators[0]): null}
+                            {article.textTranslators.length > 0 ? this.renderUserAvatar(article.textTranslators[0]) : null}
                         </div>
-                        <Progress progress indicating percent={article.metrics.completed.text} style={{ marginTop: '0.5rem' }} />
+                        <Progress progress indicating percent={this.getTextPercentage()} style={{ marginTop: '0.5rem' }} />
 
                         {article.verifiers && article.verifiers.length > 0 && (
                             <React.Fragment>
