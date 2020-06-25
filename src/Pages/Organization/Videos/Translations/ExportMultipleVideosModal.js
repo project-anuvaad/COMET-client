@@ -5,6 +5,11 @@ export default class ExportMultipleVideosModal extends React.Component {
   state = {
     normalizeAudio: true,
     voiceVolume: 1,
+    downloadZip: true,
+  };
+
+  toggleDownloadZip = () => {
+    this.setState({ downloadZip: !this.state.downloadZip });
   };
 
   render() {
@@ -90,6 +95,20 @@ export default class ExportMultipleVideosModal extends React.Component {
                 />
               </Grid.Column>
             </Grid.Row>
+
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <div className="ui checkbox">
+                  <input
+                    type="checkbox"
+                    style={{ marginRight: 5 }}
+                    checked={this.state.downloadZip}
+                    onChange={this.toggleDownloadZip}
+                  />
+                  <label>Send download link by email</label>
+                </div>
+              </Grid.Column>
+            </Grid.Row>
           </Grid>
         </Modal.Content>
 
@@ -110,7 +129,8 @@ export default class ExportMultipleVideosModal extends React.Component {
             onClick={() => {
               this.props.onSubmit(
                 this.state.voiceVolume,
-                this.state.normalizeAudio
+                this.state.normalizeAudio,
+                this.state.downloadZip
               );
             }}
           >
