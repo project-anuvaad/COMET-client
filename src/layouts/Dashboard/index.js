@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { Button, Icon, Menu, Grid, Card, Dropdown, Modal, Input, Loader, Dimmer, Label } from 'semantic-ui-react'
 import * as Sentry from '@sentry/browser';
@@ -11,7 +11,6 @@ import websockets from '../../websockets';
 
 import { APP_ENV } from '../../shared/constants';
 
-import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
 import * as organizationActions from '../../actions/organization';
 import * as pollerActions from '../../actions/poller';
@@ -25,72 +24,98 @@ import UploadProgressBox from '../../shared/containers/UploadProgressBox';
 import GiveFeedbackModal from '../../shared/components/GiveFeedbackModal';
 import UserGuidingTutorialModal from '../../shared/components/UserGuidingTutorialModal';
 import { setUploadedVideos } from '../../actions/video';
+import { canUserAccess } from '../../shared/utils/helpers';
 
-const NAV_LINKS = [
-    {
-        title: 'Home',
-        route: routes.organizationVideos(),
-        icon: 'home',
-    },
-    {
-        title: 'My Translations',
-        route: routes.organziationTasksTranslations(),
-        roles: [
-            'admin',
-            'project_leader',
-            'translate',
-            'voice_over_artist',
-            'translate_text',
-            'approve_translations',
-        ],
-        icon: 'translate',
-    },
-    {
-        title: 'My Transcriptions',
-        route: routes.organziationTasksReview(),
-        roles: [
-            'admin',
-            'project_leader',
-            'review',
-            'break_videos',
-            'transcribe_text',
-            'approve_transcriptions',
-        ],
-        icon: 'pencil alternate',
-    },
-    {
-        title: 'Archive',
-        route: routes.organizationArchive(),
-        roles: [
-            'admin',
-            'project_leader',
-        ],
-        icon: 'archive',
-    },
-    {
-        title: 'Users',
-        route: routes.organizationUsers(),
-        roles: [
-            'admin',
-            'project_leader',
-        ],
-        icon: 'user',
-    },
-    {
-        title: 'Noise Cancellation',
-        route: routes.noiseCancellation(),
-        icon: 'headphones',
-    },
-    {
-        title: 'API Keys',
-        route: routes.organizationAPIKeys(),
-        roles: [
-            'admin',
-            'project_leader',
-        ],
-        icon: 'key',
-    },
-]
+function getNavLinks(user, organization) {
+    if (!user || !organization) return [];
+
+
+    let translationNavTitle = 'My Translations'
+    // If he's translator and approver, show  My Translations & Approvals
+    if (canUserAccess(user, organization, ['approve_translations']) && canUserAccess(user, organization, ['translate_text', 'voice_over_artist'])) {
+        translationNavTitle += ' & Approvals';
+        // if he's an approver only, show My Translations Approvals
+    } else if (canUserAccess(user, organization, ['approve_translations'])) {
+        translationNavTitle += ' Approvals';
+    }
+
+    let transcriptionNavTitle = 'My Transcriptions';
+    // If he's transcriber and approver, show  My Transcriptions & Approvals
+    if (canUserAccess(user, organization, ['approve_transcriptions']) && canUserAccess(user, organization, ['break_videos', 'transcribe_text'])) {
+        transcriptionNavTitle += ' & Approvals';
+        // if he's an approver only, show My Transcription Approvals
+    } else if (canUserAccess(user, organization, ['approve_translations'])) {
+        transcriptionNavTitle += ' Approvals';
+    }
+
+    const navLinks = [
+        {
+            title: 'Home',
+            route: routes.organizationVideos(),
+            icon: 'home',
+        },
+        {
+            title: translationNavTitle,
+            route: routes.organziationTasksTranslations(),
+            roles: [
+                'admin',
+                'project_leader',
+                'translate',
+                'voice_over_artist',
+                'translate_text',
+                'approve_translations',
+            ],
+            icon: 'translate',
+        },
+        {
+            title: transcriptionNavTitle,
+            route: routes.organziationTasksReview(),
+            roles: [
+                'admin',
+                'project_leader',
+                'review',
+                'break_videos',
+                'transcribe_text',
+                'approve_transcriptions',
+            ],
+            icon: 'pencil alternate',
+        },
+        {
+            title: 'Archive',
+            route: routes.organizationArchive(),
+            roles: [
+                'admin',
+                'project_leader',
+            ],
+            icon: 'archive',
+        },
+        {
+            title: 'Users',
+            route: routes.organizationUsers(),
+            roles: [
+                'admin',
+                'project_leader',
+            ],
+            icon: 'user',
+        },
+        {
+            title: 'Noise Cancellation',
+            route: routes.noiseCancellation(),
+            icon: 'headphones',
+        },
+        {
+            title: 'API Keys',
+            route: routes.organizationAPIKeys(),
+            roles: [
+                'admin',
+                'project_leader',
+            ],
+            icon: 'key',
+        },
+    ];
+
+    return navLinks;
+}
 
 const AUTHENTICATE_USER_JOB = 'AUTHENTICATE_USER_JOB';
 
@@ -426,6 +451,7 @@ class Dashboard extends React.Component {
 
     render() {
         const { organization } = this.props;
+        const navLinks = getNavLinks(this.props.user, this.props.organization);
         return (
             <div style={{ height: '100%' }}>
                 <div style={{ height: '6rem', backgroundColor: '#1c232b', margin: 0, padding: 0, borderBottom: '1px solid gray' }}>
@@ -458,7 +484,7 @@ class Dashboard extends React.Component {
                                 tabular
                                 style={{ color: 'white', border: 'none' }}
                             >
-                                {NAV_LINKS.map((l) => {
+                                {navLinks.map((l) => {
                                     const content = (
                                         (
                                             <Link

@@ -114,19 +114,21 @@ class Reviews extends React.Component {
                         </div>
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={16}>
-                        <Checkbox
-                            label="Get Videos from all organizations"
-                            checked={this.props.fetchFromAllOrganizations}
-                            onChange={(e, { checked }) => {
-                                this.props.setFetchFromAllOrganizations(checked);
-                                this.props.fetchUserReviews()
-                            }}
-                        />
+                {this.props.user && this.props.user.superTranscriber && (
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Checkbox
+                                label="Get Videos from all organizations"
+                                checked={this.props.fetchFromAllOrganizations}
+                                onChange={(e, { checked }) => {
+                                    this.props.setFetchFromAllOrganizations(checked);
+                                    this.props.fetchUserReviews()
+                                }}
+                            />
 
-                    </Grid.Column>
-                </Grid.Row>
+                        </Grid.Column>
+                    </Grid.Row>
+                )}
                 {this.renderPagination()}
                 <LoadingComponent active={this.props.loading}>
                     {this._renderTabContent()}
@@ -137,12 +139,13 @@ class Reviews extends React.Component {
 }
 
 
-const mapStateToProps = ({ organization, organizationTasks }) => ({
+const mapStateToProps = ({ organization, organizationTasks, authentication }) => ({
     organization: organization.organization,
     currentPageNumber: organizationTasks.currentPageNumber,
     videos: organizationTasks.videos,
     totalPagesCount: organizationTasks.totalPagesCount,
     fetchFromAllOrganizations: organizationTasks.fetchFromAllOrganizations,
+    user: authentication.user,
 })
 
 const mapDispatchToProps = (dispatch) => ({
