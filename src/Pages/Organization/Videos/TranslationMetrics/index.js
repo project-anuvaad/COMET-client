@@ -210,7 +210,7 @@ class Translation extends React.Component {
 
     renderAssignVerifiers = () => (
         <AssignReviewUsers
-            title="Assign Verifiers"
+            title="Assign Approvers"
             open={this.state.assignVerifiersModalVisible}
             value={this.state.selectedArticle && this.state.selectedArticle.verifiers ? this.state.selectedArticle.verifiers : []}
             users={this.getVerifiers()}

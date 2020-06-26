@@ -151,7 +151,7 @@ class AddHumanVoiceModal extends React.Component {
                     <h4
                       style={{ textAlign: 'center', marginBottom: '1rem' }}
                     >
-                      Assign Verifiers <small>(Optional)</small>
+                      Assign Approvers <small>(Optional)</small>
                     </h4>
                   </Grid.Column>
                   <Grid.Column width={16}>
