@@ -36,7 +36,7 @@ function getNavLinks(user, organization) {
         translationNavTitle += ' & Approvals';
         // if he's an approver only, show My Translations Approvals
     } else if (canUserAccess(user, organization, ['approve_translations'])) {
-        translationNavTitle += ' Approvals';
+        translationNavTitle = 'My Translation Approvals';
     }
 
     let transcriptionNavTitle = 'My Transcriptions';
@@ -45,7 +45,7 @@ function getNavLinks(user, organization) {
         transcriptionNavTitle += ' & Approvals';
         // if he's an approver only, show My Transcription Approvals
     } else if (canUserAccess(user, organization, ['approve_translations'])) {
-        transcriptionNavTitle += ' Approvals';
+        transcriptionNavTitle = 'My Transcription Approvals';
     }
 
     const navLinks = [
