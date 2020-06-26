@@ -24,7 +24,7 @@ import UploadProgressBox from '../../shared/containers/UploadProgressBox';
 import GiveFeedbackModal from '../../shared/components/GiveFeedbackModal';
 import UserGuidingTutorialModal from '../../shared/components/UserGuidingTutorialModal';
 import { setUploadedVideos } from '../../actions/video';
-import { canUserAccess } from '../../shared/utils/helpers';
+import { canUserAccess, getUserNamePreview, getUserName } from '../../shared/utils/helpers';
 
 function getNavLinks(user, organization) {
     if (!user || !organization) return [];
@@ -294,7 +294,7 @@ class Dashboard extends React.Component {
                                     <Avatar name={user.email} round size="40" />
                                 </Grid.Column>
                                 <Grid.Column width={12}>
-                                    <ShowMore text={user.email} length={18} />
+                                    <ShowMore text={getUserName(user)} length={18} />
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
