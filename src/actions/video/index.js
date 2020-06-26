@@ -62,7 +62,6 @@ export const fetchUploadedVideos = () => (dispatch, getState) => {
         fetchFuncArray.push(cb => {
             requestAgent.get(Api.video.getVideoById(v._id))
             .then(res => {
-                console.log('video is', res.body);
                 cb(null, res.body)
             }).catch(err => {
                 console.log(err);
@@ -73,9 +72,10 @@ export const fetchUploadedVideos = () => (dispatch, getState) => {
 
     asyncSeries(fetchFuncArray, (err, result) => {
         if (result && result.length > 0) {
+            result = result.filter(r => r)
             const newVideos = getState().video.uploadedVideos || [];
             result.forEach(v => {
-                const videoIndex = newVideos.findIndex(vid => v._id === vid._id);
+                const videoIndex = newVideos.filter(v => v && v._id).findIndex(vid => v._id === vid._id);
                 if (videoIndex !== -1) {
                     newVideos[videoIndex] = v;
                 }
