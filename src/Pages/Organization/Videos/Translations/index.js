@@ -153,6 +153,31 @@ class Translated extends React.Component {
         return title;
     }
 
+    getButtonTitle = () => {
+        const { organization, user } = this.props;
+        const userRole = getUserOrganziationRole(user, organization)
+        let title = 'Add voiceover'
+        let voiceover = false;
+        let text = false;
+        if (userRole && userRole.permissions && userRole.permissions.length > 0) {
+            if (canUserAccess(user, organization, ['admin', 'project_leader', 'translate'])) {
+                voiceover = true;
+                text = true;
+            }
+            if (canUserAccess(user, organization, ['translate_text'])) {
+                text = true;
+            }
+            if (canUserAccess(user, organization, ['voice_over_artist'])) {
+                voiceover = true;
+            }
+        }
+        if (voiceover) return title;
+        if (text) {
+            return 'Translate Text';
+        }
+        return title;
+    }
+
     renderPagination = () => (
         <ClearPagination
             style={{ marginLeft: 20 }}
@@ -171,6 +196,7 @@ class Translated extends React.Component {
         const disabledLanguages = this.props.selectedVideo && this.props.selectedVideo.articles ? this.props.selectedVideo.articles.map(a => a.langCode) : [];
         return (
             <AddMultipleHumanVoiceModal
+                title={this.getButtonTitle() + ' In:'}
                 open={this.props.addMultipleHumanVoiceModalVisible}
                 onClose={() => this.props.setAddMultipleHumanVoiceModalVisible(false)}
                 users={users}
@@ -236,6 +262,8 @@ class Translated extends React.Component {
     render() {
         const allSelected = this.props.translatedArticles && this.props.translatedArticles.length > 0 && this.props.selectedCount === this.props.translatedArticles.length;
         const whatsappButtonTitle = this.getWhatsappButtonTitle();
+        const buttonTitle = this.getButtonTitle()
+
         return (
             <div>
                 <VideosTabs />
@@ -325,7 +353,7 @@ class Translated extends React.Component {
                                             duration={translatedArticle.video.duration}
                                             title={translatedArticle.video.title}
                                             titleRoute={routes.organziationTranslationMetrics(translatedArticle.video._id)}
-                                            buttonTitle="Add Voiceover"
+                                            buttonTitle={buttonTitle}
                                             onButtonClick={() => {
                                                 this.props.setSelectedVideo(translatedArticle);
                                                 this.props.setAddMultipleHumanVoiceModalVisible(true);

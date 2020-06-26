@@ -282,7 +282,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
     return (
       <Modal size="large" open={this.props.open} onClose={this.props.onClose}>
         <Modal.Header>
-          <h3>Add Human Voice Over In:</h3>
+          <h3>{this.props.title || 'Add Human Voice Over In:'}</h3>
         </Modal.Header>
         <ModalContent>
           <Grid columns="three">
