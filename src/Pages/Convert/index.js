@@ -22,7 +22,7 @@ class Convert extends React.Component {
         } else {
             const script = document.createElement("script");
             script.id = 'vw-proofread-script'
-            script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-proofread/v2.0.5.js";
+            script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-proofread/v2.0.6.js";
             script.async = true;
             script.onload = () => this.setState({ loaded: true });
             document.body.appendChild(script);
@@ -43,6 +43,7 @@ class Convert extends React.Component {
                         videoId={video}
                         backRoute={`${routes.organizationVideos()}?activeTab=proofread`}
                         finishRedirectRoute={`${routes.organziationReview()}?activeTab=proofread`}
+                        websocketServerUrl={APP_ENV.WEBSOCKET_SERVER_URL}
                     ></vw-proofread>
                 )}
             </div>
