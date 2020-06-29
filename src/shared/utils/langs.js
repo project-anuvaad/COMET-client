@@ -1453,12 +1453,12 @@ export const isoLangsArray = [{
 
 export const TTSLangs = [
   {
+    name: 'Hindi < TTS >',
     code: 'hi-tts',
-    name: 'Hindi < TTS >'
   },
   {
-    code: 'en-tts',
     name: 'English < TTS >',
+    code: 'en-tts',
   },
   {
     name: 'Bengali < TTS >',
@@ -1483,6 +1483,10 @@ export const TTSLangs = [
   {
     name: 'Telugu < TTS >',
     code: 'te-tts',
+  },
+  {
+    name: 'Arabic < TTS >',
+    code: 'ar-tts',
   }
   // {
   //   code: 'fr-tts',
