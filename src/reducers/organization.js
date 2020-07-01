@@ -2,6 +2,12 @@ import * as actionTypes from '../actions/organization/types';
 
 const INITIAL_STATE = {
     users: [],
+    usersCounts: {
+        accepted: 0,
+        pending: 0,
+    },
+    organizationUsersTotalPages: 1,
+    organizationUsersCurrentPage: 1,
     organization: null,
     createOrganizationLoading: false,
     permissionUpdateMessage: null,
@@ -21,6 +27,12 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, organization: action.payload };
         case actionTypes.FETCH_USER_SUCCESS:
             return { ...state, users: action.payload };
+        case actionTypes.SET_ORGANIZATION_USERS_COUNTS:
+            return { ...state, usersCounts: action.payload };
+        case actionTypes.SET_ORGANIZATION_USERS_TOTAL_PAGES:
+            return { ...state, organizationUsersTotalPages: action.payload };
+        case actionTypes.SET_ORGANIZATION_USERS_CURRENT_PAGE:
+            return { ...state, organizationUsersCurrentPage: action.payload };
         case actionTypes.INVITE_USER_SUCCESS:
             return { ...state, inviteUserSuccess: true, users: [...state.users, action.payload] }
         case actionTypes.INVITE_USER_ERROR:

@@ -9,6 +9,11 @@ const fetchUserSuccess = (users) => ({
     payload: users
 });
 
+const setOrganizationUsersCounts = counts => ({
+    type: actionTypes.SET_ORGANIZATION_USERS_COUNTS,
+    payload: counts,
+})
+
 const inviteUserSuccess = (user) => ({
     type: actionTypes.INVITE_USER_SUCCESS,
     payload: user
@@ -118,11 +123,78 @@ export const fetchOrganization = organizationId => dispatch => {
     })
 }
 
-export const fetchUsers = (organizationId) => dispatch => {
-    requestAgent.get(Api.organization.getUsers({ organization: organizationId }))
+export const setOrganizationUsersTotalPages = pagesCount => ({
+    type: actionTypes.SET_ORGANIZATION_USERS_TOTAL_PAGES,
+    payload: pagesCount,
+})
+
+export const setOrganizationUsersCurrentPage = page => ({
+    type: actionTypes.SET_ORGANIZATION_USERS_CURRENT_PAGE,
+    payload: page,
+})
+
+export const fetchUsers = (organizationId, { inviteStatus = '', search, page, permissions } = {}) => dispatch => {
+    const query = {
+        organization: organizationId,
+        // permissions: ['translate_text', 'approve_translations']
+    }
+    if (inviteStatus) {
+        query.inviteStatus = inviteStatus;
+    }
+    if (search) {
+        query.search = search;
+    }
+    if (page) {
+        query.page = page;
+    }
+    if (permissions) {
+        query.permissions = permissions;
+    }
+    requestAgent.get(Api.organization.getUsers(query))
         .then(({ body }) => {
             dispatch(fetchUserSuccess(body));
-        });
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+export const searchUsers = (organizationId, { inviteStatus = '', search, page, permissions } = {}) => dispatch => {
+    const query = {
+        organization: organizationId,
+        // permissions: ['translate_text', 'approve_translations']
+    }
+    if (inviteStatus) {
+        query.inviteStatus = inviteStatus;
+    }
+    if (search) {
+        query.search = search;
+    }
+    if (page) {
+        query.page = page;
+    }
+    if (permissions) {
+        query.permissions = permissions;
+    }
+    requestAgent.get(Api.user.searchUsers(query))
+        .then(({ body }) => {
+            const { users, pagesCount } = body;
+            dispatch(fetchUserSuccess(users));
+            dispatch(setOrganizationUsersTotalPages(pagesCount || 1));
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+export const fetchUsersCounts = (organizationId) => dispatch => {
+    requestAgent.get(Api.organization.getUsersCounts({ organization: organizationId }))
+        .then(({ body }) => {
+            dispatch(setOrganizationUsersCounts(body));
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 
 export const inviteUser = (organizationId, {  email, firstname, lastname, permissions }) => dispatch => {

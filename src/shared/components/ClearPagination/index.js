@@ -11,9 +11,9 @@ export default class ClearPagination extends React.Component {
 
         return (
             <Pagination
-                activePage={activePage}
+                activePage={activePage || 1}
                 onPageChange={onPageChange}
-                totalPages={totalPages}
+                totalPages={totalPages || 1}
                 firstItem={null}
                 // id="videos-pagination"
                 className='clear-pagination'

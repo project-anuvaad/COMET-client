@@ -64,6 +64,10 @@ export const USER_ROLES = [
         single: true,
     },
     {
+        name: 'Uploader',
+        value: 'uploader'
+    },
+    {
         name: 'Transcribe',
         value: 'review',
         subroles: [
@@ -91,7 +95,7 @@ export const USER_ROLES = [
                 value: 'translate_text',
             },
             {
-                name: 'Voice-over artist',
+                name: 'Voice-over Artist',
                 value: 'voice_over_artist',
             },
             {

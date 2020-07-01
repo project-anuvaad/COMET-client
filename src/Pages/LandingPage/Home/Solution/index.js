@@ -9,7 +9,7 @@ export default class Solution extends React.Component{
         return (
             <div className="our-solution" id={this.props.id}>
                 <h1 className="solution-header">
-                    our solution
+                    Our solution
                 </h1>
                 <p className="solution-desc">
                     Using VideoWiki, organizations can localize their videos into multiple Indian languages

@@ -7,7 +7,7 @@ export default class Problem extends React.Component {
         return (
             <div className="problem" id={this.props.id}>
                 <h1 className="problem-header">
-                    problem
+                    Problem
                 </h1>
                 <div
                 >
