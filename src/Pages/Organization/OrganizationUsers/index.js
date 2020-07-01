@@ -40,7 +40,6 @@ class OrganizationUsers extends React.Component {
   componentDidMount = () => {
     this.props.setOrganizationUsersCurrentPage(1);
     this.fetchUsers();
-    this.fetchUsersCounts();
     this.debouncedSearch = debounce(() => {
       this.fetchUsers();
     }, 1000);
@@ -87,6 +86,7 @@ class OrganizationUsers extends React.Component {
       search: this.state.search,
       permissions: this.state.permissions,
     });
+    this.fetchUsersCounts();
   };
 
   fetchUsersCounts = () => {

@@ -24,7 +24,7 @@ import UploadProgressBox from '../../shared/containers/UploadProgressBox';
 import GiveFeedbackModal from '../../shared/components/GiveFeedbackModal';
 import UserGuidingTutorialModal from '../../shared/components/UserGuidingTutorialModal';
 import { setUploadedVideos } from '../../actions/video';
-import { canUserAccess, getUserNamePreview, getUserName } from '../../shared/utils/helpers';
+import { canUserAccess, getUserNamePreview, getUserName, getUserOrganziationRole } from '../../shared/utils/helpers';
 
 function getNavLinks(user, organization) {
     if (!user || !organization) return [];
@@ -194,6 +194,16 @@ class Dashboard extends React.Component {
         }
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        const { user, organization } = nextProps;
+        if (user && organization) {
+            const orgRole = getUserOrganziationRole(user, organization)
+            if (orgRole && orgRole.inviteStatus !== 'accepted') {
+                this.props.respondToOrganizationInvitationAuth(organization._id)
+            }
+        }
+    }
+
     componentWillUnmount = () => {
         if (this.websocketConnection) {
             websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS);
@@ -226,7 +236,6 @@ class Dashboard extends React.Component {
     onSwitchOrganization = (organizationRole, redirectTo = '') => {
         const { userToken } = this.props;
         // Commented this out, organization will be automatically set after logging to the new org
-        // this.props.setOrganization(organizationRole.organization);
         this.props.redirectToSwitchOrganization(userToken, organizationRole.organization, redirectTo);
     }
 
@@ -571,7 +580,8 @@ const mapStateToProps = ({ authentication, organization, video, router, }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    setOrganization: org => dispatch(organizationActions.setOrganization(org)),
+    
+    respondToOrganizationInvitationAuth: (organizationId) => dispatch(organizationActions.respondToOrganizationInvitationAuth(organizationId)),
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),
     fetchOrganization: (id) => dispatch(organizationActions.fetchOrganization(id)),

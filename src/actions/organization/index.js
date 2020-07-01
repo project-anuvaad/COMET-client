@@ -237,3 +237,12 @@ export const removeUser = (organizationId, userId) => dispatch => {
           console.log(err);
         })
 }
+
+export const respondToOrganizationInvitationAuth = (organizationId) => dispatch => {
+    requestAgent.post(Api.organization.respondToOrganizationInvitationAuth(organizationId))
+        .then(() => {
+        })
+        .catch(err => {
+          console.log(err);
+        })
+}

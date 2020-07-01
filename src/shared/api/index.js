@@ -94,6 +94,7 @@ export default {
         removeUser: (organizationId, userId) => `${APP_ENV.API_ROOT}/organization/${organizationId}/users/${userId}`,
         editPermissions: (organizationId, userId) => `${APP_ENV.API_ROOT}/organization/${organizationId}/users/${userId}/permissions`,
         respondToOrganizationInvitation: (organizationId) => `${APP_ENV.API_ROOT}/organization/${organizationId}/invitations/respond`,
+        respondToOrganizationInvitationAuth: (organizationId) => `${APP_ENV.API_ROOT}/organization/${organizationId}/invitations/respondAuth`,
     },
     user: {
         searchUsers: (params) => `${APP_ENV.API_ROOT}/user?${querystring.encode(params)}`,
