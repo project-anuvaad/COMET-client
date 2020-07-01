@@ -183,6 +183,7 @@ class AppRouter extends React.Component {
                 authorize={[
                   'admin',
                   'project_leader',
+                  'uploader',
                   'review',
                   'break_videos',
                   'transcribe_text',
@@ -198,6 +199,7 @@ class AppRouter extends React.Component {
                 authorize={[
                   'admin',
                   'project_leader',
+                  'uploader',
                   'review',
                   'break_videos',
                   'transcribe_text',
@@ -268,6 +270,7 @@ class AppRouter extends React.Component {
                 authorize={[
                   'admin',
                   'project_leader',
+                  'uploader',
                   'review',
                   'break_videos',
                   'transcribe_text',

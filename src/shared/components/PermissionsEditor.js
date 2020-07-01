@@ -60,7 +60,7 @@ export default class PermissionsEditor extends React.Component {
       let mainSelected = "others";
       if (subroles && subroles.length > 0) {
         mainSelected = "others";
-      } else if (roles && roles.length === 1) {
+      } else if (roles && roles.length === 1 && ['admin', 'project_leader'].indexOf(roles[0].value) !== -1) {
         mainSelected = roles[0].value;
       }
       this.setState({
@@ -88,7 +88,8 @@ export default class PermissionsEditor extends React.Component {
           .filter((r) => !r.single)
           .slice();
         propChanges.permissions = selectedRoles
-          .filter((r) => !r.single)
+          // .filter((r) => !r.single)
+          .concat(selectedSubroles)
           .map((r) => r.value);
         // this.setState({ selectedRoles: selectedRoles.filter(r => !r.single).slice() })
       }
@@ -147,7 +148,7 @@ export default class PermissionsEditor extends React.Component {
     const stateChanges = {};
     const propChanges = {
       permissions: this.state.selectedRoles
-        .filter((r) => r.value === role.value)
+        // .filter((r) => r.value === role.value)
         .map((r) => r.value),
     };
 

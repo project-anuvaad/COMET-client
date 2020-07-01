@@ -108,7 +108,7 @@ class Review extends React.Component {
             }
         }
         const { user, organization } = this.props;
-        const defaultTab = canUserAccess(user, organization, ['review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
+        const defaultTab = canUserAccess(user, organization, ['uploader', 'review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
         if (!acTab) {
             this.setState({ activeTab: defaultTab })
         } else {
@@ -733,13 +733,13 @@ class Review extends React.Component {
                 { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
             ]
         } else {
-            // if have review or break_videos permissions show break videos 
-            if (canUserAccess(user, organization, ['review', 'break_videos'])) {
+            // if have uploader, review or break_videos permissions show break videos 
+            if (canUserAccess(user, organization, ['uploader', 'review', 'break_videos'])) {
                 SUBTABS.push(
                     { title: `Break video into slides (${formatCount(this.props.videosCounts.cutting)})`, value: TABS.CUT_VIDEO },
                 )
             }
-            if (canUserAccess(user, organization, ['review', 'transcribe_text', 'approve_transcriptions'])) {
+            if (canUserAccess(user, organization, ['uploader', 'review', 'transcribe_text', 'approve_transcriptions'])) {
 
                 SUBTABS.push(
                     { title: `Proofread (${formatCount(this.props.videosCounts.proofread)})`, value: TABS.PROOFREAD },
@@ -801,6 +801,7 @@ class Review extends React.Component {
                         <RoleRenderer roles={[
                             'admin',
                             'project_leader',
+                            'uploader',
                             'review',
                             'break_videos',
                             'transcribe_text',
