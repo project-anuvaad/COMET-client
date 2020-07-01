@@ -2,7 +2,7 @@ import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 import NotificationService from '../../shared/utils/NotificationService';
-import { redirectToSwitchOrganization } from '../../shared/utils/helpers';
+import { redirectToSwitchOrganization, getUserNamePreview } from '../../shared/utils/helpers';
 
 const fetchUserSuccess = (users) => ({
     type: actionTypes.FETCH_USER_SUCCESS,
@@ -214,18 +214,26 @@ export const editPermissions = (organizationId, userId, permissions) => (dispatc
     requestAgent.patch(Api.organization.editPermissions(organizationId, userId), { permissions })
         .then(({ body }) => {
             const users = getState().organization.users
-            users.find((u) => u._id === userId).organizationRoles.find(role => role.organization === organizationId).permissions = permissions;
+            const user = users.find((u) => u._id === userId);
+            user.organizationRoles.find(role => role.organization === organizationId).permissions = permissions;
+            NotificationService.success(`Roles for ${getUserNamePreview(user)} have been updated`)
             dispatch(editPermissionSuccess({
                 userId,
                 permissions
             }));
             dispatch(fetchUserSuccess([...users]));
-        });
+        })
+        .catch(err => {
+          console.log(err);
+        })
 }
 
 export const removeUser = (organizationId, userId) => dispatch => {
     requestAgent.delete(Api.organization.removeUser(organizationId, userId))
         .then(({ body }) => {
             dispatch(removeUserSuccess(userId))
-        });
+        })
+        .catch(err => {
+          console.log(err);
+        })
 }

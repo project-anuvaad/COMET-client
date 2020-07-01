@@ -11,7 +11,11 @@ import {
   Button,
 } from "semantic-ui-react";
 import { connect } from "react-redux";
-import { searchUsers, fetchUsersCounts, setOrganizationUsersCurrentPage } from "../../../actions/organization";
+import {
+  searchUsers,
+  fetchUsersCounts,
+  setOrganizationUsersCurrentPage,
+} from "../../../actions/organization";
 import ClearPagination from "../../../shared/components/ClearPagination";
 import { debounce } from "../../../shared/utils/helpers";
 import { USER_ROLES_TITLE_MAP } from "../../../shared/constants";
@@ -43,14 +47,14 @@ class OrganizationUsers extends React.Component {
   };
 
   onTabChange = (value) => {
-    this.setState({ activeTab: value }, () => {
+    this.props.setOrganizationUsersCurrentPage(1);
+    this.setState({ activeTab: value, permission: [], search: "" }, () => {
       this.fetchUsers();
     });
   };
 
   onPageChange = (e, data) => {
     this.props.setOrganizationUsersCurrentPage(data.activePage);
-    console.log(data)
     this.props.searchUsers(this.props.organization._id, {
       inviteStatus: USER_INVITESTATUS_MAP[this.state.activeTab],
       page: data.activePage,
@@ -169,7 +173,7 @@ class OrganizationUsers extends React.Component {
                       />
                     }
                     placeholder="Search users"
-                    value={this.props.searchFilter}
+                    value={this.state.search}
                     onChange={(e, { value }) => this.onSearchChange(value)}
                   />
                 </Grid.Column>
@@ -230,7 +234,10 @@ class OrganizationUsers extends React.Component {
                     ))}
                   </div>
                 </Grid.Column>
-                <Grid.Column width={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Grid.Column
+                  width={2}
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <Dropdown text="Showing all users" pointing="top right">
                     <Dropdown.Menu>
                       {Object.keys(USER_ROLES_TITLE_MAP).map((key) => (
@@ -286,14 +293,14 @@ const mapStateToProps = ({ organization }) => ({
   usersCounts: organization.usersCounts,
   organizationUsersCurrentPage: organization.organizationUsersCurrentPage,
   organizationUsersTotalPages: organization.organizationUsersTotalPages,
-
 });
 const mapDispatchToProps = (dispatch) => ({
   searchUsers: (organizationId, params) =>
     dispatch(searchUsers(organizationId, params)),
   fetchUsersCounts: (organizationId) =>
     dispatch(fetchUsersCounts(organizationId)),
-  setOrganizationUsersCurrentPage: page => dispatch(setOrganizationUsersCurrentPage(page))
+  setOrganizationUsersCurrentPage: (page) =>
+    dispatch(setOrganizationUsersCurrentPage(page)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OrganizationUsers);
