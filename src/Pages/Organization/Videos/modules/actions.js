@@ -241,6 +241,16 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
         })
 }
 
+export const setTranslatedArticleStageFilter = stages => ({
+    type: actionTypes.SET_SINGLE_TRANSLATED_ARTICLE_STAGE_FILTER,
+    payload: stages,
+})
+
+export const setTranslatedArticleActiveTab = tab => ({
+    type: actionTypes.SET_SINGLE_TRANSLATED_ARTICLE_ACTIVE_TAB,
+    payload: tab,
+})
+
 export const fetchSigleTranslatedArticle = (videoId, { softLoad, cb } = {}) => (dispatch, getState) => {
     if (!cb) {
         cb = () => {};
@@ -251,9 +261,16 @@ export const fetchSigleTranslatedArticle = (videoId, { softLoad, cb } = {}) => (
     }
 
     const { organization } = getState().organization;
-
+    const { singleTranslatedArticleStageFilter } = getState()[moduleName];
+    const query = {
+        organization: organization._id,
+        _id: videoId 
+    }
+    if (singleTranslatedArticleStageFilter && singleTranslatedArticleStageFilter.length > 0) {
+        query.stage = singleTranslatedArticleStageFilter;
+    }
     requestAgent
-        .get(Api.article.getTranslatedArticles({ organization: organization._id, _id: videoId }))
+        .get(Api.article.getTranslatedArticles(query))
         .then((res) => {
             const { videos } = res.body;
             dispatch(setSingleTranslatedArticle(videos[0]))
@@ -264,6 +281,20 @@ export const fetchSigleTranslatedArticle = (videoId, { softLoad, cb } = {}) => (
             NotificationService.responseError(err);
             dispatch(setVideoLoading(false))
             cb()
+        })
+}
+const setTranslationsCount = (counts) => ({
+    type: actionTypes.SET_TRANSLATIONS_COUNT,
+    payload: counts
+})
+export const fetchTranslationsCount = (videoId) => (dispacth) => {
+    requestAgent
+        .get(Api.article.getTranslationsCount({ videoId }))
+        .then((res) => {
+            const counts = res.body;
+            dispacth(setTranslationsCount(counts))
+        })
+        .catch((err) => {
         })
 }
 

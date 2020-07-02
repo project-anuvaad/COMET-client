@@ -219,6 +219,7 @@ export function getSpeakersTranslatorsMap(speakersProfile, translators, users) {
 }
 
 export function getUserName(user) {
+  if (!user) return ''
   return user.firstname && user.lastname ? `${user.firstname} ${user.lastname} (${user.email})` : user.email;
 }
 

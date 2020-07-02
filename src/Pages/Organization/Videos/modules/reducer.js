@@ -14,6 +14,9 @@ const INITIAL_STATE = {
     selectedCount: 0,
     translatedArticles: [],
     singleTranslatedArticle: null,
+    singleTranslatedArticleActiveTab: 'all',
+    singleTranslatedArticleStageFilter: [],
+    translationsCount: {},
     videoStatusFilter: [],
     translateOnWhatsappActive: false,
     videosCounts: {
@@ -55,6 +58,12 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, searchFilter: action.payload };
         case actionTypes.SET_SINGLE_TRANSLATED_ARTICLE:
             return { ...state, singleTranslatedArticle: action.payload };
+        case actionTypes.SET_SINGLE_TRANSLATED_ARTICLE_ACTIVE_TAB:
+            return { ...state, singleTranslatedArticleActiveTab: action.payload };
+        case actionTypes.SET_SINGLE_TRANSLATED_ARTICLE_STAGE_FILTER:
+            return { ...state, singleTranslatedArticleStageFilter: action.payload };
+        case actionTypes.SET_TRANSLATIONS_COUNT:
+            return { ...state, translationsCount: action.payload };
         case actionTypes.SET_VIDEOS_COUNTS:
             return { ...state, videosCounts: action.payload };
         case actionTypes.SET_SELECTED_COUNT:
