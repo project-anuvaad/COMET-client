@@ -47,7 +47,7 @@ export default class UserInfo extends React.Component {
               ({user.email})
             </small>
           </p>
-          <p style={{ marginBottom: 0, color: '#666666' }}>
+          <p style={{ marginBottom: 0, textTransform: 'capitalize', color: '#666666' }}>
             {isOrganizationOwner ? "Organization Owner" : ""}
             {orgRole &&
               orgRole.permissions &&
