@@ -78,12 +78,14 @@ export default class AssignUsersSpeakersModal extends React.Component {
                 )}
                 <Modal.Actions>
                     <Button
+                        circular
                         onClick={this.props.onClose}
                     >
                         Cancel
                     </Button>
                     <Button
                         primary
+                        circular
                         onClick={() => this.props.onSave(this.state.translators, this.state.textTranslators)}
                     >
                         Save

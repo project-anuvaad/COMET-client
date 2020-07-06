@@ -174,11 +174,11 @@ class AddHumanVoiceModal extends React.Component {
         </ModalContent>
         <ModalActions>
           {this.props.skippable ? (
-            <Button onClick={() => this.props.onSkip()} >Skip</Button>
+            <Button circular onClick={() => this.props.onSkip()} >Skip</Button>
           ) : (
               <Button onClick={this.props.onClose}>Cancel</Button>
             )}
-          <Button color="blue" onClick={this.onSubmit} >Go</Button>
+          <Button circular color="blue" onClick={this.onSubmit} >Go</Button>
         </ModalActions>
       </Modal>
     )
