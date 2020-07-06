@@ -471,6 +471,8 @@ class Translation extends React.Component {
                         <div
                           style={{
                             marginTop: 10,
+                            width: '80%',
+                            margin: '0 auto',
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
@@ -481,6 +483,7 @@ class Translation extends React.Component {
                             trigger={
                               <Button
                                 basic
+                                circular
                                 size="tiny"
                                 icon="upload"
                                 content="Upload"
@@ -496,6 +499,7 @@ class Translation extends React.Component {
                             trigger={
                               <Button
                                 primary
+                                circular
                                 loading={
                                   singleTranslatedArticle.video
                                     .extractBackgroundMusicLoading
@@ -532,20 +536,6 @@ class Translation extends React.Component {
                       left: "60%",
                     }}
                   ></div>
-
-                  {/* <div
-                    style={{
-                      position: "absolute",
-                      left: "60%",
-                      top: "9%",
-                      width: 0,
-                      height: 0,
-                      borderStyle: "solid",
-                      borderWidth: "10px 0 10px 20px",
-                      borderColor:
-                        "transparent transparent transparent #ECF5FE",
-                    }}
-                  ></div> */}
                 </Grid.Column>
                 <Grid.Column width={11} style={{ marginTop: "-1.2rem" }}>
                   <Grid>
