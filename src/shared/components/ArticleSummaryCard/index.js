@@ -164,7 +164,7 @@ export default class ArticleSummaryCard extends React.Component {
                 const user = users.find((u) => u._id === article.createdBy);
                 if (!user) return null;
                 return (
-                  <p style={{ color: "#666666", fontSize: 12 }}>
+                  <p style={{ fontWeight: 300, fontSize: 12 }}>
                     By {getUserNamePreview(user)}{" "}
                     <small style={{ color: "#999999" }}>(Owner)</small>
                   </p>
@@ -317,7 +317,7 @@ export default class ArticleSummaryCard extends React.Component {
                       <span>Completed</span>
                     ) : (
                       <React.Fragment>
-                        <span style={{ marginRight: 5 }}>Next step:</span>
+                        <span style={{ marginRight: 5, color: 'black', fontSize: 12, fontWeight: 'bold' }}>Next step:</span>
                         <span style={{ marginRight: 5 }}>
                           {ARTICLE_STAGES_TITLES[article.stage]}
                         </span>
