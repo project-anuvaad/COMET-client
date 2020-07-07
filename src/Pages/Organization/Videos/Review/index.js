@@ -478,6 +478,7 @@ class Review extends React.Component {
 
     renderAssignUsers = () => (
         <AssignReviewUsers
+            showResendEmail 
             title="Assign Transcribers"
             open={this.state.assignUsersModalOpen}
             value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
@@ -491,6 +492,7 @@ class Review extends React.Component {
     renderAssignUsersToMultipleVideos = () => (
         <AssignReviewUsers
             title="Assign Transcribers To The Selected Videos"
+            showResendEmail 
             open={this.state.assignUsersToMultipleVideosModalOpen}
             value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
             users={this.getReviewersUsers()}
@@ -503,6 +505,7 @@ class Review extends React.Component {
     renderAssignVerifiers = () => (
         <AssignReviewUsers
             title="Assign Approvers"
+            showResendEmail 
             open={this.state.assignVerifiersModalOpen}
             value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
             users={this.getReviewersUsers()}
@@ -515,6 +518,7 @@ class Review extends React.Component {
     renderAssignVerifiersToMultipleVideos = () => (
         <AssignReviewUsers
             title="Assign Approvers To The Selected Videos"
+            showResendEmail 
             open={this.state.assignVerifiersToMultipleVideosModalOpen}
             value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
             users={this.getReviewersUsers()}

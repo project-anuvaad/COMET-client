@@ -24,6 +24,7 @@ const NOTIFICATION_COMP_MAP = {
     'added_comment_to_translation': AddedCommentToTranslation,
     'invited_to_verify': DefaultNotification,
     'review_marked_as_done': MarkedReviewAsDone,
+    'invited_to_lead_translation': DefaultNotification,
 }
 
 export default class Notification extends React.Component {

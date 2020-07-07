@@ -42,6 +42,7 @@ export default {
         updateTextTranslators: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/textTranslators`,
         // resendEmailToTranslator: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/translators/resendEmail`,
         updateVerifiers: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/verifiers`,
+        updateProjectLeaders: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/projectLeaders`,
         resendEmailToVerifier: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/verifiers/resendEmail`,
         
         updateVolume: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/volume`,
