@@ -35,6 +35,7 @@ function countGender(speakers, gender) {
 class Translation extends React.Component {
   state = {
     selectedArticle: null,
+    assignVideoProjectLeaderModalVisible: false,
     deleteArticleModalVisible: false,
     deleteBackgroundMusicModalVisible: false,
     assignUsersModalVisible: false,
@@ -146,7 +147,16 @@ class Translation extends React.Component {
 
   onSaveProjectLeaders = (projectLeaders) => {
     this.setState({ assignProjectLeaderModelVisible: false });
-    this.props.updateProjectLeaders(this.state.selectedArticle._id, projectLeaders);
+    this.props.updateProjectLeaders(
+      this.state.selectedArticle._id,
+      projectLeaders
+    );
+  };
+
+  onSaveVideoProjectLeaders = (projectLeaders) => {
+    const { selectedVideo } = this.state;
+    this.setState({ assignVideoProjectLeaderModalVisible: false, selectedVideo: null });
+    this.props.updateVideoProjectLeaders(selectedVideo._id, projectLeaders)
   };
 
   onDeleteArticleClick = (article) => {
@@ -291,7 +301,7 @@ class Translation extends React.Component {
 
   renderAssignVerifiers = () => (
     <AssignReviewUsers
-      showResendEmail 
+      showResendEmail
       title="Assign Approvers"
       open={this.state.assignVerifiersModalVisible}
       value={
@@ -315,12 +325,12 @@ class Translation extends React.Component {
 
   renderAssignProjectLeader = () => (
     <AssignReviewUsers
-      title="Assign Project Leaders"
+      title="Assign Project Leader"
       single
       open={this.state.assignProjectLeaderModelVisible}
       value={
         this.state.selectedArticle && this.state.selectedArticle.projectLeaders
-          ? this.state.selectedArticle.projectLeaders.map(l => l.user)
+          ? this.state.selectedArticle.projectLeaders.map((l) => l.user)
           : []
       }
       users={this.props.organizationUsers}
@@ -334,6 +344,27 @@ class Translation extends React.Component {
       // onResendEmail={(userId) =>
       //   this.onResendEmail("verifier", this.state.selectedArticle._id, userId)
       // }
+    />
+  );
+
+  renderAssignVideoProjectLeader = () => (
+    <AssignReviewUsers
+      title="Assign Project Leader"
+      single
+      open={this.state.assignVideoProjectLeaderModalVisible}
+      value={
+        this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+          ? this.state.selectedVideo.projectLeaders
+          : []
+      }
+      users={this.props.organizationUsers}
+      onClose={() =>
+        this.setState({
+          assignVideoProjectLeaderModalVisible: false,
+          selectedVideo: null,
+        })
+      }
+      onSave={this.onSaveVideoProjectLeaders}
     />
   );
 
@@ -420,6 +451,22 @@ class Translation extends React.Component {
               >
                 <Grid.Column width={4}>
                   <VideoCard
+                    showOptions
+                    options={[
+                      {
+                        content: (
+                          <div>
+                            <Icon name="plus" color="green" /> Assign Project Leader
+                          </div>
+                        ),
+                        onClick: () => {
+                          this.setState({
+                            selectedVideo: singleTranslatedArticle.video,
+                            assignVideoProjectLeaderModalVisible: true,
+                          });
+                        },
+                      },
+                    ]}
                     buttonTitle="Add Voiceover"
                     thumbnailUrl={singleTranslatedArticle.video.thumbnailUrl}
                     title={singleTranslatedArticle.video.title}
@@ -678,6 +725,7 @@ class Translation extends React.Component {
             {this.renderAssignVerifiers()}
             {this._renderAddHumanVoiceModal()}
             {this.renderAssignProjectLeader()}
+            {this.renderAssignVideoProjectLeader()}
             {this.renderDeleteBackgroundMusic()}
           </LoaderComponent>
         </Grid>
@@ -725,6 +773,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(videoActions.updateTranslators(articleId, translators)),
   updateVerifiers: (articleId, verifiers) =>
     dispatch(videoActions.updateVerifiers(articleId, verifiers)),
+  updateVideoProjectLeaders: (videoId, projectLeaders) =>
+    dispatch(videoActions.updateVideoProjectLeaders(videoId, projectLeaders)),
   updateProjectLeaders: (articleId, projectLeaders) =>
     dispatch(videoActions.updateProjectLeaders(articleId, projectLeaders)),
   updateTranslatorsV2: (articleId, translators, textTranslators) =>

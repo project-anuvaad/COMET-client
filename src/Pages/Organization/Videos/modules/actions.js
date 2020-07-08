@@ -515,6 +515,30 @@ export const updateProjectLeaders = (articleId, projectLeaders) => (dispatch, ge
         })
 }
 
+export const updateVideoProjectLeaders = (videoId, projectLeaders) => (dispatch, getState) => {
+    requestAgent
+        .put(Api.video.updateProjectLeaders(videoId), { projectLeaders })
+        .then((res) => {
+            const { projectLeaders } = res.body;
+            const { translatedArticles, singleTranslatedArticle } = getState()[moduleName];
+            const translatedArticle = translatedArticles.find(a => a.video._id === videoId)
+            if (translatedArticle) {
+                translatedArticle.video.projectLeaders = projectLeaders;
+                dispatch(setTranslatedArticles(translatedArticles.slice()))
+            }
+            if (singleTranslatedArticle && singleTranslatedArticle.video && singleTranslatedArticle.video._id === videoId) {
+                singleTranslatedArticle.video.projectLeaders = projectLeaders;
+                dispatch(setSingleTranslatedArticle({ ...singleTranslatedArticle }));
+            }
+
+            NotificationService.success('Updated Successfully!');
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setVideoLoading(false))
+        })
+}
+
 export const resendEmailToArticleVerifiers = (articleId, userId) => () => {
     requestAgent
         .post(Api.article.resendEmailToVerifier(articleId), { userId })

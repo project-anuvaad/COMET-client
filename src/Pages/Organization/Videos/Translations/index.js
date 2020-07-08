@@ -19,6 +19,7 @@ import { debounce, getUsersByRoles, displayArticleLanguage, getUserOrganziationR
 import ClearPagination from '../../../../shared/components/ClearPagination';
 import VideoCard from '../../../../shared/components/VideoCard';
 import TranslateOnWhatsappDropdown from './TranslateOnWhatsappDropdown';
+import AssignReviewUsers from '../../../../shared/components/AssignReviewUsers';
 
 function Separator() {
     return (
@@ -28,6 +29,8 @@ function Separator() {
 
 class Translated extends React.Component {
     state = {
+        selectedVideo: null,
+        isAssignProjectLeaderModalOpen: false,
         selectMultipleLanguagesModalOpen: false,
         addUsersToMultipleVideosModalOpen: false,
         exportMultipleVideosModalOpen: false
@@ -82,6 +85,16 @@ class Translated extends React.Component {
         this.props.addUsersToMultipleVideos(data);
     }
 
+    onAssignProjectLeader = (video) => {
+        this.setState({ selectedVideo: video, isAssignProjectLeaderModalOpen: true });
+    }
+
+    onSaveProjectLeaders = (projectLeaders) => {
+        const { selectedVideo } = this.state;
+        this.setState({ selectedVideo: null, isAssignProjectLeaderModalOpen: false });
+        this.props.updateVideoProjectLeaders(selectedVideo._id, projectLeaders);
+    }
+    
     onSelectMultipleLanguages = (codes) => {
         this.setState({ selectMultipleLanguagesModalOpen: false });
         this.props.submitMultipleLanguages(codes)
@@ -249,6 +262,27 @@ class Translated extends React.Component {
         )
     }
 
+    _renderAssignProjectLeader = () => (
+        <AssignReviewUsers
+            title="Assign Project Leaders"
+            single
+            open={this.state.isAssignProjectLeaderModalOpen}
+            value={
+                this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+                ? this.state.selectedVideo.projectLeaders
+                : []
+            }
+            users={this.props.organizationUsers}
+            onClose={() =>
+                this.setState({
+                    isAssignProjectLeaderModalOpen: false,
+                    selectedVideo: null,
+                })
+            }
+            onSave={this.onSaveProjectLeaders}
+        />
+    );
+
     _renderExportMultipleVideosModal() {
         return (
             <ExportMultipleVideosModal
@@ -341,6 +375,17 @@ class Translated extends React.Component {
                                 {this.props.translatedArticles.map((translatedArticle) => (
                                     <Grid.Column width={4} key={`translated-article-container-${translatedArticle.video._id}`}>
                                         <VideoCard
+                                            showOptions
+                                            options={[
+                                                {
+                                                    content: <div>
+                                                        <Icon name="plus" color="green" /> Assign Project Leader
+                                                    </div>,
+                                                    onClick: () => {
+                                                        this.onAssignProjectLeader(translatedArticle.video);
+                                                    }
+                                                }
+                                            ]}
                                             selectable={true}
                                             selected={translatedArticle.video.selected}
                                             onSelectChange={(selected) => this.onSelectChange(translatedArticle.video, selected)}
@@ -398,6 +443,7 @@ class Translated extends React.Component {
                             {this._renderSelectMultipleLanguagesModal()}
                             {this._renderAddUsersToMultipleVideosModal()}
                             {this._renderExportMultipleVideosModal()}
+                            {this._renderAssignProjectLeader()}
                         </LoaderComponent>
                     </RoleRenderer>
                 </Grid>
@@ -432,6 +478,7 @@ const mapDispatchToProps = (dispatch) => ({
     generateTranslatableArticles: (videoId, originalArticleId, data) => dispatch(videoActions.generateTranslatableArticles(videoId, originalArticleId, data, 'multi')),
     addUsersToMultipleVideos: (data) => dispatch(videoActions.addUsersToMultipleVideos(data)),
     submitMultipleLanguages: (codes) => dispatch(videoActions.submitMultipleLanguages(codes)),
+    updateVideoProjectLeaders: (videoId, projectLeaders) => dispatch(videoActions.updateVideoProjectLeaders(videoId, projectLeaders)),
     fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),

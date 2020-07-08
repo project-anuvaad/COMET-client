@@ -451,7 +451,7 @@ export default class ArticleSummaryCard extends React.Component {
                           name="male"
                           // size="small"
                         />{" "}
-                        Project Leaders
+                        Project Leader
                       </Dropdown.Item>
                       <Dropdown.Item onClick={onAddClick}>
                         <Icon name="user" color="blue" />

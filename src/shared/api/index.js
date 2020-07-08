@@ -21,6 +21,7 @@ export default {
         updateVerifiers: id => `${APP_ENV.API_ROOT}/video/${id}/verifiers`,
         resendEmailToVerifier: id => `${APP_ENV.API_ROOT}/video/${id}/verifiers/resendEmail`,
         refreshMedia: (id) => `${APP_ENV.API_ROOT}/video/${id}/refreshMedia`,
+        updateProjectLeaders: (videoId) => `${APP_ENV.API_ROOT}/video/${videoId}/projectLeaders`,
     },
     noiseCancellationVideos: {
         getVideos: (params = {}) => `${APP_ENV.API_ROOT}/noiseCancellationVideo?${querystring.encode(params)}`,
