@@ -31,6 +31,26 @@ class VideoCard extends React.Component {
     return this.state.hovering || this.props.focused;
   };
 
+  getInfoContent = () => {
+    const { reviewCompleted, status } = this.props;
+    if (status === 'done') {
+        return 'Completed'
+    }
+    if (status === 'cutting') {
+        return 'Cutting';
+    }
+    if (status === 'uploaded') {
+        return 'Uploaded';
+    }
+    if (reviewCompleted) {
+        return 'Approver';
+    }
+    if (status === 'proofreading') {
+        return 'Proofreading'
+    }
+    return 'Proofreading';
+  }
+
   renderTopBar = () => {
     const isHovering = this.isHovering();
 
@@ -210,6 +230,13 @@ class VideoCard extends React.Component {
                 {uploadedBy && (
                   <span> | By {getUserNamePreview(uploadedBy)}</span>
                 )}
+              </small>
+
+              <small className='pull-right'>
+                <Popup
+                    trigger={<Icon name="info" circular />}
+                    content={this.getInfoContent()}
+                />
               </small>
             </Card.Content>
           )}
