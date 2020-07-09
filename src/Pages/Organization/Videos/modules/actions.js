@@ -81,6 +81,21 @@ export const setSingleTranslatedArticle = (translatedArticle) => ({
     payload: translatedArticle,
 })
 
+export const setOpenedFolder = (folder) => ({
+    type: actionTypes.SET_OPENED_FOLDER,
+    payload: folder
+})
+
+export const setFolders = (folders) => ({
+    type: actionTypes.SET_FOLDERS,
+    payload: folders
+})
+
+export const setFoldersLoading = (loading) =>({
+    type: actionTypes.SET_FOLDERS_LOADING,
+    payload: loading
+})
+
 export const updateLocalVideo = (videoId, newVideo) => (dispatch, getState) => {
     const { videos } = getState()[moduleName];
     const videoIndex = videos.findIndex((v) => v._id === videoId);
@@ -222,10 +237,12 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
     }
 
     const { organization } = getState().organization;
-    const { currentPageNumber, searchFilter } = getState()[moduleName];
-
+    const { currentPageNumber, searchFilter, openedFolder } = getState()[moduleName];
+    const params = { organization: organization._id, page: currentPageNumber, search: searchFilter };
+    if (openedFolder) params.folder = openedFolder._id;
+    
     requestAgent
-        .get(Api.article.getTranslatedArticles({ organization: organization._id, page: currentPageNumber, search: searchFilter }))
+        .get(Api.article.getTranslatedArticles(params))
         .then((res) => {
             const { videos, pagesCount } = res.body;
             dispatch(setTranslatedArticles(videos));
@@ -980,6 +997,55 @@ export const exportMultipleVideos = (voiceVolume, normalizeAudio, downloadZip) =
             else NotificationService.success('The videos have been queued to be exported');
         })
         .catch(err => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const createFolder = (name) => (dispatch, getState) => {
+    const { openedFolder, folders } = getState()[moduleName];
+    const parent = openedFolder ? openedFolder._id : null;
+    const foldersCopy = [...folders];
+    requestAgent
+        .post(Api.folder.createFolder(), { name, parent, organization: getState().organization.organization._id })
+        .then((res) => {
+            NotificationService.success('The folder is created successfully');
+            foldersCopy.push(res.body.folder);
+            dispatch(setFolders(foldersCopy));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const fetchFolders = () => (dispatch, getState) => {
+    dispatch(setFoldersLoading(true));
+    requestAgent
+        .get(Api.folder.getOrganizationFolders(getState().organization.organization._id))
+        .then((res) => {
+            const { folders } = res.body;
+            dispatch(setFolders(folders));
+            dispatch(setFoldersLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const updateFolder = (id, name) => (dispatch, getState) => {
+    const { folders } = getState()[moduleName];
+    const foldersCopy = [...folders];
+    requestAgent
+        .put(Api.folder.updateName(id), { name })
+        .then((res) => {
+            NotificationService.success('The folder is updated successfully');
+            const { folder } = res.body;
+            const updatedFolder = foldersCopy.find((f) => {
+                return f._id === folder._id
+            });
+            updatedFolder.name = folder.name;
+            dispatch(setFolders(foldersCopy));
+        })
+        .catch((err) => {
             NotificationService.responseError(err);
         });
 }

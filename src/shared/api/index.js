@@ -136,5 +136,10 @@ export default {
     videoTutorialContribution: {
         uploadVideo: () => `${APP_ENV.API_ROOT}/videoTutorialContribution`,
         getVideos: () => `${APP_ENV.API_ROOT}/videoTutorialContribution`,
+    },
+    folder: {
+        createFolder: () => `${APP_ENV.API_ROOT}/folder`,
+        updateName: (id) => `${APP_ENV.API_ROOT}/folder/${id}/name`,
+        getOrganizationFolders: (organizationId) => `${APP_ENV.API_ROOT}/folder?organization=${organizationId}`,
     }
 }

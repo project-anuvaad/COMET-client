@@ -25,7 +25,10 @@ const INITIAL_STATE = {
         completed: 0,
         cutting: 0,
         total: 0,
-    }
+    },
+    openedFolder: null,
+    folders: [],
+    foldersLoading: false,
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -68,6 +71,12 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, videosCounts: action.payload };
         case actionTypes.SET_SELECTED_COUNT:
             return { ...state, selectedCount: action.payload };
+        case actionTypes.SET_OPENED_FOLDER:
+            return { ...state, openedFolder: action.payload };
+        case actionTypes.SET_FOLDERS:
+            return { ...state, folders: action.payload };
+        case actionTypes.SET_FOLDERS_LOADING:
+            return { ...state, foldersLoading: action.payload };
         default:
             return state;
     }

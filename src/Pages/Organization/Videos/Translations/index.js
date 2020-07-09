@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Grid, Button, Input, Icon } from 'semantic-ui-react';
+import { Grid, Button, Input, Icon, Card } from 'semantic-ui-react';
 import querystring from 'query-string';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
@@ -19,6 +19,10 @@ import { debounce, getUsersByRoles, displayArticleLanguage, getUserOrganziationR
 import ClearPagination from '../../../../shared/components/ClearPagination';
 import VideoCard from '../../../../shared/components/VideoCard';
 import TranslateOnWhatsappDropdown from './TranslateOnWhatsappDropdown';
+import CreateFolderButton from './Folders/CreateFolderButton';
+import CreateFolderModal from './Folders/CreateFolderModal';
+import FoldersList from './Folders/FoldersList';
+import FolderCard from './Folders/FolderCard';
 
 function Separator() {
     return (
@@ -30,7 +34,10 @@ class Translated extends React.Component {
     state = {
         selectMultipleLanguagesModalOpen: false,
         addUsersToMultipleVideosModalOpen: false,
-        exportMultipleVideosModalOpen: false
+        exportMultipleVideosModalOpen: false,
+        createFolderModalOpen: false,
+        changeFolderNameModalOpen: false,
+        openedFolderSubfolders: [],
     }
 
     constructor(props) {
@@ -46,6 +53,18 @@ class Translated extends React.Component {
         this.props.setCurrentPageNumber(1);
         this.props.fetchTranslatedArticles();
         this.props.fetchUsers(this.props.organization._id);
+        this.props.fetchFolders();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.openedFolder) {
+            const openedFolderSubfolders = nextProps.folders.filter((f) => {
+                return f.parent === nextProps.openedFolder._id;
+            })
+            this.setState({ openedFolderSubfolders });
+        } else {
+            this.setState({ openedFolderSubfolders: [] });
+        }
     }
 
     isVideoFocused = (video) => {
@@ -94,6 +113,16 @@ class Translated extends React.Component {
 
     onSelectChange = (video, selected) => {
         this.props.setTranslatedArticleVideoSelected(video._id, selected);
+    }
+
+    onCreateFolder = (name) => {
+        this.setState({ createFolderModalOpen: false });
+        this.props.createFolder(name);
+    };
+
+    onUpdateFolder = (id, name) => {
+        this.setState({ changeFolderNameModalOpen: false });
+        this.props.updateFolder(id, name);
     }
 
     getTranslators = () => {
@@ -259,6 +288,38 @@ class Translated extends React.Component {
         )
     }
 
+    _renderCreateFolderModal() {
+        return (
+          <CreateFolderModal
+            title={"CREATE NEW FOLDER"}
+            open={this.state.createFolderModalOpen}
+            onClose={() => {
+              this.setState({ createFolderModalOpen: false });
+            }}
+            onSubmit={(name) => {
+              this.onCreateFolder(name);
+            }}
+          />
+        );
+    }
+
+    _renderChangeFolderNameModal() {
+        if (!this.props.openedFolder) return null;
+        return (
+          <CreateFolderModal
+            title={"CHANGE FOLDER NAME"}
+            name={this.props.openedFolder.name}
+            open={this.state.changeFolderNameModalOpen}
+            onClose={() => {
+              this.setState({ changeFolderNameModalOpen: false });
+            }}
+            onSubmit={(name) => {
+              this.onUpdateFolder(this.props.openedFolder._id, name);
+            }}
+          />
+        );
+    }
+
     render() {
         const allSelected = this.props.translatedArticles && this.props.translatedArticles.length > 0 && this.props.selectedCount === this.props.translatedArticles.length;
         const whatsappButtonTitle = this.getWhatsappButtonTitle();
@@ -268,6 +329,41 @@ class Translated extends React.Component {
             <div>
                 <VideosTabs />
                 <Grid style={{ margin: '1rem' }}>
+                    <LoaderComponent active={this.props.foldersLoading}>
+                        <Grid.Row
+                            style={{
+                            marginBottom: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            }}
+                        >
+                            <Grid.Column width={12}>
+                                <FoldersList
+                                    openedFolder={this.props.openedFolder}
+                                    folders={this.props.folders}
+                                    onOpenedFolderChange={(folderId) => {
+                                        const folder = !folderId ? null : this.props.folders.find((f) => f._id === folderId);
+                                        this.props.setOpenedFolder(folder);
+                                        this.props.setCurrentPageNumber(1);
+                                        this.props.fetchTranslatedArticles();
+                                    }}
+                                />
+                            </Grid.Column>
+                            <RoleRenderer roles={['admin', 'project_leader']}>
+                                <Grid.Column width={4}>
+                                    <CreateFolderButton
+                                        openedFolder={this.props.openedFolder}
+                                        onCreateClick={() => {
+                                            this.setState({ createFolderModalOpen: true });
+                                        }}
+                                        onChangeNameClick={() => {
+                                            this.setState({ changeFolderNameModalOpen: true });
+                                        }}
+                                    />
+                                </Grid.Column>
+                            </RoleRenderer>
+                        </Grid.Row>
+                    </LoaderComponent>
                     <RoleRenderer roles={[
                         'admin',
                         'project_leader',
@@ -336,6 +432,24 @@ class Translated extends React.Component {
                                 </div>
                             </Grid.Column>
                         </Grid.Row>
+                        <Grid.Row>
+                            {this.state.openedFolderSubfolders.map((f) => (
+                                <Grid.Column width={4} key={f._id}>
+                                    <FolderCard
+                                        folder={f}
+                                        onOpenedFolderChange={(folderId) => {
+                                            const folder = !folderId ? null : this.props.folders.find((f) => f._id === folderId);
+                                            this.props.setOpenedFolder(folder);
+                                            this.props.setCurrentPageNumber(1);
+                                            this.props.fetchTranslatedArticles();
+                                        }}
+                                        onSubmit={(id, name) => {
+                                            this.onUpdateFolder(id, name);
+                                          }}
+                                    />
+                                </Grid.Column>
+                            ))}
+                        </Grid.Row>
                         <LoaderComponent active={this.props.videosLoading}>
                             <Grid.Row>
                                 {this.props.translatedArticles.map((translatedArticle) => (
@@ -398,6 +512,8 @@ class Translated extends React.Component {
                             {this._renderSelectMultipleLanguagesModal()}
                             {this._renderAddUsersToMultipleVideosModal()}
                             {this._renderExportMultipleVideosModal()}
+                            {this._renderCreateFolderModal()}
+                            {this._renderChangeFolderNameModal()}
                         </LoaderComponent>
                     </RoleRenderer>
                 </Grid>
@@ -421,6 +537,9 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     searchFilter: organizationVideos.searchFilter,
     organizationUsers: organization.users,
     selectedCount: organizationVideos.selectedCount,
+    openedFolder: organizationVideos.openedFolder,
+    folders: organizationVideos.folders,
+    foldersLoading:  organizationVideos.foldersLoading,
 })
 const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
@@ -436,7 +555,11 @@ const mapDispatchToProps = (dispatch) => ({
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
     setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected)),
-    exportMultipleVideos: (voiceVolume, normalizeAudio, downloadZip) => dispatch(videoActions.exportMultipleVideos(voiceVolume, normalizeAudio, downloadZip))
+    exportMultipleVideos: (voiceVolume, normalizeAudio, downloadZip) => dispatch(videoActions.exportMultipleVideos(voiceVolume, normalizeAudio, downloadZip)),
+    createFolder: (name) => dispatch(videoActions.createFolder(name)),
+    updateFolder: (id, name) => dispatch(videoActions.updateFolder(id, name)),
+    setOpenedFolder: (folder) => dispatch(videoActions.setOpenedFolder(folder)),
+    fetchFolders: () => dispatch(videoActions.fetchFolders()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));
