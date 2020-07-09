@@ -35,10 +35,12 @@ function countGender(speakers, gender) {
 class Translation extends React.Component {
   state = {
     selectedArticle: null,
+    assignVideoProjectLeaderModalVisible: false,
     deleteArticleModalVisible: false,
     deleteBackgroundMusicModalVisible: false,
     assignUsersModalVisible: false,
     assignVerifiersModalVisible: false,
+    assignProjectLeaderModelVisible: false,
   };
 
   componentWillMount = () => {
@@ -47,7 +49,7 @@ class Translation extends React.Component {
     this.props.fetchSigleTranslatedArticle(videoId, {
       stage: this.state.activeFilter,
     });
-    this.props.fetchTranslationsCount(videoId)
+    this.props.fetchTranslationsCount(videoId);
     this.initSocketSub();
   };
 
@@ -100,6 +102,21 @@ class Translation extends React.Component {
     );
   };
 
+  getProjectLeaders = () => {
+    const { organizationUsers } = this.props;
+    const { selectedArticle } = this.state;
+    if (
+      !selectedArticle ||
+      !selectedArticle.projectLeaders ||
+      !organizationUsers
+    )
+      return null;
+
+    return organizationUsers.filter(
+      (u) => selectedArticle.projectLeaders.indexOf(u._id) !== -1
+    );
+  };
+
   isAdmin = () => {};
 
   deleteSelectedArticle = () => {
@@ -128,6 +145,20 @@ class Translation extends React.Component {
     this.props.updateVerifiers(this.state.selectedArticle._id, verifiers);
   };
 
+  onSaveProjectLeaders = (projectLeaders) => {
+    this.setState({ assignProjectLeaderModelVisible: false });
+    this.props.updateProjectLeaders(
+      this.state.selectedArticle._id,
+      projectLeaders
+    );
+  };
+
+  onSaveVideoProjectLeaders = (projectLeaders) => {
+    const { selectedVideo } = this.state;
+    this.setState({ assignVideoProjectLeaderModalVisible: false, selectedVideo: null });
+    this.props.updateVideoProjectLeaders(selectedVideo._id, projectLeaders)
+  };
+
   onDeleteArticleClick = (article) => {
     this.setState({
       selectedArticle: article,
@@ -138,6 +169,14 @@ class Translation extends React.Component {
   onAddClick = (article) => {
     this.props.fetchUsers(this.props.organization._id);
     this.setState({ selectedArticle: article, assignUsersModalVisible: true });
+  };
+
+  onAddProjectLeaderClick = (article) => {
+    this.props.fetchUsers(this.props.organization._id);
+    this.setState({
+      selectedArticle: article,
+      assignProjectLeaderModelVisible: true,
+    });
   };
 
   onAddVerifiersClick = (article) => {
@@ -262,6 +301,7 @@ class Translation extends React.Component {
 
   renderAssignVerifiers = () => (
     <AssignReviewUsers
+      showResendEmail
       title="Assign Approvers"
       open={this.state.assignVerifiersModalVisible}
       value={
@@ -280,6 +320,51 @@ class Translation extends React.Component {
       onResendEmail={(userId) =>
         this.onResendEmail("verifier", this.state.selectedArticle._id, userId)
       }
+    />
+  );
+
+  renderAssignProjectLeader = () => (
+    <AssignReviewUsers
+      title="Assign Project Leader"
+      single
+      open={this.state.assignProjectLeaderModelVisible}
+      value={
+        this.state.selectedArticle && this.state.selectedArticle.projectLeaders
+          ? this.state.selectedArticle.projectLeaders.map((l) => l.user)
+          : []
+      }
+      users={this.props.organizationUsers}
+      onClose={() =>
+        this.setState({
+          assignProjectLeaderModelVisible: false,
+          selectedArticle: null,
+        })
+      }
+      onSave={this.onSaveProjectLeaders}
+      // onResendEmail={(userId) =>
+      //   this.onResendEmail("verifier", this.state.selectedArticle._id, userId)
+      // }
+    />
+  );
+
+  renderAssignVideoProjectLeader = () => (
+    <AssignReviewUsers
+      title="Assign Project Leader"
+      single
+      open={this.state.assignVideoProjectLeaderModalVisible}
+      value={
+        this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+          ? this.state.selectedVideo.projectLeaders
+          : []
+      }
+      users={this.props.organizationUsers}
+      onClose={() =>
+        this.setState({
+          assignVideoProjectLeaderModalVisible: false,
+          selectedVideo: null,
+        })
+      }
+      onSave={this.onSaveVideoProjectLeaders}
     />
   );
 
@@ -303,7 +388,10 @@ class Translation extends React.Component {
         filters: [ARTICLE_STAGES.VOICE_OVER_TRANSLATION],
       },
       {
-        title: `Approvals (${(translationsCount.text_translation_done || 0) + (translationsCount.voice_over_translation_done || 0)})`,
+        title: `Approvals (${
+          (translationsCount.text_translation_done || 0) +
+          (translationsCount.voice_over_translation_done || 0)
+        })`,
         value: "approvals",
         filters: [
           ARTICLE_STAGES.TEXT_TRANSLATION_DONE,
@@ -363,6 +451,22 @@ class Translation extends React.Component {
               >
                 <Grid.Column width={4}>
                   <VideoCard
+                    showOptions
+                    options={[
+                      {
+                        content: (
+                          <div>
+                            <Icon name="plus" color="green" /> Assign Project Leader
+                          </div>
+                        ),
+                        onClick: () => {
+                          this.setState({
+                            selectedVideo: singleTranslatedArticle.video,
+                            assignVideoProjectLeaderModalVisible: true,
+                          });
+                        },
+                      },
+                    ]}
                     buttonTitle="Add Voiceover"
                     thumbnailUrl={singleTranslatedArticle.video.thumbnailUrl}
                     title={singleTranslatedArticle.video.title}
@@ -471,6 +575,8 @@ class Translation extends React.Component {
                         <div
                           style={{
                             marginTop: 10,
+                            width: "80%",
+                            margin: "0 auto",
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
@@ -481,6 +587,7 @@ class Translation extends React.Component {
                             trigger={
                               <Button
                                 basic
+                                circular
                                 size="tiny"
                                 icon="upload"
                                 content="Upload"
@@ -496,6 +603,7 @@ class Translation extends React.Component {
                             trigger={
                               <Button
                                 primary
+                                circular
                                 loading={
                                   singleTranslatedArticle.video
                                     .extractBackgroundMusicLoading
@@ -532,20 +640,6 @@ class Translation extends React.Component {
                       left: "60%",
                     }}
                   ></div>
-
-                  {/* <div
-                    style={{
-                      position: "absolute",
-                      left: "60%",
-                      top: "9%",
-                      width: 0,
-                      height: 0,
-                      borderStyle: "solid",
-                      borderWidth: "10px 0 10px 20px",
-                      borderColor:
-                        "transparent transparent transparent #ECF5FE",
-                    }}
-                  ></div> */}
                 </Grid.Column>
                 <Grid.Column width={11} style={{ marginTop: "-1.2rem" }}>
                   <Grid>
@@ -563,7 +657,7 @@ class Translation extends React.Component {
                               key={`tab-item-${tab.value}`}
                               circular
                               style={{
-                                fontWeight: '300',
+                                fontWeight: "300",
                                 padding: "0.5rem 1rem",
                                 backgroundColor:
                                   this.props
@@ -614,6 +708,9 @@ class Translation extends React.Component {
                                 onAddVerifiersClick={() =>
                                   this.onAddVerifiersClick(article)
                                 }
+                                onAddProjectLeaderClick={() =>
+                                  this.onAddProjectLeaderClick(article)
+                                }
                               />
                             </Grid.Column>
                           ))}
@@ -627,6 +724,8 @@ class Translation extends React.Component {
             {this.renderAssignUsersModal()}
             {this.renderAssignVerifiers()}
             {this._renderAddHumanVoiceModal()}
+            {this.renderAssignProjectLeader()}
+            {this.renderAssignVideoProjectLeader()}
             {this.renderDeleteBackgroundMusic()}
           </LoaderComponent>
         </Grid>
@@ -674,6 +773,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(videoActions.updateTranslators(articleId, translators)),
   updateVerifiers: (articleId, verifiers) =>
     dispatch(videoActions.updateVerifiers(articleId, verifiers)),
+  updateVideoProjectLeaders: (videoId, projectLeaders) =>
+    dispatch(videoActions.updateVideoProjectLeaders(videoId, projectLeaders)),
+  updateProjectLeaders: (articleId, projectLeaders) =>
+    dispatch(videoActions.updateProjectLeaders(articleId, projectLeaders)),
   updateTranslatorsV2: (articleId, translators, textTranslators) =>
     dispatch(
       videoActions.updateTranslatorsV2(articleId, translators, textTranslators)

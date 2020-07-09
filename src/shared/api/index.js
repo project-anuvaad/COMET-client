@@ -21,6 +21,7 @@ export default {
         updateVerifiers: id => `${APP_ENV.API_ROOT}/video/${id}/verifiers`,
         resendEmailToVerifier: id => `${APP_ENV.API_ROOT}/video/${id}/verifiers/resendEmail`,
         refreshMedia: (id) => `${APP_ENV.API_ROOT}/video/${id}/refreshMedia`,
+        updateProjectLeaders: (videoId) => `${APP_ENV.API_ROOT}/video/${videoId}/projectLeaders`,
     },
     noiseCancellationVideos: {
         getVideos: (params = {}) => `${APP_ENV.API_ROOT}/noiseCancellationVideo?${querystring.encode(params)}`,
@@ -42,6 +43,7 @@ export default {
         updateTextTranslators: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/textTranslators`,
         // resendEmailToTranslator: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/translators/resendEmail`,
         updateVerifiers: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/verifiers`,
+        updateProjectLeaders: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/projectLeaders`,
         resendEmailToVerifier: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/verifiers/resendEmail`,
         
         updateVolume: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/volume`,

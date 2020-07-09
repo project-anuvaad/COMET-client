@@ -115,6 +115,7 @@ export default class ArticleSummaryCard extends React.Component {
       onDeleteClick,
       onAddClick,
       onAddVerifiersClick,
+      onAddProjectLeaderClick,
       users,
     } = this.props;
 
@@ -158,15 +159,24 @@ export default class ArticleSummaryCard extends React.Component {
                 </RoleRenderer>
               )}
             </h4>
-            {article.createdBy &&
+            {article.projectLeaders && article.projectLeaders.length > 0 &&
               users &&
               (function () {
-                const user = users.find((u) => u._id === article.createdBy);
-                if (!user) return null;
+                const projectLeaders = users.filter(
+                  (u) =>
+                    article.projectLeaders.map((l) => l.user).indexOf(u._id) !==
+                    -1
+                );
+                if (!projectLeaders) return null;
                 return (
-                  <p style={{ color: "#666666", fontSize: 12 }}>
-                    By {getUserNamePreview(user)}{" "}
-                    <small style={{ color: "#999999" }}>(Owner)</small>
+                  <p style={{ fontWeight: 300, fontSize: 12 }}>
+                    By{" "}
+                    {projectLeaders.map((p) => (
+                      <span key={`project-leader-${p._id}`}>
+                        {getUserNamePreview(p)}{" "}
+                        <small style={{ color: "#999999" }}>(Owner)</small>
+                      </span>
+                    ))}{" "}
                   </p>
                 );
               })()}
@@ -317,7 +327,16 @@ export default class ArticleSummaryCard extends React.Component {
                       <span>Completed</span>
                     ) : (
                       <React.Fragment>
-                        <span style={{ marginRight: 5 }}>Next step:</span>
+                        <span
+                          style={{
+                            marginRight: 5,
+                            color: "black",
+                            fontSize: 12,
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Next step:
+                        </span>
                         <span style={{ marginRight: 5 }}>
                           {ARTICLE_STAGES_TITLES[article.stage]}
                         </span>
@@ -420,14 +439,23 @@ export default class ArticleSummaryCard extends React.Component {
                     icon=""
                     trigger={
                       <Button circular basic primary>
-                        Assign Contributors <Icon name="chevron down" style={{ marginLeft: 10 }} />
+                        Assign Contributors{" "}
+                        <Icon name="chevron down" style={{ marginLeft: 10 }} />
                       </Button>
                     }
                   >
                     <Dropdown.Menu>
+                      <Dropdown.Item onClick={onAddProjectLeaderClick}>
+                        <Icon
+                          // color="green"
+                          name="male"
+                          // size="small"
+                        />{" "}
+                        Project Leader
+                      </Dropdown.Item>
                       <Dropdown.Item onClick={onAddClick}>
                         <Icon name="user" color="blue" />
-                        Assign Translators
+                        Translators
                       </Dropdown.Item>
 
                       <Dropdown.Item onClick={onAddVerifiersClick}>
@@ -436,7 +464,7 @@ export default class ArticleSummaryCard extends React.Component {
                           name="check"
                           // size="small"
                         />{" "}
-                        Assign Approvers
+                        Approvers
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
