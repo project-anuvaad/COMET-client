@@ -142,6 +142,8 @@ export default {
     folder: {
         createFolder: () => `${APP_ENV.API_ROOT}/folder`,
         updateName: (id) => `${APP_ENV.API_ROOT}/folder/${id}/name`,
-        getOrganizationFolders: (organizationId) => `${APP_ENV.API_ROOT}/folder?organization=${organizationId}`,
+        getBreadcrumbFolder: (folderId, params) => `${APP_ENV.API_ROOT}/folder/${folderId}/breadcrumb/?${querystring.encode(params)}`,
+        getOrganizationMainFolders: (params) => `${APP_ENV.API_ROOT}/folder/mainFolders?${querystring.encode(params)}`,
+        getSubfolders: (folderId, params) => `${APP_ENV.API_ROOT}/folder/${folderId}/subfolders?${querystring.encode(params)}`,
     }
 }

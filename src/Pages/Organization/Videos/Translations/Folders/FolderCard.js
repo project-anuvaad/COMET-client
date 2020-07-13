@@ -28,7 +28,7 @@ export default class FolderCard extends React.Component {
       >
         {this.state.editing ? (
           <React.Fragment>
-            <RoleRenderer roles={["admin"]}>
+            <RoleRenderer roles={["admin", "project_leader"]}>
               <Input
                 fluid
                 size="mini"
@@ -39,13 +39,13 @@ export default class FolderCard extends React.Component {
                 }}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
-                    this.props.onSubmit(this.props.folder._id, this.state.name);
+                    this.props.onUpdateFolderName(this.state.name);
                     this.toggleEdit();
                   }
                 }}
               />
               <div style={{ fontSize: ".6rem" }}>
-                <span>Press enter so save</span>
+                <span>Press enter to save</span>
                 <span
                   style={{
                     float: "right",
@@ -64,13 +64,13 @@ export default class FolderCard extends React.Component {
             <span
               style={{ cursor: "pointer" }}
               onClick={() => {
-                this.props.onOpenedFolderChange(this.props.folder._id);
+                this.props.onOpenFolder();
               }}
             >
               <Icon name="folder" style={{ marginRight: 12 }} />
               {this.props.folder.name}
             </span>
-            <RoleRenderer roles={["admin"]}>
+            <RoleRenderer roles={["admin", "project_leader"]}>
               <Icon
                 name="edit"
                 style={{ float: "right", cursor: "pointer" }}

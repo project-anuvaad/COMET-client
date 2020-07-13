@@ -26,9 +26,21 @@ const INITIAL_STATE = {
         cutting: 0,
         total: 0,
     },
+
     openedFolder: null,
-    folders: [],
-    foldersLoading: false,
+
+    mainFolders: [],
+    mainFoldersLoading: false,
+    mainFoldersCurrentPageNumber: 1,
+    mainFoldersTotalPagesCount: 1,
+
+    breadcrumbFolder: null,
+    breadcrumbLoading: false,
+    breadcrumbCurrentPageNumber: 1,
+    breadcrumbTotalPagesCount: 1,
+
+    subfolders: [],
+    subfoldersLoading: false,
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -73,10 +85,26 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, selectedCount: action.payload };
         case actionTypes.SET_OPENED_FOLDER:
             return { ...state, openedFolder: action.payload };
-        case actionTypes.SET_FOLDERS:
-            return { ...state, folders: action.payload };
-        case actionTypes.SET_FOLDERS_LOADING:
-            return { ...state, foldersLoading: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS:
+            return { ...state, mainFolders: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS_LOADING:
+            return { ...state, mainFoldersLoading: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS_CURRENT_PAGE_NUMBER:
+            return { ...state, mainFoldersCurrentPageNumber: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS_TOTAL_PAGES_COUNT:
+            return { ...state, mainFoldersTotalPagesCount: action.payload };
+        case actionTypes.SET_BREADCRUMB_FOLDER:
+            return { ...state, breadcrumbFolder: action.payload };
+        case actionTypes.SET_BREADCRUMB_LOADING:
+            return { ...state, breadcrumbLoading: action.payload };
+        case actionTypes.SET_BREADCRUMB_CURRENT_PAGE_NUMBER:
+            return { ...state, breadcrumbCurrentPageNumber: action.payload };
+        case actionTypes.SET_BREADCRUMB_TOTAL_PAGES_COUNT:
+            return { ...state, breadcrumbTotalPagesCount: action.payload };
+        case actionTypes.SET_SUBFOLDERS:
+            return { ...state, subfolders: action.payload };
+        case actionTypes.SET_SUBFOLDERS_LOADING:
+            return { ...state, subfoldersLoading: action.payload };
         default:
             return state;
     }

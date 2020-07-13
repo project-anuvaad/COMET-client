@@ -41,7 +41,6 @@ class Translated extends React.Component {
         exportMultipleVideosModalOpen: false,
         createFolderModalOpen: false,
         changeFolderNameModalOpen: false,
-        openedFolderSubfolders: [],
     }
 
     constructor(props) {
@@ -57,18 +56,7 @@ class Translated extends React.Component {
         this.props.setCurrentPageNumber(1);
         this.props.fetchTranslatedArticles();
         this.props.fetchUsers(this.props.organization._id);
-        this.props.fetchFolders();
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.openedFolder) {
-            const openedFolderSubfolders = nextProps.folders.filter((f) => {
-                return f.parent === nextProps.openedFolder._id;
-            })
-            this.setState({ openedFolderSubfolders });
-        } else {
-            this.setState({ openedFolderSubfolders: [] });
-        }
+        this.props.fetchMainFolders();
     }
 
     isVideoFocused = (video) => {
@@ -87,6 +75,7 @@ class Translated extends React.Component {
     onPageChange = (e, { activePage }) => {
         this.props.setCurrentPageNumber(activePage);
         this.props.fetchTranslatedArticles(this.props.organization._id, activePage);
+        if (this.props.openedFolder) this.props.fetchSubfolders();
     }
 
     onSearchChange = (searchTerm) => {
@@ -134,9 +123,9 @@ class Translated extends React.Component {
         this.props.createFolder(name);
     };
 
-    onUpdateFolder = (id, name) => {
+    onUpdateFolder = (name, id) => {
         this.setState({ changeFolderNameModalOpen: false });
-        this.props.updateFolder(id, name);
+        this.props.updateFolder(name, id);
     }
 
     getTranslators = () => {
@@ -219,6 +208,15 @@ class Translated extends React.Component {
             return 'Translate Text';
         }
         return title;
+    }
+
+    getOpenedFolderName = () => {
+        if (this.props.mainFolders.find((f) => f._id === this.props.openedFolder)) {
+            return this.props.mainFolders.find((f) => f._id === this.props.openedFolder).name;
+        } else if (this.props.breadcrumbFolder && this.props.breadcrumbFolder._id === this.props.openedFolder) {
+            return this.props.breadcrumbFolder.name;
+        } 
+        return '';
     }
 
     renderPagination = () => (
@@ -343,13 +341,13 @@ class Translated extends React.Component {
         return (
           <CreateFolderModal
             title={"CHANGE FOLDER NAME"}
-            name={this.props.openedFolder.name}
+            name={this.getOpenedFolderName()}
             open={this.state.changeFolderNameModalOpen}
             onClose={() => {
               this.setState({ changeFolderNameModalOpen: false });
             }}
             onSubmit={(name) => {
-              this.onUpdateFolder(this.props.openedFolder._id, name);
+              this.onUpdateFolder(name);
             }}
           />
         );
@@ -374,14 +372,70 @@ class Translated extends React.Component {
                         >
                             <Grid.Column width={12}>
                                 <FoldersList
+                                    mainFolders={this.props.mainFolders}
+                                    breadcrumbFolder={this.props.breadcrumbFolder}
                                     openedFolder={this.props.openedFolder}
-                                    folders={this.props.folders}
-                                    onOpenedFolderChange={(folderId) => {
-                                        const folder = !folderId ? null : this.props.folders.find((f) => f._id === folderId);
-                                        this.props.setOpenedFolder(folder);
+                                    onHomeClick={() => {
+                                        this.props.setOpenedFolder(null);
+
+                                        this.props.setBreadcrumbFolder(null);
+                                        this.props.setBreadcrumbLoading(false);
+                                        this.props.setBreadcrumbCurrentPageNumber(1);
+                                        this.props.setBreadcrumbTotalPagesCount(1);
+
+                                        this.props.setSubfolders([]);
+                                        this.props.setSubfoldersLoading(false);
+
                                         this.props.setCurrentPageNumber(1);
+                                        this.props.setTotalPagesCount(1);
                                         this.props.fetchTranslatedArticles();
                                     }}
+                                    onOpenMainFolder={(folderId) => {
+                                        this.props.setOpenedFolder(folderId);
+
+                                        this.props.setBreadcrumbFolder(null);
+                                        this.props.setBreadcrumbLoading(false);
+                                        this.props.setBreadcrumbCurrentPageNumber(1);
+                                        this.props.setBreadcrumbTotalPagesCount(1);
+
+                                        this.props.setSubfolders([]);
+                                        this.props.setSubfoldersLoading(false);
+
+                                        this.props.setCurrentPageNumber(1);
+                                        this.props.setTotalPagesCount(1);
+                                        this.props.fetchTranslatedArticles();
+                                        this.props.fetchSubfolders();
+
+                                    }}
+                                    onOpenFolder={(folderId) => {
+                                        this.props.setOpenedFolder(folderId);
+
+                                        this.props.setBreadcrumbFolder(null);
+                                        this.props.setBreadcrumbLoading(false);
+                                        this.props.setBreadcrumbCurrentPageNumber(1);
+                                        this.props.setBreadcrumbTotalPagesCount(1);
+
+                                        this.props.setSubfolders([]);
+                                        this.props.setSubfoldersLoading(false);
+
+                                        this.props.setCurrentPageNumber(1);
+                                        this.props.setTotalPagesCount(1);
+                                        this.props.fetchTranslatedArticles();
+                                        this.props.fetchSubfolders();
+                                        this.props.fetchBreadcrumbFolder();
+                                    }}
+                                    onLoadMoreMainFolders={() => {
+                                        this.props.loadMoreMainFolders();
+                                    }}
+                                    mainFoldersLoading={this.props.mainFoldersLoading}
+                                    mainFoldersCurrentPageNumber={this.props.mainFoldersCurrentPageNumber}
+                                    mainFoldersTotalPagesCount={this.props.mainFoldersTotalPagesCount}
+                                    onLoadMoreSiblingFolders={() => {
+                                        this.props.loadMoreSiblingFolders();
+                                    }}
+                                    breadcrumbLoading={this.props.breadcrumbLoading}
+                                    breadcrumbCurrentPageNumber={this.props.breadcrumbCurrentPageNumber}
+                                    breadcrumbTotalPagesCount={this.props.breadcrumbTotalPagesCount}
                                 />
                             </Grid.Column>
                             <RoleRenderer roles={['admin', 'project_leader']}>
@@ -468,19 +522,30 @@ class Translated extends React.Component {
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
-                            {this.state.openedFolderSubfolders.map((f) => (
+                            {this.props.subfolders.map((f) => (
                                 <Grid.Column width={4} key={f._id}>
                                     <FolderCard
                                         folder={f}
-                                        onOpenedFolderChange={(folderId) => {
-                                            const folder = !folderId ? null : this.props.folders.find((f) => f._id === folderId);
-                                            this.props.setOpenedFolder(folder);
+                                        onOpenFolder={() => {
+                                            this.props.setOpenedFolder(f._id);
+
+                                            this.props.setBreadcrumbFolder(null);
+                                            this.props.setBreadcrumbLoading(false);
+                                            this.props.setBreadcrumbCurrentPageNumber(1);
+                                            this.props.setBreadcrumbTotalPagesCount(1);
+
+                                            this.props.setSubfolders([]);
+                                            this.props.setSubfoldersLoading(false);
+
                                             this.props.setCurrentPageNumber(1);
+                                            this.props.setTotalPagesCount(1);
                                             this.props.fetchTranslatedArticles();
+                                            this.props.fetchSubfolders();
+                                            this.props.fetchBreadcrumbFolder();
                                         }}
-                                        onSubmit={(id, name) => {
-                                            this.onUpdateFolder(id, name);
-                                          }}
+                                        onUpdateFolderName={(name) => {
+                                            this.onUpdateFolder(name, f._id);
+                                        }}
                                     />
                                 </Grid.Column>
                             ))}
@@ -584,9 +649,17 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     searchFilter: organizationVideos.searchFilter,
     organizationUsers: organization.users,
     selectedCount: organizationVideos.selectedCount,
+    mainFolders: organizationVideos.mainFolders,
+    mainFoldersLoading:  organizationVideos.mainFoldersLoading,
+    mainFoldersCurrentPageNumber: organizationVideos.mainFoldersCurrentPageNumber,
+    mainFoldersTotalPagesCount: organizationVideos.mainFoldersTotalPagesCount,
+    breadcrumbFolder: organizationVideos.breadcrumbFolder,
+    breadCrumbLoading:  organizationVideos.breadCrumbLoading,
+    breadcrumbCurrentPageNumber: organizationVideos.breadcrumbCurrentPageNumber,
+    breadcrumbTotalPagesCount: organizationVideos.breadcrumbTotalPagesCount,
+    subfolders: organizationVideos.subfolders,
+    subfoldersLoading:  organizationVideos.subfoldersLoading,
     openedFolder: organizationVideos.openedFolder,
-    folders: organizationVideos.folders,
-    foldersLoading:  organizationVideos.foldersLoading,
 })
 const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
@@ -604,10 +677,29 @@ const mapDispatchToProps = (dispatch) => ({
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
     setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected)),
     exportMultipleVideos: (voiceVolume, normalizeAudio, downloadZip) => dispatch(videoActions.exportMultipleVideos(voiceVolume, normalizeAudio, downloadZip)),
+
     createFolder: (name) => dispatch(videoActions.createFolder(name)),
-    updateFolder: (id, name) => dispatch(videoActions.updateFolder(id, name)),
-    setOpenedFolder: (folder) => dispatch(videoActions.setOpenedFolder(folder)),
-    fetchFolders: () => dispatch(videoActions.fetchFolders()),
+    updateFolder: (name, id) => dispatch(videoActions.updateFolder(name, id)),
+    fetchMainFolders: () => dispatch(videoActions.fetchMainFolders()),
+    fetchSubfolders: () => dispatch(videoActions.fetchSubfolders()),
+    fetchBreadcrumbFolder: () => dispatch(videoActions.fetchBreadcrumbFolder()),
+
+    setOpenedFolder: (openedFolder) => dispatch(videoActions.setOpenedFolder(openedFolder)),
+
+    setMainFolders: (folders) => dispatch(videoActions.setMainFolders(folders)),
+
+    setBreadcrumbFolder: (folder) => dispatch(videoActions.setBreadcrumbFolder(folder)),
+    setBreadcrumbLoading: (loading) => dispatch(videoActions.setBreadcrumbLoading(loading)),
+    setBreadcrumbCurrentPageNumber: (pageNumber) => dispatch(videoActions.setBreadcrumbCurrentPageNumber(pageNumber)),
+    setBreadcrumbTotalPagesCount: (pagesCount) => dispatch(videoActions.setBreadcrumbTotalPagesCount(pagesCount)),
+
+    setSubfolders: (folders) => dispatch(videoActions.setSubfolders(folders)),
+    setSubfoldersLoading: (loading) => dispatch(videoActions.setSubfoldersLoading(loading)),
+
+    setTotalPagesCount: (pagesCount) => dispatch(videoActions.setTotalPagesCount(pagesCount)),
+
+    loadMoreMainFolders: () => dispatch(videoActions.loadMoreMainFolders()),
+    loadMoreSiblingFolders: () => dispatch(videoActions.loadMoreSiblingFolders()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));

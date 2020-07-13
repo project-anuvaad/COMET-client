@@ -22,9 +22,7 @@ export default class CreateFolderButton extends React.Component {
           onClick={this.props.onCreateClick}
         >
           <Icon name="plus" />
-          {this.props.openedFolder && this.props.openedFolder.parent
-            ? "Create Sub-Folder"
-            : "Create New Folder"}
+          {this.props.openedFolder ? "Create Sub-Folder" : "Create New Folder"}
         </Button>
       </span>
     );

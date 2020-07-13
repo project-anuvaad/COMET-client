@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Button, Modal, Input } from "semantic-ui-react";
 
 export default class CreateFolderModal extends React.Component {
-  state = { name: "" };
+  state = { name: '' };
 
   componentDidMount() {
     if (this.props.name) {

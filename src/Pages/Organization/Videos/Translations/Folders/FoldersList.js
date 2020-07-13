@@ -1,73 +1,70 @@
 import React from "react";
-import { Icon, Breadcrumb, Dropdown } from "semantic-ui-react";
+import { Icon, Breadcrumb, Dropdown, Button } from "semantic-ui-react";
 
 export default class FoldersList extends React.Component {
-  state = { groupedFolders: {}, openedFolderParents: [] };
-
-  componentDidMount() {
-    const groupedFolders = this.props.folders.reduce((acc, f) => {
-      if (!f.parent) f.parent = "unassigned";
-      acc[f.parent] = [...(acc[f.parent] || []), f];
-      return acc;
-    }, {});
-    this.setState({ groupedFolders });
-
-    if (this.props.openedFolder) {
-      const openedFolderParents = [];
-      let openedFolderParent = this.props.folders.find(
-        (f) => f._id === this.props.openedFolder.parent
-      );
-      while (openedFolderParent) {
-        openedFolderParents.unshift(openedFolderParent);
-        openedFolderParent = this.props.folders.find(
-          (f) => f._id === openedFolderParent.parent
-        );
-      }
-      this.setState({ openedFolderParents });
-    }
-  }
+  state = {
+    selectedMainFolderId: null,
+    selectedMainFolderName: null,
+    selectedSubfolderId: null,
+    selectedSubfolderName: null,
+  };
 
   componentWillReceiveProps(nextProps) {
-    const groupedFolders = nextProps.folders.reduce((acc, f) => {
-      if (!f.parent) f.parent = "unassigned";
-      acc[f.parent] = [...(acc[f.parent] || []), f];
-      return acc;
-    }, {});
-    this.setState({ groupedFolders });
+    if (nextProps.breadcrumbFolder) {
+      this.setState({ selectedSubfolderName: nextProps.breadcrumbFolder.name });
+      this.setState({ selectedSubfolderId: nextProps.breadcrumbFolder._id });
+    }
 
     if (nextProps.openedFolder) {
-      const openedFolderParents = [];
-      let openedFolderParent = nextProps.folders.find(
-        (f) => f._id === nextProps.openedFolder.parent
+      const folder = nextProps.mainFolders.find(
+        (f) => f._id === this.state.selectedMainFolderId
       );
-      while (openedFolderParent) {
-        openedFolderParents.unshift(openedFolderParent);
-        openedFolderParent = nextProps.folders.find(
-          (f) => f._id === openedFolderParent.parent
-        );
+      if (folder) {
+        if (folder.name !== this.state.selectedMainFolderName) {
+          this.setState({ selectedMainFolderName: folder.name });
+        }
       }
-      this.setState({ openedFolderParents });
     }
   }
 
   render() {
-    let foldersOptions = [];
-    if (Object.keys(this.state.groupedFolders).length > 0) {
-      const parent =
-        this.props.openedFolder && this.props.openedFolder.parent
-          ? this.props.openedFolder.parent
-          : "unassigned";
+    const mainFoldersOptions = this.props.mainFolders.map((f) => ({
+      key: f.name,
+      value: f._id,
+      name: f.name,
+      content: (
+        <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
+          <Icon name="folder" style={{ marginRight: 5 }} />
+          {f.name}
+        </span>
+      ),
+    }));
 
-      foldersOptions = this.state.groupedFolders[parent].map((f) => ({
+    const { breadcrumbFolder } = this.props;
+    let siblingFoldersOptions = [];
+    if (breadcrumbFolder) {
+      siblingFoldersOptions = breadcrumbFolder.siblings.map((f) => ({
         key: f.name,
         value: f._id,
-        text: (
+        name: f.name,
+        content: (
           <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
             <Icon name="folder" style={{ marginRight: 5 }} />
             {f.name}
           </span>
         ),
       }));
+      siblingFoldersOptions.unshift({
+        key: breadcrumbFolder.name,
+        value: breadcrumbFolder._id,
+        name: breadcrumbFolder.name,
+        content: (
+          <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
+            <Icon name="folder" style={{ marginRight: 5 }} />
+            {breadcrumbFolder.name}
+          </span>
+        ),
+      });
     }
 
     return (
@@ -76,8 +73,11 @@ export default class FoldersList extends React.Component {
           <Icon name="home" style={{ marginRight: 5 }} />
           <span
             onClick={() => {
-              if (this.props.openedFolder)
-                this.props.onOpenedFolderChange(null);
+              this.setState({
+                mainFoldersOptions: null,
+                siblingFoldersOptions: null,
+              });
+              this.props.onHomeClick();
             }}
             style={{
               marginRight: 5,
@@ -90,50 +90,142 @@ export default class FoldersList extends React.Component {
         </Breadcrumb.Section>
         <Breadcrumb.Divider icon="right chevron" />
 
-        {this.state.openedFolderParents.map((p) => (
-          <React.Fragment>
-            <Breadcrumb.Section>
-              <Icon name="folder open" />
-              <span
-                onClick={() => {
-                  this.props.onOpenedFolderChange(p._id);
-                }}
-                style={{
-                  marginRight: 5,
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                }}
-              >
-                {p.name}
-              </span>
-            </Breadcrumb.Section>
-            <Breadcrumb.Divider icon="right chevron" />
-          </React.Fragment>
-        ))}
-
         <Breadcrumb.Section>
           <Dropdown
             text={
               this.props.openedFolder ? (
-                <span>
+                <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
                   <Icon name="folder open" style={{ marginRight: 5 }} />
-                  <span>{this.props.openedFolder.name}</span>
+                  {this.state.selectedMainFolderName}
                 </span>
               ) : (
-                <span>
+                <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
                   <Icon name="folder" style={{ marginRight: 5 }} />
-                  <span>Select Folder</span>
+                  Select Folder
                 </span>
               )
             }
-            pointing
-            options={foldersOptions}
-            value={this.props.openedFolder ? this.props.openedFolder._id : null}
-            onChange={(e, { value }) => {
-              this.props.onOpenedFolderChange(value);
-            }}
-          />
+            pointing={mainFoldersOptions.length > 0}
+          >
+            <Dropdown.Menu>
+              {mainFoldersOptions.map((o) => (
+                <Dropdown.Item
+                  {...o}
+                  onClick={(e, { value }) => {
+                    this.setState({ selectedMainFolderName: o.name });
+                    this.setState({ selectedMainFolderId: o.value });
+                    this.props.onOpenMainFolder(value);
+                  }}
+                />
+              ))}
+              {this.props.mainFoldersCurrentPageNumber !==
+                this.props.mainFoldersTotalPagesCount && (
+                <div
+                  style={{
+                    margin: 20,
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button
+                    primary
+                    size="mini"
+                    disabled={this.props.mainFoldersLoading}
+                    loading={this.props.mainFoldersLoading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      this.props.onLoadMoreMainFolders();
+                    }}
+                  >
+                    Load More...
+                  </Button>
+                </div>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
         </Breadcrumb.Section>
+
+        {this.props.breadcrumbFolder &&
+          this.props.breadcrumbFolder.parent &&
+          this.props.breadcrumbFolder.parent.parent && (
+            <React.Fragment>
+              <Breadcrumb.Divider icon="right chevron" />
+              <Breadcrumb.Section>
+                <Icon name="folder open" style={{ marginRight: 5 }} />
+                <span
+                  onClick={() => {
+                    this.props.onOpenFolder(
+                      this.props.breadcrumbFolder.parent._id
+                    );
+                  }}
+                  style={{
+                    marginRight: 5,
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
+                >
+                  {this.props.breadcrumbFolder.parent.name}
+                </span>
+              </Breadcrumb.Section>
+            </React.Fragment>
+          )}
+
+        {this.props.breadcrumbFolder && (
+          <Breadcrumb.Divider icon="right chevron" />
+        )}
+
+        {this.props.breadcrumbFolder && (
+          <React.Fragment>
+            <Breadcrumb.Section>
+              <Dropdown
+                text={
+                  <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
+                    <Icon name="folder open" style={{ marginRight: 5 }} />
+                    {this.state.selectedSubfolderName}
+                  </span>
+                }
+                pointing={siblingFoldersOptions.length > 0}
+                defaultValue={this.props.breadcrumbFolder._id}
+              >
+                <Dropdown.Menu>
+                  {siblingFoldersOptions.map((o) => (
+                    <Dropdown.Item
+                      {...o}
+                      onClick={(e, { value }) => {
+                        this.setState({ selectedSubfolderName: o.name });
+                        this.setState({ selectedSubfolderId: o.value });
+                        this.props.onOpenFolder(value);
+                      }}
+                    />
+                  ))}
+                  {this.props.breadcrumbCurrentPageNumber !==
+                    this.props.breadcrumbTotalPagesCount && (
+                    <div
+                      style={{
+                        margin: 20,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button
+                        primary
+                        size="mini"
+                        disabled={this.props.breadcrumbLoading}
+                        loading={this.props.breadcrumbLoading}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          this.props.onLoadMoreSiblingFolders();
+                        }}
+                      >
+                        Load More...
+                      </Button>
+                    </div>
+                  )}
+                </Dropdown.Menu>
+              </Dropdown>
+            </Breadcrumb.Section>
+          </React.Fragment>
+        )}
       </Breadcrumb>
     );
   }

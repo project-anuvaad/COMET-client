@@ -81,18 +81,58 @@ export const setSingleTranslatedArticle = (translatedArticle) => ({
     payload: translatedArticle,
 })
 
-export const setOpenedFolder = (folder) => ({
+export const setOpenedFolder = (openedFolder) => ({
     type: actionTypes.SET_OPENED_FOLDER,
-    payload: folder
+    payload: openedFolder
 })
 
-export const setFolders = (folders) => ({
-    type: actionTypes.SET_FOLDERS,
+export const setMainFolders = (folders) => ({
+    type: actionTypes.SET_MAIN_FOLDERS,
     payload: folders
 })
 
-export const setFoldersLoading = (loading) =>({
-    type: actionTypes.SET_FOLDERS_LOADING,
+export const setMainFoldersLoading = (loading) =>({
+    type: actionTypes.SET_MAIN_FOLDERS_LOADING,
+    payload: loading
+})
+
+export const setMainFoldersCurrentPageNumber = (pageNumber) =>({
+    type: actionTypes.SET_MAIN_FOLDERS_CURRENT_PAGE_NUMBER,
+    payload: pageNumber
+})
+
+export const setMainFoldersTotalPagesCount = (pagesCount) =>({
+    type: actionTypes.SET_MAIN_FOLDERS_TOTAL_PAGES_COUNT,
+    payload: pagesCount
+})
+
+export const setBreadcrumbFolder = (folders) => ({
+    type: actionTypes.SET_BREADCRUMB_FOLDER,
+    payload: folders
+})
+
+export const setBreadcrumbLoading = (loading) =>({
+    type: actionTypes.SET_BREADCRUMB_LOADING,
+    payload: loading
+})
+
+export const setBreadcrumbCurrentPageNumber = (pageNumber) =>({
+    type: actionTypes.SET_BREADCRUMB_CURRENT_PAGE_NUMBER,
+    payload: pageNumber
+})
+
+export const setBreadcrumbTotalPagesCount = (pagesCount) =>({
+    type: actionTypes.SET_BREADCRUMB_TOTAL_PAGES_COUNT,
+    payload: pagesCount
+})
+
+export const setSubfolders = (folders) => ({
+    type: actionTypes.SET_SUBFOLDERS,
+    payload: folders
+})
+
+export const setSubfoldersLoading = (loading) =>({
+    type: actionTypes.SET_SUBFOLDERS_LOADING,
     payload: loading
 })
 
@@ -237,16 +277,20 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
     }
 
     const { organization } = getState().organization;
-    const { currentPageNumber, searchFilter, openedFolder } = getState()[moduleName];
+    const { currentPageNumber, searchFilter, openedFolder, totalPagesCount } = getState()[moduleName];
     const params = { organization: organization._id, page: currentPageNumber, search: searchFilter };
-    if (openedFolder) params.folder = openedFolder._id;
-    
+    if (openedFolder) params.folder = openedFolder;
+
     requestAgent
         .get(Api.article.getTranslatedArticles(params))
         .then((res) => {
             const { videos, pagesCount } = res.body;
+            let pc = pagesCount || 1;
             dispatch(setTranslatedArticles(videos));
-            dispatch(setTotalPagesCount(pagesCount || 1));
+            // dispatch(setTotalPagesCount(pagesCount || 1));
+            if (pc > getState()[moduleName].totalPagesCount) {
+                dispatch(setTotalPagesCount(pc || 1));
+            }
             dispatch(setSelectedCount(0));
             cb()
             dispatch(setVideoLoading(false))
@@ -1044,50 +1088,166 @@ export const exportMultipleVideos = (voiceVolume, normalizeAudio, downloadZip) =
 }
 
 export const createFolder = (name) => (dispatch, getState) => {
-    const { openedFolder, folders } = getState()[moduleName];
-    const parent = openedFolder ? openedFolder._id : null;
-    const foldersCopy = [...folders];
+    const { openedFolder, mainFolders, subfolders } = getState()[moduleName];
+    const parent = openedFolder ? openedFolder : null;
     requestAgent
         .post(Api.folder.createFolder(), { name, parent, organization: getState().organization.organization._id })
         .then((res) => {
+            const { folder } = res.body;
             NotificationService.success('The folder is created successfully');
-            foldersCopy.push(res.body.folder);
-            dispatch(setFolders(foldersCopy));
+            if (openedFolder) {
+                const folders = [...subfolders];
+                folders.unshift(folder);
+                dispatch(setSubfolders(folders)); 
+                
+            } else {
+                const folders = [...mainFolders];
+                folders.unshift(folder);
+                dispatch(setMainFolders(folders)); 
+            }
+            
         })
         .catch((err) => {
             NotificationService.responseError(err);
         });
 }
 
-export const fetchFolders = () => (dispatch, getState) => {
-    dispatch(setFoldersLoading(true));
-    requestAgent
-        .get(Api.folder.getOrganizationFolders(getState().organization.organization._id))
-        .then((res) => {
-            const { folders } = res.body;
-            dispatch(setFolders(folders));
-            dispatch(setFoldersLoading(false));
-        })
-        .catch((err) => {
-            NotificationService.responseError(err);
-        });
-}
-
-export const updateFolder = (id, name) => (dispatch, getState) => {
-    const { folders } = getState()[moduleName];
-    const foldersCopy = [...folders];
+export const updateFolder = (name, folderId) => (dispatch, getState) => {
+    const { openedFolder, mainFolders, subfolders, breadcrumbFolder } = getState()[moduleName];
+    const id = folderId ? folderId : openedFolder;
     requestAgent
         .put(Api.folder.updateName(id), { name })
         .then((res) => {
             NotificationService.success('The folder is updated successfully');
             const { folder } = res.body;
-            const updatedFolder = foldersCopy.find((f) => {
-                return f._id === folder._id
-            });
-            updatedFolder.name = folder.name;
-            dispatch(setFolders(foldersCopy));
+            if (folderId) {
+                const folders = [...subfolders];
+                folders.find((f) => f._id === folder._id).name = folder.name;
+                dispatch(setSubfolders(folders)); 
+            } else {
+                if (folder.parent) {
+                    const bcf = {...breadcrumbFolder};
+                    bcf.name = folder.name;
+                    dispatch(setBreadcrumbFolder(bcf));
+                } else {
+                    const folders = [...mainFolders];
+                    folders.find((f) => f._id === folder._id).name = folder.name;
+                    dispatch(setMainFolders(folders)); 
+                }
+            }
         })
         .catch((err) => {
             NotificationService.responseError(err);
         });
+}
+
+export const fetchMainFolders = () => (dispatch, getState) => {
+    dispatch(setMainFoldersLoading(true));
+
+    const { organization } = getState().organization;
+
+    requestAgent
+        .get(Api.folder.getOrganizationMainFolders({ organization: organization._id, page: 1 }))
+        .then((res) => {
+            const { folders, pagesCount } = res.body;
+            dispatch(setMainFolders(folders));
+            dispatch(setMainFoldersCurrentPageNumber(1));
+            dispatch(setMainFoldersTotalPagesCount(pagesCount || 1));
+            dispatch(setMainFoldersLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const fetchSubfolders = () => (dispatch, getState) => {
+    dispatch(setSubfoldersLoading(true));
+
+    const { organization } = getState().organization;
+    const { currentPageNumber, openedFolder } = getState()[moduleName];
+    const params = { organization: organization._id, page: currentPageNumber };
+
+    requestAgent
+        .get(Api.folder.getSubfolders(openedFolder, params))
+        .then((res) => {
+            const { folders, pagesCount } = res.body;
+            let pc = pagesCount || 1;
+            dispatch(setSubfolders(folders));
+            if (pc > getState()[moduleName].totalPagesCount) {
+                dispatch(setTotalPagesCount(pc));
+            }
+            dispatch(setSubfoldersLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const fetchBreadcrumbFolder = () => (dispatch, getState) => {
+    dispatch(setBreadcrumbLoading(true));
+
+    const { organization } = getState().organization;
+    const { openedFolder } = getState()[moduleName];
+
+    requestAgent
+        .get(Api.folder.getBreadcrumbFolder(openedFolder, { organization: organization._id, page: 1 }))
+        .then((res) => {
+            const { folder, pagesCount } = res.body;
+            dispatch(setBreadcrumbFolder(folder));
+            dispatch(setBreadcrumbCurrentPageNumber(1));
+            dispatch(setBreadcrumbTotalPagesCount(pagesCount || 1));
+            dispatch(setBreadcrumbLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const loadMoreMainFolders = () => (dispatch, getState) => {
+    const { organization } = getState().organization;
+    const { mainFoldersCurrentPageNumber } = getState()[moduleName];
+
+    dispatch(setMainFoldersLoading(true))
+    requestAgent
+    .get(Api.folder.getOrganizationMainFolders({ organization: organization._id, page: mainFoldersCurrentPageNumber + 1 }))
+    .then((res) => {
+        const { folders: newFolders, pagesCount } = res.body;
+        const { mainFolders } = getState()[moduleName];
+        const finalMainFolders = mainFolders.concat(newFolders);
+        dispatch(setMainFoldersCurrentPageNumber(mainFoldersCurrentPageNumber + 1))
+        dispatch(setMainFolders(finalMainFolders))
+        dispatch(setTotalPagesCount(pagesCount || 1))
+        dispatch(setMainFoldersLoading(false))
+    })
+    .catch(err => {
+        console.log(err);
+        NotificationService.responseError(err);
+        dispatch(setMainFoldersLoading(false));
+    })
+}
+
+export const loadMoreSiblingFolders = () => (dispatch, getState) => {
+    const { organization } = getState().organization;
+    const { openedFolder, breadcrumbCurrentPageNumber } = getState()[moduleName];
+    dispatch(setBreadcrumbLoading(true))
+    requestAgent
+    .get(Api.folder.getBreadcrumbFolder(openedFolder, { organization: organization._id, page: breadcrumbCurrentPageNumber + 1 }))
+    .then((res) => {
+        const { folder, pagesCount } = res.body;
+        const { breadcrumbFolder } = getState()[moduleName];
+        const oldBreadcrumbFolderCopy = JSON.parse(JSON.stringify(breadcrumbFolder));
+        const oldSiblingsCopy = JSON.parse(JSON.stringify(oldBreadcrumbFolderCopy.siblings));
+        const newSiblingsCopy = JSON.parse(JSON.stringify(folder.siblings));
+        const finalSiblings = oldSiblingsCopy.concat(newSiblingsCopy);
+        oldBreadcrumbFolderCopy.siblings = finalSiblings;
+        dispatch(setBreadcrumbCurrentPageNumber(breadcrumbCurrentPageNumber + 1));
+        dispatch(setBreadcrumbFolder(oldBreadcrumbFolderCopy));
+        dispatch(setTotalPagesCount(pagesCount || 1));
+        dispatch(setBreadcrumbLoading(false));
+    })
+    .catch(err => {
+        console.log(err);
+        NotificationService.responseError(err);
+        dispatch(setBreadcrumbLoading(false));
+    })
 }
