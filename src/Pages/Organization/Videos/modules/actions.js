@@ -205,6 +205,7 @@ export const deleteArticle = (articleId, videoId) => (dispatch, getState) => {
             NotificationService.success('Deleted succesfully')
             dispatch(fetchTranslatedArticles());
             dispatch(fetchSigleTranslatedArticle(videoId))
+            dispatch(fetchTranslationsCount(videoId))
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -730,8 +731,11 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
                 } else {
                     const { singleTranslatedArticle } = getState()[moduleName];
                     if (singleTranslatedArticle) {
+                        dispatch(fetchTranslationsCount(singleTranslatedArticle.video._id))
                         dispatch(fetchSigleTranslatedArticle(singleTranslatedArticle.video._id, {softLoad: true, cb: () => {
-                            window.location.href = routes.translationArticle(createdArtcile._id)
+                            // setTimeout(() => {
+                            //     window.location.href = routes.translationArticle(createdArtcile._id)
+                            // }, 1000);
                         }}))
                     } else {
                         window.location.href = routes.translationArticle(createdArtcile._id)
@@ -771,16 +775,33 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
     async.series(funcArray, (err, createdArticles) => {
         dispatch(fetchTranslatedArticles({ softLoad: true, cb: () => {
             // Wait till the cached browser page reflects the current articles
-            setTimeout(() => {
-                createdArticles = createdArticles.filter(a => a);
-                if (createdArticles.length > 1) {
-                    window.location.href = routes.organziationTranslationMetrics(videoId);
-                } else if (createdArticles.length > 0) {
-                    window.location.href = routes.translationArticle(createdArticles[0]._id);
-                } else {
-                    NotificationService.error('Something went wrong');
-                }
-            }, 1000);
+                    const { singleTranslatedArticle } = getState()[moduleName];
+                    if (singleTranslatedArticle) {
+                        dispatch(fetchTranslationsCount(singleTranslatedArticle.video._id))
+                        dispatch(fetchSigleTranslatedArticle(singleTranslatedArticle.video._id, {softLoad: true, cb: () => {
+                            setTimeout(() => {
+                            createdArticles = createdArticles.filter(a => a);
+                                if (createdArticles.length > 1) {
+                                    window.location.href = routes.organziationTranslationMetrics(videoId);
+                                } else if (createdArticles.length > 0) {
+                                    window.location.href = routes.translationArticle(createdArticles[0]._id);
+                                } else {
+                                    NotificationService.error('Something went wrong');
+                                }
+                            }, 1000);
+                        }}))
+                    } else {
+                        setTimeout(() => {
+                            createdArticles = createdArticles.filter(a => a);
+                            if (createdArticles.length > 1) {
+                                window.location.href = routes.organziationTranslationMetrics(videoId);
+                            } else if (createdArticles.length > 0) {
+                                window.location.href = routes.translationArticle(createdArticles[0]._id);
+                            } else {
+                                NotificationService.error('Something went wrong');
+                            }
+                        }, 1000);
+                    }
         }}))
     })
 }
