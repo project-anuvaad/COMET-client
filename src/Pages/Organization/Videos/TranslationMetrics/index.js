@@ -66,6 +66,7 @@ class Translation extends React.Component {
         console.log("got socket data", data);
         const { videoId } = this.props.match.params;
         this.props.fetchSigleTranslatedArticle(videoId);
+        this.props.fetchTranslationsCount(videoId);
       }
     );
   };
@@ -231,6 +232,7 @@ class Translation extends React.Component {
     setTimeout(() => {
       const { videoId } = this.props.match.params;
       this.props.fetchSigleTranslatedArticle(videoId, { softLoad: true });
+      this.props.fetchTranslationsCount(videoId);
     });
   };
   renderDeleteArticleModal = () => (
