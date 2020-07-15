@@ -131,9 +131,39 @@ export const setSubfolders = (folders) => ({
     payload: folders
 })
 
-export const setSubfoldersLoading = (loading) =>({
+export const setSubfoldersLoading = (loading) => ({
     type: actionTypes.SET_SUBFOLDERS_LOADING,
     payload: loading
+})
+
+export const setSubfoldersTotalPagesCount = (pagesCount) => ({
+    type: actionTypes.SET_SUBFOLDERS_TOTAL_PAGES_COUNT,
+    payload: pagesCount
+})
+
+export const setMoveVideoMainFolders = (folders) => ({
+    type: actionTypes.SET_MOVE_VIDEO_MAIN_FOLDERS,
+    payload: folders
+})
+
+export const setMoveVideoOpenedFolder = (folder) => ({
+    type: actionTypes.SET_MOVE_VIDEO_OPENED_FOLDER,
+    payload: folder
+})
+
+export const setMoveVideoLoading = (loading) => ({
+    type: actionTypes.SET_MOVE_VIDEO_LOADING,
+    payload: loading
+})
+
+export const setMoveVideoCurrentPageNumber = (pageNumber) => ({
+    type: actionTypes.SET_MOVE_VIDEO_CURRENT_PAGE_NUMBER,
+    payload: pageNumber
+})
+
+export const setMoveVideoTotalPagesCount = (pagesCount) => ({
+    type: actionTypes.SET_MOVE_VIDEO_TOTAL_PAGES_COUNT,
+    payload: pagesCount
 })
 
 export const updateLocalVideo = (videoId, newVideo) => (dispatch, getState) => {
@@ -285,12 +315,8 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
         .get(Api.article.getTranslatedArticles(params))
         .then((res) => {
             const { videos, pagesCount } = res.body;
-            let pc = pagesCount || 1;
             dispatch(setTranslatedArticles(videos));
-            // dispatch(setTotalPagesCount(pagesCount || 1));
-            if (pc > getState()[moduleName].totalPagesCount) {
-                dispatch(setTotalPagesCount(pc || 1));
-            }
+            dispatch(setTotalPagesCount(pagesCount || 1));
             dispatch(setSelectedCount(0));
             cb()
             dispatch(setVideoLoading(false))
@@ -653,6 +679,21 @@ export const updateVideosReviewers = (reviewers) => (dispatch, getState) => {
         NotificationService.success('Updated Successfully!');
         dispatch(fetchVideos());
     })
+}
+
+export const updateVideoFolder = (videoId, folderId) => (dispatch, getState) => {
+    dispatch(setVideoLoading(true));
+    requestAgent
+        .put(Api.video.updateFolder(videoId), { folder: folderId })
+        .then((res) => {
+            dispatch(setVideoLoading(false));
+            NotificationService.success('The video is moved successfully!');
+            dispatch(fetchTranslatedArticles());
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setVideoLoading(false));
+        })
 }
 
 export const resendEmailToVideoReviewer = (videoId, userId) => () => {
@@ -1171,11 +1212,8 @@ export const fetchSubfolders = () => (dispatch, getState) => {
         .get(Api.folder.getSubfolders(openedFolder, params))
         .then((res) => {
             const { folders, pagesCount } = res.body;
-            let pc = pagesCount || 1;
             dispatch(setSubfolders(folders));
-            if (pc > getState()[moduleName].totalPagesCount) {
-                dispatch(setTotalPagesCount(pc));
-            }
+            dispatch(setSubfoldersTotalPagesCount(pagesCount || 1));
             dispatch(setSubfoldersLoading(false));
         })
         .catch((err) => {
@@ -1216,7 +1254,7 @@ export const loadMoreMainFolders = () => (dispatch, getState) => {
         const finalMainFolders = mainFolders.concat(newFolders);
         dispatch(setMainFoldersCurrentPageNumber(mainFoldersCurrentPageNumber + 1))
         dispatch(setMainFolders(finalMainFolders))
-        dispatch(setTotalPagesCount(pagesCount || 1))
+        dispatch(setMainFoldersTotalPagesCount(pagesCount || 1))
         dispatch(setMainFoldersLoading(false))
     })
     .catch(err => {
@@ -1250,4 +1288,81 @@ export const loadMoreSiblingFolders = () => (dispatch, getState) => {
         NotificationService.responseError(err);
         dispatch(setBreadcrumbLoading(false));
     })
+}
+
+export const fetchMoveVideoMainFolders = () => (dispatch, getState) => {
+    dispatch(setMoveVideoLoading(true));
+
+    const { organization } = getState().organization;
+
+    requestAgent
+        .get(Api.folder.getOrganizationMainFolders({ organization: organization._id, page: 1 }))
+        .then((res) => {
+            const { folders, pagesCount } = res.body;
+            dispatch(setMoveVideoMainFolders(folders));
+            dispatch(setMoveVideoCurrentPageNumber(1));
+            dispatch(setMoveVideoTotalPagesCount(pagesCount || 1));
+            dispatch(setMoveVideoLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const fetchMoveVideoOpenedFolder = (id) => (dispatch, getState) => {
+    dispatch(setMoveVideoLoading(true));
+
+    const { organization } = getState().organization;
+
+    requestAgent
+        .get(Api.folder.getMoveVideoOpenedFolder(id, { organization: organization._id, page: 1 }))
+        .then((res) => {
+            const { folder, pagesCount } = res.body;
+            dispatch(setMoveVideoOpenedFolder(folder));
+            dispatch(setMoveVideoCurrentPageNumber(1));
+            dispatch(setMoveVideoTotalPagesCount(pagesCount || 1));
+            dispatch(setMoveVideoLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+}
+
+export const loadMoreMoveVideoFolders = () => (dispatch, getState) => {
+    const { organization } = getState().organization;
+    const { moveVideoMainFolders, moveVideoOpenedFolder, moveVideoCurrentPageNumber } = getState()[moduleName];
+
+    dispatch(setMoveVideoLoading(true));
+
+    if (!moveVideoOpenedFolder) {
+        requestAgent
+        .get(Api.folder.getOrganizationMainFolders({ organization: organization._id, page: moveVideoCurrentPageNumber + 1 }))
+        .then((res) => {
+            const { folders, pagesCount } = res.body;
+            const finalFolders = moveVideoMainFolders.concat(folders);
+            dispatch(setMoveVideoMainFolders(finalFolders));
+            dispatch(setMoveVideoCurrentPageNumber(moveVideoCurrentPageNumber + 1));
+            dispatch(setMoveVideoTotalPagesCount(pagesCount || 1));
+            dispatch(setMoveVideoLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setMoveVideoLoading(false));
+        });
+    } else {
+        requestAgent
+        .get(Api.folder.getSubfolders(moveVideoOpenedFolder._id, { organization: organization._id, page: moveVideoCurrentPageNumber + 1 }))
+        .then((res) => {
+            const { folders, pagesCount } = res.body;
+            const moveVideoOpenedFolderCopy = JSON.parse(JSON.stringify(moveVideoOpenedFolder));
+            moveVideoOpenedFolderCopy.subfolders = moveVideoOpenedFolder.subfolders.concat(folders); 
+            dispatch(setMoveVideoOpenedFolder(moveVideoOpenedFolderCopy));
+            dispatch(setMoveVideoCurrentPageNumber(moveVideoCurrentPageNumber + 1));
+            dispatch(setMoveVideoTotalPagesCount(pagesCount || 1));
+            dispatch(setMoveVideoLoading(false));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+        });
+    }
 }

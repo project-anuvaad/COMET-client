@@ -61,22 +61,24 @@ export default class FolderCard extends React.Component {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <span
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                this.props.onOpenFolder();
-              }}
-            >
-              <Icon name="folder" style={{ marginRight: 12 }} />
-              {this.props.folder.name}
-            </span>
-            <RoleRenderer roles={["admin", "project_leader"]}>
-              <Icon
-                name="edit"
-                style={{ float: "right", cursor: "pointer" }}
-                onClick={this.toggleEdit}
-              />
-            </RoleRenderer>
+            <div style={{ display: "flex", justifyContent: 'space-between' }}>
+              <span
+                style={{ cursor: "pointer", flex: 5 }}
+                onClick={() => {
+                  this.props.onOpenFolder();
+                }}
+              >
+                <Icon name="folder" style={{ marginRight: 12 }} />
+                {this.props.folder.name}
+              </span>
+              <RoleRenderer roles={["admin", "project_leader"]}>
+                <Icon
+                  name="edit"
+                  style={{ float: "right", cursor: "pointer", flex: 1 }}
+                  onClick={this.toggleEdit}
+                />
+              </RoleRenderer>
+            </div>
           </React.Fragment>
         )}
       </Card>

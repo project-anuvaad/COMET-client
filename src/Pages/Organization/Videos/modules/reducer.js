@@ -41,6 +41,13 @@ const INITIAL_STATE = {
 
     subfolders: [],
     subfoldersLoading: false,
+    subfoldersTotalPagesCount: 1,
+
+    moveVideoMainFolders: [],
+    moveVideoOpenedFolder: null,
+    moveVideoLoading: false,
+    moveVideoCurrentPageNumber: 1,
+    moveVideoTotalPagesCount: 1,
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -105,6 +112,18 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, subfolders: action.payload };
         case actionTypes.SET_SUBFOLDERS_LOADING:
             return { ...state, subfoldersLoading: action.payload };
+        case actionTypes.SET_SUBFOLDERS_TOTAL_PAGES_COUNT:
+            return { ...state, subfoldersTotalPagesCount: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_MAIN_FOLDERS:
+            return { ...state, moveVideoMainFolders: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_OPENED_FOLDER:
+            return { ...state, moveVideoOpenedFolder: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_LOADING:
+            return { ...state, moveVideoLoading: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_CURRENT_PAGE_NUMBER:
+            return { ...state, moveVideoCurrentPageNumber: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_TOTAL_PAGES_COUNT:
+            return { ...state, moveVideoTotalPagesCount: action.payload };
         default:
             return state;
     }
