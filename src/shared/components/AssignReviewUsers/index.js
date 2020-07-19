@@ -28,6 +28,8 @@ export default class AssignReviewUsers extends React.Component {
           defaultValue: newValue,
           defaultValueCached: true,
         });
+      } else {
+        this.setState({ defaultValueCached: true })
       }
     }
   };
