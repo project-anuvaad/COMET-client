@@ -108,7 +108,7 @@ class Review extends React.Component {
             }
         }
         const { user, organization } = this.props;
-        const defaultTab = canUserAccess(user, organization, ['uploader', 'review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
+        const defaultTab = canUserAccess(user, organization, ['admin', 'project_leader', 'uploader', 'review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
         if (!acTab) {
             this.setState({ activeTab: defaultTab })
         } else {
