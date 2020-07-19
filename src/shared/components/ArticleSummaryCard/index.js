@@ -32,13 +32,9 @@ export default class ArticleSummaryCard extends React.Component {
     return false;
   };
 
-  renderUserAvatar = (translator, extra) => {
-    const { users } = this.props;
-    if (!translator || !users) return null;
-    if (typeof translator === "string") {
-      translator = users.find((u) => u._id === translator);
-    } else {
-      translator = users.find((u) => u._id === translator.user);
+  renderUserAvatar = (translator, field, extra) => {
+    if (field) {
+      translator = translator[field];
     }
     if (!translator) return null;
     const translatorName = translator.firstname
@@ -162,11 +158,7 @@ export default class ArticleSummaryCard extends React.Component {
             {article.projectLeaders && article.projectLeaders.length > 0 &&
               users &&
               (function () {
-                const projectLeaders = users.filter(
-                  (u) =>
-                    article.projectLeaders.map((l) => l.user).indexOf(u._id) !==
-                    -1
-                );
+                const projectLeaders = article.projectLeaders.map(p => p.user);
                 if (!projectLeaders) return null;
                 return (
                   <p style={{ fontWeight: 300, fontSize: 12 }}>
@@ -371,7 +363,7 @@ export default class ArticleSummaryCard extends React.Component {
                     article.textTranslators.length > 0 &&
                     article.textTranslators.map((translator, index) => (
                       <span key={`translator-${translator.user}`}>
-                        {this.renderUserAvatar(translator, "Translator")}
+                        {this.renderUserAvatar(translator, 'user', "Translator")}
                       </span>
                     ))}
                   {article.textTranslators &&
@@ -393,6 +385,7 @@ export default class ArticleSummaryCard extends React.Component {
                       <span key={`voice-over-artist-${translator.user}`}>
                         {this.renderUserAvatar(
                           translator,
+                          'user',
                           <span>
                             Voice-over artist
                             {/* <div>Invitation: {translator.invitationStatus || 'pending'}</div> */}
@@ -417,7 +410,7 @@ export default class ArticleSummaryCard extends React.Component {
                     article.verifiers.length > 0 &&
                     article.verifiers.map((verifier) => (
                       <span key={`approver-${verifier}`}>
-                        {this.renderUserAvatar(verifier, "Approver")}
+                        {this.renderUserAvatar(verifier, '', "Approver")}
                       </span>
                     ))}
                   {/* Separator if there's text translators and  */}

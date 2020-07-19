@@ -491,85 +491,101 @@ class Review extends React.Component {
         </Modal>
     )
 
-    renderAssignUsers = () => (
-        <AssignReviewUsers
-            showResendEmail 
-            title="Assign Transcribers"
-            open={this.state.assignUsersModalOpen}
-            value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => {
-                this.onAssignUsersBlur();
-                this.setState({ assignUsersModalOpen: false, selectedVideo: null });
-            }}
-            onSave={this.onSaveAssignedUsers}
-            onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
-            onSearchUsersChange={(searchTerm) => {
-                this.onSearchUsersChange(searchTerm);
-            }}
-            onBlur={this.onAssignUsersBlur}
-        />
-    )
+    renderAssignUsers = () => {
+        if (!this.state.assignUsersModalOpen) return null;
+        return (
+            <AssignReviewUsers
+                showResendEmail 
+                title="Assign Transcribers"
+                open={this.state.assignUsersModalOpen}
+                value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignUsersModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onSaveAssignedUsers}
+                onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
 
-    renderAssignUsersToMultipleVideos = () => (
-        <AssignReviewUsers
-            title="Assign Transcribers To The Selected Videos"
-            showResendEmail 
-            open={this.state.assignUsersToMultipleVideosModalOpen}
-            value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => {
-                this.onAssignUsersBlur();
-                this.setState({ assignUsersToMultipleVideosModalOpen: false, selectedVideo: null });
-            }}
-            onSave={this.onMultipleVideosSaveAssignedUsers}
-            onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
-            onSearchUsersChange={(searchTerm) => {
-                this.onSearchUsersChange(searchTerm);
-            }}
-            onBlur={this.onAssignUsersBlur}
-        />
-    )
+    renderAssignUsersToMultipleVideos = () => {
+        if (!this.state.assignUsersToMultipleVideosModalOpen) return null;
 
-    renderAssignVerifiers = () => (
-        <AssignReviewUsers
-            title="Assign Approvers"
-            showResendEmail 
-            open={this.state.assignVerifiersModalOpen}
-            value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => {
-                this.onAssignUsersBlur();
-                this.setState({ assignVerifiersModalOpen: false, selectedVideo: null });
-            }}
-            onSave={this.onSaveVerifiers}
-            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
-            onSearchUsersChange={(searchTerm) => {
-                this.onSearchUsersChange(searchTerm);
-            }}
-            onBlur={this.onAssignUsersBlur}
-        />
-    )
+        return (
+            <AssignReviewUsers
+                title="Assign Transcribers To The Selected Videos"
+                showResendEmail 
+                open={this.state.assignUsersToMultipleVideosModalOpen}
+                value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignUsersToMultipleVideosModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onMultipleVideosSaveAssignedUsers}
+                onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
 
-    renderAssignVerifiersToMultipleVideos = () => (
-        <AssignReviewUsers
-            title="Assign Approvers To The Selected Videos"
-            showResendEmail 
-            open={this.state.assignVerifiersToMultipleVideosModalOpen}
-            value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => {
-                this.onAssignUsersBlur();
-                this.setState({ assignVerifiersToMultipleVideosModalOpen: false, selectedVideo: null });
-            }}
-            onSave={this.onMultipleVideosSaveVerifiers}
-            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
-            onSearchUsersChange={(searchTerm) => {
-                this.onSearchUsersChange(searchTerm);
-            }}
-            onBlur={this.onAssignUsersBlur}
-        />
-    )
+    renderAssignVerifiers = () => {
+        if (!this.state.assignVerifiersModalOpen) return null;
+
+        return (
+            <AssignReviewUsers
+                title="Assign Approvers"
+                showResendEmail 
+                open={this.state.assignVerifiersModalOpen}
+                value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignVerifiersModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onSaveVerifiers}
+                onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
+
+    renderAssignVerifiersToMultipleVideos = () => {
+        if (!this.state.assignVerifiersToMultipleVideosModalOpen) return null;
+
+        return (
+            <AssignReviewUsers
+                title="Assign Approvers To The Selected Videos"
+                showResendEmail 
+                open={this.state.assignVerifiersToMultipleVideosModalOpen}
+                value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignVerifiersToMultipleVideosModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onMultipleVideosSaveVerifiers}
+                onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
+
 
     renderConfirmReviewModal = () => (
         <Modal open={this.state.confirmReviewModalVisible} size="tiny">

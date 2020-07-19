@@ -14,32 +14,42 @@ export default class AssignReviewUsers extends React.Component {
     defaultValueCached: false,
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (!this.state.defaultValueCached) {
-      if (
-        JSON.stringify(nextProps.value) !==
-        JSON.stringify(this.state.value.map((v) => v._id))
-      ) {
-        const newValue = nextProps.value.map((v) =>
-          nextProps.users.find((u) => u._id === v)
-        );
+  componentDidMount = () => {
+        const newValue = this.props.value.map((v) =>
+          this.props.users.find((u) => u._id === v)
+        ).filter(a => a);
         this.setState({
           value: newValue,
           defaultValue: newValue,
           defaultValueCached: true,
         });
-      } else {
-        this.setState({ defaultValueCached: true })
-      }
-    }
-  };
+
+  }
+  // componentWillReceiveProps = (nextProps) => {
+  //   if (!this.state.defaultValueCached) {
+  //     if (
+  //       JSON.stringify(nextProps.value) !==
+  //       JSON.stringify(this.state.value.map((v) => v._id))
+  //     ) {
+  //       const newValue = nextProps.value.map((v) =>
+  //         nextProps.users.find((u) => u._id === v)
+  //       ).filter(a => a);
+  //       this.setState({
+  //         value: newValue,
+  //         defaultValue: newValue,
+  //         defaultValueCached: true,
+  //       });
+  //     } else {
+  //       // this.setState({ defaultValueCached: true })
+  //     }
+  //   }
+  // };
 
   onChange = (_, { value }) => {
     if (this.props.single) {
       const userObj = this.props.users.find(
         (u) => u._id === value[value.length - 1]
       );
-      console.log(userObj);
       this.setState({ value: value.length === 0 ? [] : [userObj] });
     } else {
       let userObjects = [];

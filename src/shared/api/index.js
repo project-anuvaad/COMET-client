@@ -49,6 +49,7 @@ export default {
         updateVolume: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/volume`,
         updateNormalizeAudio: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/normalizeAudio`,
         getTranslatedArticles: (params) => `${APP_ENV.API_ROOT}/article/translations?${querystring.encode(params)}`,
+        getSingleTranslatedArticles: (params) => `${APP_ENV.API_ROOT}/article/translations/single?${querystring.encode(params)}`,
         getTranslationsCount: (params) => `${APP_ENV.API_ROOT}/article/translations/count?${querystring.encode(params)}`,
         getUserTranslations: (params) => `${APP_ENV.API_ROOT}/article/translations/by_user?${querystring.encode(params)}`,
         findAndReplaceText: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/text/replace`,

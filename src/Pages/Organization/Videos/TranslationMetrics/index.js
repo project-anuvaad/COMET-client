@@ -112,20 +112,6 @@ class Translation extends React.Component {
     );
   };
 
-  getProjectLeaders = () => {
-    const { organizationUsers } = this.props;
-    const { selectedArticle } = this.state;
-    if (
-      !selectedArticle ||
-      !selectedArticle.projectLeaders ||
-      !organizationUsers
-    )
-      return null;
-
-    return organizationUsers.filter(
-      (u) => selectedArticle.projectLeaders.indexOf(u._id) !== -1
-    );
-  };
 
   isAdmin = () => {};
 
@@ -334,14 +320,17 @@ class Translation extends React.Component {
     );
   };
 
-  renderAssignVerifiers = () => (
+  renderAssignVerifiers = () => {
+   if (!this.state.assignVerifiersModalVisible) return null;
+
+    return (
     <AssignReviewUsers
       showResendEmail
       title="Assign Approvers"
       open={this.state.assignVerifiersModalVisible}
       value={
         this.state.selectedArticle && this.state.selectedArticle.verifiers
-          ? this.state.selectedArticle.verifiers
+          ? this.state.selectedArticle.verifiers.map(v => v._id)
           : []
       }
       users={this.getVerifiers()}
@@ -361,16 +350,18 @@ class Translation extends React.Component {
       }}
       onBlur={this.onAssignUsersBlur}
     />
-  );
+  )};
 
-  renderAssignProjectLeader = () => (
+  renderAssignProjectLeader = () => {
+      if (!this.state.assignProjectLeaderModelVisible || !this.state.selectedArticle) return null
+    return (
     <AssignReviewUsers
       title="Assign Project Leader"
       single
       open={this.state.assignProjectLeaderModelVisible}
       value={
         this.state.selectedArticle && this.state.selectedArticle.projectLeaders
-          ? this.state.selectedArticle.projectLeaders.map((l) => l.user)
+          ? this.state.selectedArticle.projectLeaders.map((l) => l.user._id)
           : []
       }
       users={this.props.organizationUsers}
@@ -390,36 +381,38 @@ class Translation extends React.Component {
       }}
       onBlur={this.onAssignUsersBlur}
     />
-  );
+  )};
 
-  renderAssignVideoProjectLeader = () => (
-    <AssignReviewUsers
-      title="Assign Project Leader"
-      single
-      open={this.state.assignVideoProjectLeaderModalVisible}
-      value={
-        this.state.selectedVideo && this.state.selectedVideo.projectLeaders
-          ? this.state.selectedVideo.projectLeaders
-          : []
-      }
-      users={this.props.organizationUsers}
-      onClose={() => {
-        this.onAssignUsersBlur();
-        this.setState({
-          assignVideoProjectLeaderModalVisible: false,
-          selectedVideo: null,
-        });
-      }}
-      onSave={this.onSaveVideoProjectLeaders}
-      onSearchUsersChange={(searchTerm) => {
-        this.onSearchUsersChange(searchTerm);
-      }}
-      onBlur={this.onAssignUsersBlur}
-    />
-  );
+  renderAssignVideoProjectLeader = () => {
+   if (!this.state.assignVideoProjectLeaderModalVisible)  return null;
+    return (
+      <AssignReviewUsers
+        title="Assign Project Leader"
+        single
+        open={this.state.assignVideoProjectLeaderModalVisible}
+        value={
+          this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+            ? this.state.selectedVideo.projectLeaders
+            : []
+        }
+        users={this.props.organizationUsers}
+        onClose={() => {
+          this.onAssignUsersBlur();
+          this.setState({
+            assignVideoProjectLeaderModalVisible: false,
+            selectedVideo: null,
+          });
+        }}
+        onSave={this.onSaveVideoProjectLeaders}
+        onSearchUsersChange={(searchTerm) => {
+          this.onSearchUsersChange(searchTerm);
+        }}
+        onBlur={this.onAssignUsersBlur}
+      />
+    )
+  };
 
   render() {
-    console.log('this.state.selectedArticle', this.state.selectedArticle);
     const { singleTranslatedArticle, translationsCount } = this.props;
     const organizationUsers = this.props.organizationUsers;
     const tabs = [

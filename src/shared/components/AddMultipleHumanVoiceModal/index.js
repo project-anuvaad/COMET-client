@@ -60,18 +60,13 @@ class AddMultipleHumanVoiceModal extends React.Component {
       );
       this.setState({ dropdownOptions: availableLangs });
     }
-  }
-
-  componentWillReceiveProps(nextProps) {
     if (
-      nextProps.selectedTranslatedArticles !==
         this.props.selectedTranslatedArticles &&
-      nextProps.selectedTranslatedArticles &&
-      nextProps.selectedTranslatedArticles.length > 0
+      this.props.selectedTranslatedArticles.length > 0
     ) {
       let data = [];
       let languages = [];
-      nextProps.selectedTranslatedArticles.forEach((ta) => {
+      this.props.selectedTranslatedArticles.forEach((ta) => {
         ta.articles.forEach((a) => {
           languages.push({
             language: a.tts ? `${a.langCode}-tts` : a.langCode,
@@ -106,6 +101,52 @@ class AddMultipleHumanVoiceModal extends React.Component {
       }
     }
   }
+
+  // componentWillReceiveProps(nextProps) {
+  //   if (
+  //     nextProps.selectedTranslatedArticles !==
+  //       this.props.selectedTranslatedArticles &&
+  //     nextProps.selectedTranslatedArticles &&
+  //     nextProps.selectedTranslatedArticles.length > 0
+  //   ) {
+  //     let data = [];
+  //     let languages = [];
+  //     nextProps.selectedTranslatedArticles.forEach((ta) => {
+  //       ta.articles.forEach((a) => {
+  //         languages.push({
+  //           language: a.tts ? `${a.langCode}-tts` : a.langCode,
+  //           languageName: a.langName,
+  //           tts: a.tts ? true : false,
+  //         });
+  //       });
+  //     });
+
+  //     languages = Array.from(new Set(languages.map(JSON.stringify))).map(
+  //       JSON.parse
+  //     );
+
+  //     console.log('clearing', nextProps.selectedTranslatedArticles, this.props.selectedTranslatedArticles)
+  //     languages.forEach((l) => {
+  //       data.push({
+  //         ...l,
+  //         searchValue: "",
+  //         tts: l.tts,
+  //         voiceTranslators: [],
+  //         textTranslators: [],
+  //         verifiers: [],
+  //         new: false,
+  //       });
+  //     });
+
+  //     if (languages.length !== 0) {
+  //       this.setState({
+  //         data,
+  //         isDisabledAddLang: false,
+  //         selectedVideosAllLangs: languages,
+  //       }); // selectedVideosAllLangs when multiVideos prop equals true
+  //     }
+  //   }
+  // }
 
   componentWillUpdate = (nextProps) => {
     if (this.props.open !== nextProps.open && nextProps.open) {

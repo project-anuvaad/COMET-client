@@ -253,6 +253,7 @@ class Translated extends React.Component {
     }
 
     _renderAddUsersToMultipleVideosModal() {
+        if (!this.state.addUsersToMultipleVideosModalOpen) return null;
         const users = this.getTranslators();
         const verifiers = this.getVerifiers();
         const selectedTranslatedArticles = this.props.translatedArticles.filter(ta => ta.video.selected);
@@ -266,12 +267,13 @@ class Translated extends React.Component {
         disabledLanguages = Array.from(new Set(disabledLanguages.map(JSON.stringify))).map(
             JSON.parse
         );
-
+        
         return (
             <AddMultipleHumanVoiceModal
                 open={this.state.addUsersToMultipleVideosModalOpen}
                 onClose={() => {
                     this.onAssignUsersBlur();
+
                     this.setState({ addUsersToMultipleVideosModalOpen: false });
                 }}
                 users={users}
@@ -289,31 +291,34 @@ class Translated extends React.Component {
         )
     }
 
-    _renderAssignProjectLeader = () => (
-        <AssignReviewUsers
-            title="Assign Project Leaders"
-            single
-            open={this.state.isAssignProjectLeaderModalOpen}
-            value={
-                this.state.selectedVideo && this.state.selectedVideo.projectLeaders
-                ? this.state.selectedVideo.projectLeaders
-                : []
-            }
-            users={this.props.organizationUsers}
-            onClose={() => {
-                this.onAssignUsersBlur();
-                this.setState({
-                    isAssignProjectLeaderModalOpen: false,
-                    selectedVideo: null,
-                });
-            }}
-            onSave={this.onSaveProjectLeaders}
-            onSearchUsersChange={(searchTerm) => {
-                this.onSearchUsersChange(searchTerm);
-            }}
-            onBlur={this.onAssignUsersBlur}
-        />
-    );
+    _renderAssignProjectLeader = () => {
+        if (!this.state.isAssignProjectLeaderModalOpen) return null;
+        return (
+            <AssignReviewUsers
+                title="Assign Project Leaders"
+                single
+                open={this.state.isAssignProjectLeaderModalOpen}
+                value={
+                    this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+                    ? this.state.selectedVideo.projectLeaders
+                    : []
+                }
+                users={this.props.organizationUsers}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({
+                        isAssignProjectLeaderModalOpen: false,
+                        selectedVideo: null,
+                    });
+                }}
+                onSave={this.onSaveProjectLeaders}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    };
 
     _renderExportMultipleVideosModal() {
         return (
