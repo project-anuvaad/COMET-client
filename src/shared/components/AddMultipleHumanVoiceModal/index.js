@@ -223,9 +223,12 @@ class AddMultipleHumanVoiceModal extends React.Component {
   };
 
   onSubmit = () => {
-    this.props.onSubmit(
-      this.state.data.filter((d) => d.language || d.languageName)
-    );
+    const data = this.state.data.slice();
+    data.forEach((d) => {
+      d.textTranslators = d.textTranslators.map((t) => t._id);
+      d.verifiers = d.verifiers.map((v) => v._id);
+    });
+    this.props.onSubmit(data.filter((d) => d.language || d.languageName));
   };
 
   addNewRow = () => {
@@ -264,25 +267,53 @@ class AddMultipleHumanVoiceModal extends React.Component {
     });
   };
 
-  render() {
-    const verifiersOptions = this.props.verifiers
-      ? this.props.verifiers.map((user) => ({
-          text: getUserName(user),
-          value: user._id,
-          key: `user-list-${user._id}`,
-        }))
-      : [];
+  getTextTranslatorOptions = (selectedTextTranslators) => {
     const { users } = this.props;
-    const textTranslatorOptions = !users
-      ? []
-      : users.map((user) => ({
-          value: user._id,
-          text: `${user.firstname} ${user.lastname} (${user.email})`,
-        }));
+    const usersIds = users.map((u) => u._id);
+
+    return selectedTextTranslators
+      .filter((t) => !usersIds.includes(t._id))
+      .map((t) => ({
+        value: t._id,
+        text: `${t.firstname} ${t.lastname} (${t.email})`,
+      }))
+      .concat(
+        !users
+          ? []
+          : users.map((u) => ({
+              value: u._id,
+              text: `${u.firstname} ${u.lastname} (${u.email})`,
+            }))
+      );
+  };
+
+  getVerifiersOptions = (selectedVerifiers) => {
+    const { verifiers } = this.props;
+    const verifiersIds = verifiers.map((v) => v._id);
+
+    return selectedVerifiers
+      .filter((v) => !verifiersIds.includes(v._id))
+      .map((v) => ({
+        text: getUserName(v),
+        value: v._id,
+        key: `user-list-${v._id}`,
+      }))
+      .concat(
+        !verifiers
+          ? []
+          : verifiers.map((v) => ({
+              text: getUserName(v),
+              value: v._id,
+              key: `user-list-${v._id}`,
+            }))
+      );
+  };
+
+  render() {
     return (
       <Modal size="large" open={this.props.open} onClose={this.props.onClose}>
         <Modal.Header>
-          <h3>{this.props.title || 'Add Human Voice Over In:'}</h3>
+          <h3>{this.props.title || "Add Human Voice Over In:"}</h3>
         </Modal.Header>
         <ModalContent>
           <Grid columns="three">
@@ -366,21 +397,32 @@ class AddMultipleHumanVoiceModal extends React.Component {
                                 search
                                 selection
                                 clearable
-                                options={textTranslatorOptions}
+                                options={this.getTextTranslatorOptions(
+                                  d.textTranslators
+                                )}
                                 className="translate-users-dropdown"
                                 value={
                                   d.textTranslators.length > 0
-                                    ? d.textTranslators[0]
+                                    ? d.textTranslators[0]._id
                                     : null
                                 }
                                 placeholder="Translator"
                                 onChange={(_, { value }) => {
                                   let data = this.state.data.slice();
-                                  let textTranslators = [];
-                                  textTranslators.push(value);
-                                  data[i].textTranslators = textTranslators;
+                                  if (value) {
+                                    const userObj = this.props.users.find(
+                                      (u) => u._id === value
+                                    );
+                                    data[i].textTranslators = [userObj];
+                                  } else {
+                                    data[i].textTranslators = [];
+                                  }
                                   this.setState({ data });
                                 }}
+                                onSearchChange={(e, { searchQuery }) => {
+                                  this.props.onSearchUsersChange(searchQuery);
+                                }}
+                                onBlur={this.props.onBlur}
                               />
                             </Grid.Column>
                           </Grid.Row>
@@ -396,6 +438,10 @@ class AddMultipleHumanVoiceModal extends React.Component {
                               data[i].voiceTranslators = translators;
                               this.setState({ data });
                             }}
+                            onSearchUsersChange={(searchQuery) => {
+                              this.props.onSearchUsersChange(searchQuery);
+                            }}
+                            onBlur={this.props.onBlur}
                           />
                         )}
                       </Grid.Column>
@@ -409,14 +455,26 @@ class AddMultipleHumanVoiceModal extends React.Component {
                                 multiple
                                 search
                                 selection
-                                options={verifiersOptions}
-                                value={d.verifiers}
+                                options={this.getVerifiersOptions(d.verifiers)}
+                                value={d.verifiers.map((v) => v._id)}
                                 onChange={(_, { value }) => {
+                                  let verifiers = [];
                                   let data = this.state.data.slice();
-                                  data[i].verifiers = value;
+                                  value.forEach((v) => {
+                                    const userObj =
+                                      this.props.verifiers.find(
+                                        (u) => u._id === v
+                                      ) || d.verifiers.find((u) => u._id === v);
+                                    verifiers.push(userObj);
+                                  });
+                                  data[i].verifiers = verifiers;
                                   this.setState({ data });
                                 }}
+                                onSearchChange={(e, { searchQuery }) => {
+                                  this.props.onSearchUsersChange(searchQuery);
+                                }}
                                 placeholder="Select users"
+                                onBlur={this.props.onBlur}
                               />
                             </Grid.Column>
                             <Grid.Column width={3}>
