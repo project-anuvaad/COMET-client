@@ -73,7 +73,10 @@ export default class PermissionsEditor extends React.Component {
 
   onSelectRole = (role) => {
     const { selectedRoles, selectedSubroles } = this.state;
-    const stateChanges = {};
+    const stateChanges = {
+      selectedRoles: selectedRoles.slice(),
+      selectedSubroles: selectedSubroles.slice(),
+    };
     const propChanges = { permissions: [] };
     if (selectedRoles.map((r) => r.value).indexOf(role.value) === -1) {
       // Add Role and subroles
@@ -126,12 +129,18 @@ export default class PermissionsEditor extends React.Component {
           .filter((r) => subroles.indexOf(r) === -1)
           .concat(newSubroles.map((r) => r.value));
         this.setState({ selectedSubroles: newSubroles });
+      } else {
+        propChanges.permissions = propChanges.permissions.concat(selectedSubroles.map(r => r.value))
       }
     }
     // remove review/translate roles as it's deprecated
     propChanges.permissions = propChanges.permissions.filter(
       (p) => ["review", "translate"].indexOf(p) === -1
     );
+    stateChanges.selectedRoles = stateChanges.selectedRoles.filter((r, i) => stateChanges.selectedRoles.map(r => r.value).indexOf(r.value) === i);
+    stateChanges.selectedSubroles = stateChanges.selectedSubroles.filter((r, i) => stateChanges.selectedSubroles.map(r => r.value).indexOf(r.value) === i);
+    propChanges.permissions = propChanges.permissions.filter((p, i) => propChanges.permissions.indexOf(p) === i);
+
     this.setState({
       ...stateChanges,
       mainSelected:
