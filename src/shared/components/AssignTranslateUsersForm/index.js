@@ -5,22 +5,67 @@ import './style.scss';
 export default class AssignTranslateUsersForm extends React.Component {
     state = {
         translators: [],
+        selectedTranslators: [],
+        defaultTranslatorsCached: false,
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.hasDefaultTranslators && nextProps.translators && nextProps.translators.length > 0 && !this.state.defaultTranslatorsCached) {
+            const selectedTranslators = this.state.selectedTranslators.slice();
+            nextProps.translators.forEach(t => {
+                const userObj = nextProps.users.find((u) => u._id === t.user);
+                if (userObj) {
+                    const selectedTranslatorsIds = selectedTranslators.map(t => t._id);
+                    if (!selectedTranslatorsIds.includes(userObj._id)) {
+                        selectedTranslators.push(userObj);
+                    }
+                }
+            })
+            this.setState({ selectedTranslators });
+        }
     }
 
     onTranslatorChange = (speakerNumber, userId) => {
-        const { translators } = this.props;
+        const { translators, users } = this.props;
         if (translators.find((t) => t.speakerNumber === speakerNumber)) {
             translators.find((t) => t.speakerNumber === speakerNumber).user = userId;
         } else {
             translators.push({ speakerNumber, user: userId });
         }
-        this.props.onChange(translators)
+        this.props.onChange(translators);
+
+        if (userId) {
+            const userObj = users.find((u) => u._id === userId);
+            if (userObj) {
+                const selectedTranslators = this.state.selectedTranslators.slice();
+                const selectedTranslatorsIds = selectedTranslators.map(t => t._id);
+                if (!selectedTranslatorsIds.includes(userObj._id)) {
+                    selectedTranslators.push(userObj);
+                    this.setState({ selectedTranslators });
+                }
+            }
+        }
     }
 
     render() {
         const { tts, speakersProfile, users } = this.props;
-        const dropdownOptions = !users ? [] : users.map((user) => ({ value: user._id, text: `${user.firstname} ${user.lastname} (${user.email})` }))
+        const usersIds = users.map((u) => u._id);
+        // const dropdownOptions = !users ? [] : users.map((user) => ({ value: user._id, text: `${user.firstname} ${user.lastname} (${user.email})` }))
      
+        const dropdownOptions = this.state.selectedTranslators
+            .filter((t) => !usersIds.includes(t._id))
+            .map((t) => ({
+                value: t._id,
+                text: `${t.firstname} ${t.lastname} (${t.email})`,
+            }))
+            .concat(
+            !users
+                ? []
+                : users.map((u) => ({
+                    value: u._id,
+                    text: `${u.firstname} ${u.lastname} (${u.email})`,
+                }))
+            );
         return (
             <Grid style={{}}>
                 {tts && (
@@ -50,6 +95,10 @@ export default class AssignTranslateUsersForm extends React.Component {
                                         this.props.onChange(newTranslators)
                                         // this.setState({ translators: newTranslators });
                                     }}
+                                    onSearchChange={(e, { searchQuery }) => {
+                                        this.props.onSearchUsersChange(searchQuery);
+                                    }}
+                                    onBlur={this.props.onBlur}
                                 />
                             </div>
                         </Grid.Column>
@@ -74,6 +123,10 @@ export default class AssignTranslateUsersForm extends React.Component {
                                         placeholder="Translator"
                                         value={assignedTranslator ? assignedTranslator.user : null}
                                         onChange={(e, { value }) => this.onTranslatorChange(speaker.speakerNumber, value)}
+                                        onSearchChange={(e, { searchQuery }) => {
+                                            this.props.onSearchUsersChange(searchQuery);
+                                        }}
+                                        onBlur={this.props.onBlur}
                                     />
                                 </div>
                             </Grid.Column>
