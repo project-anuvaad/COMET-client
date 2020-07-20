@@ -866,8 +866,8 @@ export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
     updateArticlesData.forEach((d) => {
       selectedTranslatedArticles.forEach((sta) => {
         sta.articles.forEach((a) => {
-          if (
-            d.language === a.langCode ||
+        if (
+            (d.language.split('-')[0] === a.langCode && d.tts === a.tts) ||
             (d.languageName && d.languageName === a.langName)
           ) {
             d.articlesToUpdate.push(a);
