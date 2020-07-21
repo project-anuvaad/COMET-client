@@ -25,7 +25,29 @@ const INITIAL_STATE = {
         completed: 0,
         cutting: 0,
         total: 0,
-    }
+    },
+
+    openedFolder: null,
+
+    mainFolders: [],
+    mainFoldersLoading: false,
+    mainFoldersCurrentPageNumber: 1,
+    mainFoldersTotalPagesCount: 1,
+
+    breadcrumbFolder: null,
+    breadcrumbLoading: false,
+    breadcrumbCurrentPageNumber: 1,
+    breadcrumbTotalPagesCount: 1,
+
+    subfolders: [],
+    subfoldersLoading: false,
+    subfoldersTotalPagesCount: 1,
+
+    moveVideoMainFolders: [],
+    moveVideoOpenedFolder: null,
+    moveVideoLoading: false,
+    moveVideoCurrentPageNumber: 1,
+    moveVideoTotalPagesCount: 1,
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -68,6 +90,40 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, videosCounts: action.payload };
         case actionTypes.SET_SELECTED_COUNT:
             return { ...state, selectedCount: action.payload };
+        case actionTypes.SET_OPENED_FOLDER:
+            return { ...state, openedFolder: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS:
+            return { ...state, mainFolders: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS_LOADING:
+            return { ...state, mainFoldersLoading: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS_CURRENT_PAGE_NUMBER:
+            return { ...state, mainFoldersCurrentPageNumber: action.payload };
+        case actionTypes.SET_MAIN_FOLDERS_TOTAL_PAGES_COUNT:
+            return { ...state, mainFoldersTotalPagesCount: action.payload };
+        case actionTypes.SET_BREADCRUMB_FOLDER:
+            return { ...state, breadcrumbFolder: action.payload };
+        case actionTypes.SET_BREADCRUMB_LOADING:
+            return { ...state, breadcrumbLoading: action.payload };
+        case actionTypes.SET_BREADCRUMB_CURRENT_PAGE_NUMBER:
+            return { ...state, breadcrumbCurrentPageNumber: action.payload };
+        case actionTypes.SET_BREADCRUMB_TOTAL_PAGES_COUNT:
+            return { ...state, breadcrumbTotalPagesCount: action.payload };
+        case actionTypes.SET_SUBFOLDERS:
+            return { ...state, subfolders: action.payload };
+        case actionTypes.SET_SUBFOLDERS_LOADING:
+            return { ...state, subfoldersLoading: action.payload };
+        case actionTypes.SET_SUBFOLDERS_TOTAL_PAGES_COUNT:
+            return { ...state, subfoldersTotalPagesCount: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_MAIN_FOLDERS:
+            return { ...state, moveVideoMainFolders: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_OPENED_FOLDER:
+            return { ...state, moveVideoOpenedFolder: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_LOADING:
+            return { ...state, moveVideoLoading: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_CURRENT_PAGE_NUMBER:
+            return { ...state, moveVideoCurrentPageNumber: action.payload };
+        case actionTypes.SET_MOVE_VIDEO_TOTAL_PAGES_COUNT:
+            return { ...state, moveVideoTotalPagesCount: action.payload };
         default:
             return state;
     }

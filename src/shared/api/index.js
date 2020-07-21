@@ -22,6 +22,7 @@ export default {
         resendEmailToVerifier: id => `${APP_ENV.API_ROOT}/video/${id}/verifiers/resendEmail`,
         refreshMedia: (id) => `${APP_ENV.API_ROOT}/video/${id}/refreshMedia`,
         updateProjectLeaders: (videoId) => `${APP_ENV.API_ROOT}/video/${videoId}/projectLeaders`,
+        updateFolder: id => `${APP_ENV.API_ROOT}/video/${id}/folder`,
     },
     noiseCancellationVideos: {
         getVideos: (params = {}) => `${APP_ENV.API_ROOT}/noiseCancellationVideo?${querystring.encode(params)}`,
@@ -139,5 +140,13 @@ export default {
     videoTutorialContribution: {
         uploadVideo: () => `${APP_ENV.API_ROOT}/videoTutorialContribution`,
         getVideos: () => `${APP_ENV.API_ROOT}/videoTutorialContribution`,
+    },
+    folder: {
+        createFolder: () => `${APP_ENV.API_ROOT}/folder`,
+        updateName: (id) => `${APP_ENV.API_ROOT}/folder/${id}/name`,
+        getBreadcrumbFolder: (folderId, params) => `${APP_ENV.API_ROOT}/folder/${folderId}/breadcrumb/?${querystring.encode(params)}`,
+        getOrganizationMainFolders: (params) => `${APP_ENV.API_ROOT}/folder/mainFolders?${querystring.encode(params)}`,
+        getSubfolders: (folderId, params) => `${APP_ENV.API_ROOT}/folder/${folderId}/subfolders?${querystring.encode(params)}`,
+        getMoveVideoOpenedFolder: (folderId, params) => `${APP_ENV.API_ROOT}/folder/${folderId}/moveVideo?${querystring.encode(params)}`,
     }
 }
