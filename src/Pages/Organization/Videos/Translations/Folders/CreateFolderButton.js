@@ -4,11 +4,12 @@ import { Button, Icon } from "semantic-ui-react";
 export default class CreateFolderButton extends React.Component {
   render() {
     return (
-      <span style={{ display: "flex" }}>
+      <span style={{ display: "flex", justifyContent: 'space-between' }}>
         {this.props.openedFolder && (
           <Button
             color="green"
-            style={{ display: "block", margin: "auto" }}
+            size="tiny"
+            basic
             onClick={this.props.onChangeNameClick}
           >
             <Icon name="edit" />
@@ -18,7 +19,8 @@ export default class CreateFolderButton extends React.Component {
 
         <Button
           color="green"
-          style={{ display: "block", margin: "auto" }}
+          size="tiny"
+          basic
           onClick={this.props.onCreateClick}
         >
           <Icon name="plus" />

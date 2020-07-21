@@ -443,7 +443,7 @@ class Translated extends React.Component {
                             alignItems: "center",
                             }}
                         >
-                            <Grid.Column width={12}>
+                            <Grid.Column width={10}>
                                 <FoldersList
                                     mainFolders={this.props.mainFolders}
                                     breadcrumbFolder={this.props.breadcrumbFolder}
@@ -512,7 +512,8 @@ class Translated extends React.Component {
                                 />
                             </Grid.Column>
                             <RoleRenderer roles={['admin', 'project_leader']}>
-                                <Grid.Column width={4}>
+                                <Grid.Column width={6}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '2rem', }}>
                                     <CreateFolderButton
                                         openedFolder={this.props.openedFolder}
                                         onCreateClick={() => {
@@ -522,6 +523,7 @@ class Translated extends React.Component {
                                             this.setState({ changeFolderNameModalOpen: true });
                                         }}
                                     />
+                                    </div>
                                 </Grid.Column>
                             </RoleRenderer>
                         </Grid.Row>
