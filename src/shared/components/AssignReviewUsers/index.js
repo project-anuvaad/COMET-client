@@ -149,7 +149,7 @@ export default class AssignReviewUsers extends React.Component {
           <Button
             circular
             primary
-            onClick={() => this.props.onSave(this.state.value)}
+            onClick={() => this.props.onSave(this.state.value.map(v => v._id))}
           >
             Save
           </Button>
