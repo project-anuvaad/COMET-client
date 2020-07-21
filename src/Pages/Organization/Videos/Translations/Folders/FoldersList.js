@@ -91,58 +91,77 @@ export default class FoldersList extends React.Component {
         <Breadcrumb.Divider icon="right chevron" />
 
         <Breadcrumb.Section>
-          <Dropdown
-            text={
-              this.props.openedFolder ? (
-                <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
-                  <Icon name="folder open" style={{ marginRight: 5 }} />
-                  {this.state.selectedMainFolderName}
-                </span>
-              ) : (
-                <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
-                  <Icon name="folder" style={{ marginRight: 5 }} />
-                  Select Folder
-                </span>
-              )
-            }
-            pointing={mainFoldersOptions.length > 0}
-          >
-            <Dropdown.Menu>
-              {mainFoldersOptions.map((o) => (
-                <Dropdown.Item
-                  {...o}
-                  onClick={(e, { value }) => {
-                    this.setState({ selectedMainFolderName: o.name });
-                    this.setState({ selectedMainFolderId: o.value });
-                    this.props.onOpenMainFolder(value);
-                  }}
-                />
-              ))}
-              {this.props.mainFoldersCurrentPageNumber !==
-                this.props.mainFoldersTotalPagesCount && (
-                <div
-                  style={{
-                    margin: 20,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Button
-                    primary
-                    size="mini"
-                    disabled={this.props.mainFoldersLoading}
-                    loading={this.props.mainFoldersLoading}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.props.onLoadMoreMainFolders();
+          {this.props.breadcrumbFolder && this.props.breadcrumbFolder.parent ? (
+            <span
+              style={{
+                color: "#041c34",
+                fontSize: "0.9rem",
+                cursor: "pointer",
+                textDecoration: 'underline'
+              }}
+              onClick={() => {
+                this.setState({ selectedMainFolderName: this.state.selectedMainFolderName });
+                this.setState({ selectedMainFolderId: this.state.selectedMainFolderId });
+                this.props.onOpenMainFolder(this.state.selectedMainFolderId);
+              }}
+            >
+              <Icon name="folder open" style={{ marginRight: 5 }} />
+              {this.state.selectedMainFolderName}
+            </span>
+          ) : (
+            <Dropdown
+              text={
+                this.props.openedFolder ? (
+                  <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
+                    <Icon name="folder open" style={{ marginRight: 5 }} />
+                    {this.state.selectedMainFolderName}
+                  </span>
+                ) : (
+                  <span style={{ color: "#041c34", fontSize: "0.9rem" }}>
+                    <Icon name="folder" style={{ marginRight: 5 }} />
+                    Select Folder
+                  </span>
+                )
+              }
+              pointing={mainFoldersOptions.length > 0}
+            >
+              <Dropdown.Menu>
+                {mainFoldersOptions.map((o) => (
+                  <Dropdown.Item
+                    {...o}
+                    onClick={(e, { value }) => {
+                      this.setState({ selectedMainFolderName: o.name });
+                      this.setState({ selectedMainFolderId: o.value });
+                      this.props.onOpenMainFolder(value);
+                    }}
+                  />
+                ))}
+                {this.props.mainFoldersCurrentPageNumber !==
+                  this.props.mainFoldersTotalPagesCount && (
+                  <div
+                    style={{
+                      margin: 20,
+                      display: "flex",
+                      justifyContent: "center",
                     }}
                   >
-                    Load More...
-                  </Button>
-                </div>
-              )}
-            </Dropdown.Menu>
-          </Dropdown>
+                    <Button
+                      primary
+                      size="mini"
+                      disabled={this.props.mainFoldersLoading}
+                      loading={this.props.mainFoldersLoading}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        this.props.onLoadMoreMainFolders();
+                      }}
+                    >
+                      Load More...
+                    </Button>
+                  </div>
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
         </Breadcrumb.Section>
 
         {this.props.breadcrumbFolder &&
