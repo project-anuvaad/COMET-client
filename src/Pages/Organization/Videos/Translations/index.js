@@ -43,6 +43,7 @@ class Translated extends React.Component {
         createFolderModalOpen: false,
         changeFolderNameModalOpen: false,
         moveVideoModalOpen: false,
+        searchUsersFilter: '',
     }
 
     constructor(props) {
@@ -51,15 +52,17 @@ class Translated extends React.Component {
             this.props.setCurrentPageNumber(1);
             this.props.fetchTranslatedArticles();
         }, 500)
-
+        this.debouncedUsersSearch = debounce(() => {
+            this.props.searchUsers(this.props.organization._id, { search: this.state.searchUsersFilter });
+        }, 500);
     }
     componentWillMount = () => {
         this.props.setSearchFilter('');
         this.props.setCurrentPageNumber(1);
         this.props.fetchTranslatedArticles();
-        this.props.fetchUsers(this.props.organization._id);
         this.props.fetchMainFolders();
         this.props.fetchMoveVideoMainFolders();
+        this.props.searchUsers(this.props.organization._id, { search: '' });
     }
 
     isVideoFocused = (video) => {
@@ -84,6 +87,11 @@ class Translated extends React.Component {
     onSearchChange = (searchTerm) => {
         this.props.setSearchFilter(searchTerm);
         this.debouncedSearch()
+    }
+
+    onSearchUsersChange = (searchTerm) => {
+        this.setState({ searchUsersFilter: searchTerm });
+        this.debouncedUsersSearch();
     }
 
     onAddHumanVoice = (data) => {
@@ -133,6 +141,10 @@ class Translated extends React.Component {
     onUpdateFolder = (name, id) => {
         this.setState({ changeFolderNameModalOpen: false });
         this.props.updateFolder(name, id);
+    }
+    onAssignUsersBlur = () => {
+        this.setState({ searchUsersFilter: '' });
+        this.props.searchUsers(this.props.organization._id, { search: '' });
     }
 
     getTranslators = () => {
@@ -246,13 +258,20 @@ class Translated extends React.Component {
             <AddMultipleHumanVoiceModal
                 title={this.getButtonTitle() + ' In:'}
                 open={this.props.addMultipleHumanVoiceModalVisible}
-                onClose={() => this.props.setAddMultipleHumanVoiceModalVisible(false)}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.props.setAddMultipleHumanVoiceModalVisible(false);
+                }}
                 users={users}
                 verifiers={verifiers}
                 speakersProfile={selectedVideo && selectedVideo.originalArticle ? selectedVideo.originalArticle.speakersProfile : []}
                 disabledLanguages={disabledLanguages}
                 skippable={false}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
                 onSubmit={(data) => this.onAddHumanVoice(data)}
+                onBlur={this.onAssignUsersBlur}
             />
         )
     }
@@ -268,6 +287,7 @@ class Translated extends React.Component {
     }
 
     _renderAddUsersToMultipleVideosModal() {
+        if (!this.state.addUsersToMultipleVideosModalOpen) return null;
         const users = this.getTranslators();
         const verifiers = this.getVerifiers();
         const selectedTranslatedArticles = this.props.translatedArticles.filter(ta => ta.video.selected);
@@ -281,11 +301,15 @@ class Translated extends React.Component {
         disabledLanguages = Array.from(new Set(disabledLanguages.map(JSON.stringify))).map(
             JSON.parse
         );
-
+        
         return (
             <AddMultipleHumanVoiceModal
                 open={this.state.addUsersToMultipleVideosModalOpen}
-                onClose={() => this.setState({ addUsersToMultipleVideosModalOpen: false })}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+
+                    this.setState({ addUsersToMultipleVideosModalOpen: false });
+                }}
                 users={users}
                 verifiers={verifiers}
                 disabledLanguages={disabledLanguages}
@@ -293,30 +317,42 @@ class Translated extends React.Component {
                 onSubmit={(data) => this.onAddUsersToMultipleVideos(data)}
                 multiVideos={true}
                 selectedTranslatedArticles={selectedTranslatedArticles}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
             />
         )
     }
 
-    _renderAssignProjectLeader = () => (
-        <AssignReviewUsers
-            title="Assign Project Leaders"
-            single
-            open={this.state.isAssignProjectLeaderModalOpen}
-            value={
-                this.state.selectedVideo && this.state.selectedVideo.projectLeaders
-                ? this.state.selectedVideo.projectLeaders
-                : []
-            }
-            users={this.props.organizationUsers}
-            onClose={() =>
-                this.setState({
-                    isAssignProjectLeaderModalOpen: false,
-                    selectedVideo: null,
-                })
-            }
-            onSave={this.onSaveProjectLeaders}
-        />
-    );
+    _renderAssignProjectLeader = () => {
+        if (!this.state.isAssignProjectLeaderModalOpen) return null;
+        return (
+            <AssignReviewUsers
+                title="Assign Project Leaders"
+                single
+                open={this.state.isAssignProjectLeaderModalOpen}
+                value={
+                    this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+                    ? this.state.selectedVideo.projectLeaders
+                    : []
+                }
+                users={this.props.organizationUsers}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({
+                        isAssignProjectLeaderModalOpen: false,
+                        selectedVideo: null,
+                    });
+                }}
+                onSave={this.onSaveProjectLeaders}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    };
 
     _renderExportMultipleVideosModal() {
         return (
@@ -724,7 +760,7 @@ const mapDispatchToProps = (dispatch) => ({
     addUsersToMultipleVideos: (data) => dispatch(videoActions.addUsersToMultipleVideos(data)),
     submitMultipleLanguages: (codes) => dispatch(videoActions.submitMultipleLanguages(codes)),
     updateVideoProjectLeaders: (videoId, projectLeaders) => dispatch(videoActions.updateVideoProjectLeaders(videoId, projectLeaders)),
-    fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
+    searchUsers: (organizationId, query) => dispatch(organizationActions.searchUsers(organizationId, query)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     setAllTranslatedArticleVideoSelected: (selected) => dispatch(videoActions.setAllTranslatedArticleVideoSelected(selected)),
     setTranslatedArticleVideoSelected: (videoId, selected) => dispatch(videoActions.setTranslatedArticleVideoSelected(videoId, selected)),

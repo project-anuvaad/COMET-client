@@ -15,6 +15,7 @@ import * as videoActions from "../modules/actions";
 import * as organizationActions from "../../../../actions/organization";
 
 import {
+  debounce,
   getUsersByRoles,
   displayArticleLanguage,
 } from "../../../../shared/utils/helpers";
@@ -41,11 +42,19 @@ class Translation extends React.Component {
     assignUsersModalVisible: false,
     assignVerifiersModalVisible: false,
     assignProjectLeaderModelVisible: false,
+    searchUsersFilter: '',
   };
+
+  constructor(props) {
+    super(props);
+    this.debouncedUsersSearch = debounce(() => {
+        this.props.searchUsers(this.props.organization._id, { search: this.state.searchUsersFilter });
+    }, 500);
+  }
 
   componentWillMount = () => {
     const { videoId } = this.props.match.params;
-    this.props.fetchUsers(this.props.organization._id);
+    this.props.searchUsers(this.props.organization._id, { search: '' });
     this.props.fetchSigleTranslatedArticle(videoId, {
       stage: this.state.activeFilter,
     });
@@ -103,20 +112,6 @@ class Translation extends React.Component {
     );
   };
 
-  getProjectLeaders = () => {
-    const { organizationUsers } = this.props;
-    const { selectedArticle } = this.state;
-    if (
-      !selectedArticle ||
-      !selectedArticle.projectLeaders ||
-      !organizationUsers
-    )
-      return null;
-
-    return organizationUsers.filter(
-      (u) => selectedArticle.projectLeaders.indexOf(u._id) !== -1
-    );
-  };
 
   isAdmin = () => {};
 
@@ -168,12 +163,12 @@ class Translation extends React.Component {
   };
 
   onAddClick = (article) => {
-    this.props.fetchUsers(this.props.organization._id);
+    // this.props.fetchUsers(this.props.organization._id);
     this.setState({ selectedArticle: article, assignUsersModalVisible: true });
   };
 
   onAddProjectLeaderClick = (article) => {
-    this.props.fetchUsers(this.props.organization._id);
+    // this.props.fetchUsers(this.props.organization._id);
     this.setState({
       selectedArticle: article,
       assignProjectLeaderModelVisible: true,
@@ -181,7 +176,7 @@ class Translation extends React.Component {
   };
 
   onAddVerifiersClick = (article) => {
-    this.props.fetchUsers(this.props.organization._id);
+    // this.props.fetchUsers(this.props.organization._id);
     this.setState({
       selectedArticle: article,
       assignVerifiersModalVisible: true,
@@ -206,6 +201,16 @@ class Translation extends React.Component {
       // this.props.resendEmailToReviewer(articleId, userId);
     }
   };
+
+  onSearchUsersChange = (searchTerm) => {
+    this.setState({ searchUsersFilter: searchTerm });
+    this.debouncedUsersSearch();
+  }
+
+  onAssignUsersBlur = () => {
+    this.setState({ searchUsersFilter: '' });
+    this.props.searchUsers(this.props.organization._id, { search: '' });
+  }
 
   getTranslationArticleUrl = (articleId, langCode, langName) => {
     const parts = [];
@@ -272,7 +277,10 @@ class Translation extends React.Component {
     return (
       <AddMultipleHumanVoiceModal
         open={this.props.addMultipleHumanVoiceModalVisible}
-        onClose={() => this.props.setAddMultipleHumanVoiceModalVisible(false)}
+        onClose={() => {
+          this.onAssignUsersBlur();
+          this.props.setAddMultipleHumanVoiceModalVisible(false);
+        }}
         users={users}
         verifiers={verifiers}
         speakersProfile={
@@ -283,6 +291,10 @@ class Translation extends React.Component {
         disabledLanguages={disabledLanguages}
         skippable={false}
         onSubmit={(data) => this.onAddHumanVoice(data)}
+        onSearchUsersChange={(searchTerm) => {
+          this.onSearchUsersChange(searchTerm);
+        }}
+        onBlur={this.onAssignUsersBlur}
       />
     );
   }
@@ -295,80 +307,110 @@ class Translation extends React.Component {
         open={this.state.assignUsersModalVisible}
         article={this.state.selectedArticle}
         users={users}
-        onClose={() => this.setState({ assignUsersModalVisible: false })}
+        onClose={() => {
+          this.onAssignUsersBlur();
+          this.setState({ assignUsersModalVisible: false });
+        }}
         onSave={this.onSaveTranslators}
+        onSearchUsersChange={(searchTerm) => {
+          this.onSearchUsersChange(searchTerm);
+        }}
+        onBlur={this.onAssignUsersBlur}
       />
     );
   };
 
-  renderAssignVerifiers = () => (
+  renderAssignVerifiers = () => {
+   if (!this.state.assignVerifiersModalVisible) return null;
+
+    return (
     <AssignReviewUsers
       showResendEmail
       title="Assign Approvers"
       open={this.state.assignVerifiersModalVisible}
       value={
         this.state.selectedArticle && this.state.selectedArticle.verifiers
-          ? this.state.selectedArticle.verifiers
+          ? this.state.selectedArticle.verifiers.map(v => v._id)
           : []
       }
       users={this.getVerifiers()}
-      onClose={() =>
+      onClose={() => {
+        this.onAssignUsersBlur();
         this.setState({
           assignVerifiersModalVisible: false,
           selectedArticle: null,
-        })
-      }
+        });
+      }}
       onSave={this.onSaveVerifiers}
       onResendEmail={(userId) =>
         this.onResendEmail("verifier", this.state.selectedArticle._id, userId)
       }
+      onSearchUsersChange={(searchTerm) => {
+        this.onSearchUsersChange(searchTerm);
+      }}
+      onBlur={this.onAssignUsersBlur}
     />
-  );
+  )};
 
-  renderAssignProjectLeader = () => (
+  renderAssignProjectLeader = () => {
+      if (!this.state.assignProjectLeaderModelVisible || !this.state.selectedArticle) return null
+    return (
     <AssignReviewUsers
       title="Assign Project Leader"
       single
       open={this.state.assignProjectLeaderModelVisible}
       value={
         this.state.selectedArticle && this.state.selectedArticle.projectLeaders
-          ? this.state.selectedArticle.projectLeaders.map((l) => l.user)
+          ? this.state.selectedArticle.projectLeaders.map((l) => l.user._id)
           : []
       }
       users={this.props.organizationUsers}
-      onClose={() =>
+      onClose={() => {
+        this.onAssignUsersBlur();
         this.setState({
           assignProjectLeaderModelVisible: false,
           selectedArticle: null,
-        })
-      }
+        });
+      }}
       onSave={this.onSaveProjectLeaders}
       // onResendEmail={(userId) =>
       //   this.onResendEmail("verifier", this.state.selectedArticle._id, userId)
       // }
+      onSearchUsersChange={(searchTerm) => {
+        this.onSearchUsersChange(searchTerm);
+      }}
+      onBlur={this.onAssignUsersBlur}
     />
-  );
+  )};
 
-  renderAssignVideoProjectLeader = () => (
-    <AssignReviewUsers
-      title="Assign Project Leader"
-      single
-      open={this.state.assignVideoProjectLeaderModalVisible}
-      value={
-        this.state.selectedVideo && this.state.selectedVideo.projectLeaders
-          ? this.state.selectedVideo.projectLeaders
-          : []
-      }
-      users={this.props.organizationUsers}
-      onClose={() =>
-        this.setState({
-          assignVideoProjectLeaderModalVisible: false,
-          selectedVideo: null,
-        })
-      }
-      onSave={this.onSaveVideoProjectLeaders}
-    />
-  );
+  renderAssignVideoProjectLeader = () => {
+   if (!this.state.assignVideoProjectLeaderModalVisible)  return null;
+    return (
+      <AssignReviewUsers
+        title="Assign Project Leader"
+        single
+        open={this.state.assignVideoProjectLeaderModalVisible}
+        value={
+          this.state.selectedVideo && this.state.selectedVideo.projectLeaders
+            ? this.state.selectedVideo.projectLeaders
+            : []
+        }
+        users={this.props.organizationUsers}
+        onClose={() => {
+          this.onAssignUsersBlur();
+          this.setState({
+            assignVideoProjectLeaderModalVisible: false,
+            selectedVideo: null,
+          });
+        }}
+        onSave={this.onSaveVideoProjectLeaders}
+        onSearchUsersChange={(searchTerm) => {
+          this.onSearchUsersChange(searchTerm);
+        }}
+        onBlur={this.onAssignUsersBlur}
+      />
+    )
+  };
 
   render() {
     const { singleTranslatedArticle, translationsCount } = this.props;
@@ -769,8 +811,7 @@ const mapDispatchToProps = (dispatch) => ({
   deleteArticle: (articleId, videoId) =>
     dispatch(videoActions.deleteArticle(articleId, videoId)),
   setSearchFilter: (filter) => dispatch(videoActions.setSearchFilter(filter)),
-  fetchUsers: (organizationId) =>
-    dispatch(organizationActions.fetchUsers(organizationId)),
+  searchUsers: (organizationId, query) => dispatch(organizationActions.searchUsers(organizationId, query)),
   updateTranslators: (articleId, translators) =>
     dispatch(videoActions.updateTranslators(articleId, translators)),
   updateVerifiers: (articleId, verifiers) =>

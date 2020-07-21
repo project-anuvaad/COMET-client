@@ -23,7 +23,7 @@ class TranslateArticle extends React.Component {
         } else {
             const script = document.createElement("script");
             script.id = 'vw-translate-script'
-            script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-translate/v2.0.10.js";
+            script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-translate/v2.0.14.js";
             script.async = true;
             script.onload = () => this.setState({ loaded: true });
             document.body.appendChild(script);

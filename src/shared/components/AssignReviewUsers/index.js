@@ -10,30 +10,78 @@ import "./style.scss";
 export default class AssignReviewUsers extends React.Component {
   state = {
     value: [],
+    defaultValue: [],
+    defaultValueCached: false,
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.value !== this.state.value) {
-      this.setState({ value: nextProps.value });
-    }
-  };
+  componentDidMount = () => {
+        const newValue = this.props.value.map((v) =>
+          this.props.users.find((u) => u._id === v)
+        ).filter(a => a);
+        this.setState({
+          value: newValue,
+          defaultValue: newValue,
+          defaultValueCached: true,
+        });
+
+  }
+  // componentWillReceiveProps = (nextProps) => {
+  //   if (!this.state.defaultValueCached) {
+  //     if (
+  //       JSON.stringify(nextProps.value) !==
+  //       JSON.stringify(this.state.value.map((v) => v._id))
+  //     ) {
+  //       const newValue = nextProps.value.map((v) =>
+  //         nextProps.users.find((u) => u._id === v)
+  //       ).filter(a => a);
+  //       this.setState({
+  //         value: newValue,
+  //         defaultValue: newValue,
+  //         defaultValueCached: true,
+  //       });
+  //     } else {
+  //       // this.setState({ defaultValueCached: true })
+  //     }
+  //   }
+  // };
 
   onChange = (_, { value }) => {
     if (this.props.single) {
-      this.setState({ value: value.length === 0 ? [] : [value.pop()] })
+      const userObj = this.props.users.find(
+        (u) => u._id === value[value.length - 1]
+      );
+      this.setState({ value: value.length === 0 ? [] : [userObj] });
     } else {
-      this.setState({ value });
+      let userObjects = [];
+      value.forEach((v) => {
+        const userObj =
+          this.props.users.find((u) => u._id === v) ||
+          this.state.value.find((u) => u._id === v);
+        if (userObj) userObjects.push(userObj);
+      });
+      this.setState({ value: userObjects });
     }
   };
 
   render() {
-    const options = this.props.users
-      ? this.props.users.map((user) => ({
-          text: getUserName(user),
-          value: user._id,
-          key: `user-list-${user._id}`,
-        }))
-      : [];
+    const { users } = this.props;
+    const usersIds = users.map((u) => u._id);
+    const options = this.state.value
+      .filter((v) => !usersIds.includes(v._id))
+      .map((v) => ({
+        text: getUserName(v),
+        value: v._id,
+        key: `user-list-${v._id}`,
+      }))
+      .concat(
+        !users
+          ? []
+          : users.map((u) => ({
+              text: getUserName(u),
+              value: u._id,
+              key: `user-list-${u._id}`,
+            }))
+      );
 
     return (
       <Modal open={this.props.open} size="tiny" onClose={this.props.onClose}>
@@ -51,26 +99,28 @@ export default class AssignReviewUsers extends React.Component {
         <Modal.Content>
           {this.props.showResendEmail && (
             <div className={"assign-review-users__user-list"}>
-              {this.props.value.map((userId, index) => (
-                <div
-                  className={"assign-review-users__user-item"}
-                  key={`assign-user-modal-user-${index}`}
-                >
-                  <span>
-                    {getUserName(
-                      this.props.users.find((u) => u._id === userId)
-                    )}
-                  </span>
-                  <Button
-                    basic
-                    circular
-                    primary
-                    onClick={() => this.props.onResendEmail(userId)}
+              {this.state.defaultValue
+                .map((v) => v._id)
+                .map((userId, index) => (
+                  <div
+                    className={"assign-review-users__user-item"}
+                    key={`assign-user-modal-user-${index}`}
                   >
-                    Resend email
-                  </Button>
-                </div>
-              ))}
+                    <span>
+                      {getUserName(
+                        this.state.defaultValue.find((u) => u._id === userId)
+                      )}
+                    </span>
+                    <Button
+                      basic
+                      circular
+                      primary
+                      onClick={() => this.props.onResendEmail(userId)}
+                    >
+                      Resend email
+                    </Button>
+                  </div>
+                ))}
             </div>
           )}
           <Dropdown
@@ -81,9 +131,15 @@ export default class AssignReviewUsers extends React.Component {
             search
             selection
             options={options}
-            value={this.state.value}
+            value={this.state.value.map((v) => v._id)}
             onChange={this.onChange}
             placeholder="Select users"
+            onSearchChange={(e, { searchQuery }) => {
+              this.props.onSearchUsersChange(searchQuery);
+            }}
+            onBlur={() => {
+              this.props.onBlur();
+            }}
           />
         </Modal.Content>
         <Modal.Actions>
@@ -93,7 +149,7 @@ export default class AssignReviewUsers extends React.Component {
           <Button
             circular
             primary
-            onClick={() => this.props.onSave(this.state.value)}
+            onClick={() => this.props.onSave(this.state.value.map(v => v._id))}
           >
             Save
           </Button>

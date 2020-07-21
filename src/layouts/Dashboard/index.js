@@ -209,6 +209,7 @@ class Dashboard extends React.Component {
             websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS);
             websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED);
             websockets.unsubscribeFromEvent(websockets.websocketsEvents.DOWNLOAD_FILE);
+            websockets.disconnectConnection();
         }
         this.props.stopJob(AUTHENTICATE_USER_JOB);
     }

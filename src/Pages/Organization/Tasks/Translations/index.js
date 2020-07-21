@@ -81,7 +81,7 @@ class Translations extends React.Component {
                                             videoUrl={article.video.url}
                                             thumbnailUrl={article.video.thumbnailUrl}
                                             article={article}
-                                            onTitleClick={() => this.props.history.push(routes.translationArticle(article.originalArticle) + `?lang=${article.langCode}`)}
+                                            onTitleClick={() => this.props.history.push(routes.translationArticle(article._id))}
                                         />
                                     </Grid.Column>
                                 ))}

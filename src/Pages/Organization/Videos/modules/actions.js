@@ -358,7 +358,7 @@ export const fetchSigleTranslatedArticle = (videoId, { softLoad, cb } = {}) => (
         query.stage = singleTranslatedArticleStageFilter;
     }
     requestAgent
-        .get(Api.article.getTranslatedArticles(query))
+        .get(Api.article.getSingleTranslatedArticles(query))
         .then((res) => {
             const { videos } = res.body;
             dispatch(setSingleTranslatedArticle(videos[0]))
@@ -956,6 +956,7 @@ export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
 }
 
 export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
+    console.log('add to multiple videos', data)
     const { translatedArticles } = getState()[moduleName];
     const selectedTranslatedArticles = translatedArticles.filter(
       (sta) => sta.video.selected
@@ -967,8 +968,8 @@ export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
     updateArticlesData.forEach((d) => {
       selectedTranslatedArticles.forEach((sta) => {
         sta.articles.forEach((a) => {
-          if (
-            d.language === a.langCode ||
+        if (
+            (d.language.split('-')[0] === a.langCode && d.tts === a.tts) ||
             (d.languageName && d.languageName === a.langName)
           ) {
             d.articlesToUpdate.push(a);

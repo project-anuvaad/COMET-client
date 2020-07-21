@@ -1,4 +1,4 @@
-FROM node:10.15.0-jessie
+FROM node:10.21.0-alpine3.11
 WORKDIR /client
 
 COPY . .
@@ -17,3 +17,4 @@ RUN npm install
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
+HEALTHCHECK --start-period=30s --interval=2m CMD wget --quiet --tries=1 localhost:3000  -O /dev/null || exit 1

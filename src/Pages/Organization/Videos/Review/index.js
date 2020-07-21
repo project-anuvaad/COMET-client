@@ -80,6 +80,7 @@ class Review extends React.Component {
         editVideoModalOpen: false,
         tmpEditVideo: null,
         isNotifyWithWhatsappModalOpen: false,
+        searchUsersFilter: '',
     }
 
     constructor(props) {
@@ -89,6 +90,10 @@ class Review extends React.Component {
             this.props.setCurrentPageNumber(1);
             this.props.fetchVideos();
             this.props.fetchVideosCount(this.props.organization._id);
+        }, 500)
+
+        this.debouncedUsersSearch = debounce(() => {
+            this.props.searchUsers(this.props.organization._id, { search: this.state.searchUsersFilter });
         }, 500)
     }
 
@@ -108,14 +113,14 @@ class Review extends React.Component {
             }
         }
         const { user, organization } = this.props;
-        const defaultTab = canUserAccess(user, organization, ['uploader', 'review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
+        const defaultTab = canUserAccess(user, organization, ['admin', 'project_leader', 'uploader', 'review', 'break_videos']) ? TABS.CUT_VIDEO : TABS.PROOFREAD;
         if (!acTab) {
             this.setState({ activeTab: defaultTab })
         } else {
             this.setState({ activeTab: acTab })
         }
         this.props.setSearchFilter('');
-        this.props.fetchUsers(this.props.organization._id);
+        this.props.searchUsers(this.props.organization._id, { search: '' });
         this.props.setCurrentPageNumber(1);
         this.props.setVideoStatusFilter(videoStatusMap[activeTab || defaultTab]);
         this.props.fetchVideos();
@@ -288,6 +293,16 @@ class Review extends React.Component {
         } else if (userRole === 'reviewer') {
             this.props.resendEmailToVideoReviewer(videoId, userId);
         }
+    }
+
+    onSearchUsersChange = (searchTerm) => {
+        this.setState({ searchUsersFilter: searchTerm });
+        this.debouncedUsersSearch();
+    }
+
+    onAssignUsersBlur = () => {
+        this.setState({ searchUsersFilter: '' });
+        this.props.searchUsers(this.props.organization._id, { search: '' });
     }
 
     getReviewersUsers = () => {
@@ -476,57 +491,101 @@ class Review extends React.Component {
         </Modal>
     )
 
-    renderAssignUsers = () => (
-        <AssignReviewUsers
-            showResendEmail 
-            title="Assign Transcribers"
-            open={this.state.assignUsersModalOpen}
-            value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => this.setState({ assignUsersModalOpen: false, selectedVideo: null })}
-            onSave={this.onSaveAssignedUsers}
-            onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
-        />
-    )
+    renderAssignUsers = () => {
+        if (!this.state.assignUsersModalOpen) return null;
+        return (
+            <AssignReviewUsers
+                showResendEmail 
+                title="Assign Transcribers"
+                open={this.state.assignUsersModalOpen}
+                value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignUsersModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onSaveAssignedUsers}
+                onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
 
-    renderAssignUsersToMultipleVideos = () => (
-        <AssignReviewUsers
-            title="Assign Transcribers To The Selected Videos"
-            showResendEmail 
-            open={this.state.assignUsersToMultipleVideosModalOpen}
-            value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => this.setState({ assignUsersToMultipleVideosModalOpen: false, selectedVideo: null })}
-            onSave={this.onMultipleVideosSaveAssignedUsers}
-            onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
-        />
-    )
+    renderAssignUsersToMultipleVideos = () => {
+        if (!this.state.assignUsersToMultipleVideosModalOpen) return null;
 
-    renderAssignVerifiers = () => (
-        <AssignReviewUsers
-            title="Assign Approvers"
-            showResendEmail 
-            open={this.state.assignVerifiersModalOpen}
-            value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => this.setState({ assignVerifiersModalOpen: false, selectedVideo: null })}
-            onSave={this.onSaveVerifiers}
-            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
-        />
-    )
+        return (
+            <AssignReviewUsers
+                title="Assign Transcribers To The Selected Videos"
+                showResendEmail 
+                open={this.state.assignUsersToMultipleVideosModalOpen}
+                value={this.state.selectedVideo ? this.state.selectedVideo.reviewers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignUsersToMultipleVideosModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onMultipleVideosSaveAssignedUsers}
+                onResendEmail={(userId) => this.onResendEmail('reviewer', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
 
-    renderAssignVerifiersToMultipleVideos = () => (
-        <AssignReviewUsers
-            title="Assign Approvers To The Selected Videos"
-            showResendEmail 
-            open={this.state.assignVerifiersToMultipleVideosModalOpen}
-            value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
-            users={this.getReviewersUsers()}
-            onClose={() => this.setState({ assignVerifiersToMultipleVideosModalOpen: false, selectedVideo: null })}
-            onSave={this.onMultipleVideosSaveVerifiers}
-            onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
-        />
-    )
+    renderAssignVerifiers = () => {
+        if (!this.state.assignVerifiersModalOpen) return null;
+
+        return (
+            <AssignReviewUsers
+                title="Assign Approvers"
+                showResendEmail 
+                open={this.state.assignVerifiersModalOpen}
+                value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignVerifiersModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onSaveVerifiers}
+                onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
+
+    renderAssignVerifiersToMultipleVideos = () => {
+        if (!this.state.assignVerifiersToMultipleVideosModalOpen) return null;
+
+        return (
+            <AssignReviewUsers
+                title="Assign Approvers To The Selected Videos"
+                showResendEmail 
+                open={this.state.assignVerifiersToMultipleVideosModalOpen}
+                value={this.state.selectedVideo && this.state.selectedVideo.verifiers ? this.state.selectedVideo.verifiers.map(r => r._id) : []}
+                users={this.getReviewersUsers()}
+                onClose={() => {
+                    this.onAssignUsersBlur();
+                    this.setState({ assignVerifiersToMultipleVideosModalOpen: false, selectedVideo: null });
+                }}
+                onSave={this.onMultipleVideosSaveVerifiers}
+                onResendEmail={(userId) => this.onResendEmail('verifier', this.state.selectedVideo._id, userId)}
+                onSearchUsersChange={(searchTerm) => {
+                    this.onSearchUsersChange(searchTerm);
+                }}
+                onBlur={this.onAssignUsersBlur}
+            />
+        )
+    }
+
 
     renderConfirmReviewModal = () => (
         <Modal open={this.state.confirmReviewModalVisible} size="tiny">
@@ -955,7 +1014,7 @@ const mapDispatchToProps = (dispatch) => ({
     setLanguageFilter: (langCode) => dispatch(videoActions.setLanguageFilter(langCode)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
-    fetchUsers: (organizationId) => dispatch(organizationActions.fetchUsers(organizationId)),
+    searchUsers: (organizationId, query) => dispatch(organizationActions.searchUsers(organizationId, query)),
     setVideoStatusFilter: filter => dispatch(videoActions.setVideoStatusFilter(filter)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
     transcribeVideo: video => dispatch(videoActions.transcribeVideo(video)),
