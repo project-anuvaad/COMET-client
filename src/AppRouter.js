@@ -65,7 +65,7 @@ class AppRouter extends React.Component {
       })
       .catch(err => {
         console.log('error loading env file', err);
-        alert('Misconfiguration error: Please contact Videowiki\'s support team')
+        alert('Misconfiguration error: Please contact Videowiki\'s support team, error ' + JSON.stringify(err))
       })
   }
 
