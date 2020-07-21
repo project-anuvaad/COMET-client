@@ -19,9 +19,10 @@ export default class MoveVideoModal extends React.Component {
             >
               <Checkbox
                 checked={this.state.selectedFolderId === f._id}
-                onChange={(e, { checked }) =>
-                  this.onCheckChange(checked, f._id)
-                }
+                onChange={(e, { checked }) => {
+                  this.props.onOpenFolder(f._id);
+                  this.onCheckChange(checked, f._id);
+                }}
               />
               <span
                 style={{
@@ -54,9 +55,10 @@ export default class MoveVideoModal extends React.Component {
                 checked={
                   this.state.selectedFolderId === this.props.openedFolder._id
                 }
-                onChange={(e, { checked }) =>
-                  this.onCheckChange(checked, this.props.openedFolder._id)
-                }
+                onChange={(e, { checked }) => {
+                  this.props.onOpenFolder(this.props.openedFolder._id);
+                  this.onCheckChange(checked, this.props.openedFolder._id);
+                }}
               />
               <span
                 style={{
@@ -86,9 +88,10 @@ export default class MoveVideoModal extends React.Component {
               >
                 <Checkbox
                   checked={this.state.selectedFolderId === f._id}
-                  onChange={(e, { checked }) =>
-                    this.onCheckChange(checked, f._id)
-                  }
+                  onChange={(e, { checked }) => {
+                    this.props.onOpenFolder(f._id);
+                    this.onCheckChange(checked, f._id);
+                  }}
                 />
                 <span
                   style={{
@@ -123,12 +126,13 @@ export default class MoveVideoModal extends React.Component {
                   this.state.selectedFolderId ===
                   this.props.openedFolder.parent._id
                 }
-                onChange={(e, { checked }) =>
+                onChange={(e, { checked }) => {
+                  this.props.onOpenFolder(this.props.openedFolder.parent._id);
                   this.onCheckChange(
                     checked,
                     this.props.openedFolder.parent._id
-                  )
-                }
+                  );
+                }}
               />
               <span
                 style={{
@@ -155,9 +159,10 @@ export default class MoveVideoModal extends React.Component {
                 checked={
                   this.state.selectedFolderId === this.props.openedFolder._id
                 }
-                onChange={(e, { checked }) =>
-                  this.onCheckChange(checked, this.props.openedFolder._id)
-                }
+                onChange={(e, { checked }) => {
+                  this.props.onOpenFolder(this.props.openedFolder._id);
+                  this.onCheckChange(checked, this.props.openedFolder._id);
+                }}
               />
               <span
                 style={{
@@ -187,9 +192,10 @@ export default class MoveVideoModal extends React.Component {
               >
                 <Checkbox
                   checked={this.state.selectedFolderId === f._id}
-                  onChange={(e, { checked }) =>
-                    this.onCheckChange(checked, f._id)
-                  }
+                  onChange={(e, { checked }) => {
+                    this.props.onOpenFolder(f._id);
+                    this.onCheckChange(checked, f._id);
+                  }}
                 />
                 <span
                   style={{
@@ -234,9 +240,11 @@ export default class MoveVideoModal extends React.Component {
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <Checkbox
                     checked={!this.state.selectedFolderId}
-                    onChange={(e, { checked }) =>
-                      this.onCheckChange(checked, null)
-                    }
+                    onChange={(e, { checked }) => {
+                      this.setState({ openedMainFolder: null });
+                      this.props.onOpenHomePage();
+                      this.onCheckChange(checked, null);
+                    }}
                   />
                   <span
                     style={{
@@ -270,6 +278,8 @@ export default class MoveVideoModal extends React.Component {
                       <Checkbox
                         checked={this.state.selectedFolderId === f._id}
                         onChange={(e, { checked }) => {
+                          this.setState({ openedMainFolder: f });
+                          this.props.onOpenFolder(f._id);
                           this.onCheckChange(checked, f._id);
                         }}
                       />
