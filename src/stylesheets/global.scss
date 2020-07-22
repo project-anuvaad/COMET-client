@@ -13,8 +13,11 @@
 }
 
 .ui.modal > .header:not(.ui) {
-  background-color: #ecf5fe !important;
-  color: #333333 !important;
+  background-color: #2185d0 !important;
+  color: white !important;
+  h3 .ui.button {
+    background: #e0e1e2 none !important;
+  }
 }
 
 .ui.checked.checkbox label {

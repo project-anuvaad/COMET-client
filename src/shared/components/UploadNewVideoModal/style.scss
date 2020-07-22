@@ -16,9 +16,10 @@
             padding: 1.5rem;
             font-size: 18px;
             font-weight: 500;
+            opacity: 0.5;
             &-active {
+                opacity: 1;
                 font-weight: 600;
-                border-bottom: 3px solid #0e7ceb;
             }
         }
     }

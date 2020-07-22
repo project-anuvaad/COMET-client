@@ -366,7 +366,8 @@ class Review extends React.Component {
             <Modal.Actions>
                 <Button
                     circular
-                    primary
+                    basic
+                    className="clear-button"
                     onClick={() => this.onSkipTranscribe('videowiki')}
                 >
                     Let Videowiki's Team do it
