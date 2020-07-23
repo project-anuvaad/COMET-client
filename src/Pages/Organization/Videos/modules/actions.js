@@ -852,7 +852,7 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
 }
 
 export const generateTranslatableArticles = (videoId, originalArticleId, data, mode = 'single') => (dispatch, getState) => {
-    const translatedArticle = getState()[moduleName].translatedArticles.find(a => a.vide._id === videoId);
+    const translatedArticle = getState()[moduleName].translatedArticles.find(a => a.video._id === videoId);
     const existedCodes = translatedArticle.articles.map(a => {
         if (a.tts) return `${a.langCode}-tts`;
         return a.langCode;

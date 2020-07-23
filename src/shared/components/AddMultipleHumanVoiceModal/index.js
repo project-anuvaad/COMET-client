@@ -162,7 +162,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
       let data = [];
       nextProps.initialCodes.forEach((langCode) => {
         data.push({
-          language: langCode.split("-")[0],
+          language: langCode,
           languageName: "",
           tts: langCode.split("-").pop() === "tts" ? true : false,
           searchValue: "",
