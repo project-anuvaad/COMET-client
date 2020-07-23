@@ -5,29 +5,30 @@ import { fetchUserApiKey } from '../../actions/authentication';
 import routes from '../../shared/routes';
 import { APP_ENV } from '../../shared/constants';
 import LoadingComponent from '../../shared/components/LoaderComponent';
+import vwProofread from '@videowiki/vw-proofread';
 
 class Convert extends React.Component {
     state = {
-        loaded: false,
+        loaded: true,
     }
 
     componentWillMount = () => {
         this.props.fetchUserApiKey(this.props.organization._id)
     }
 
-    componentDidMount = () => {
-        const vwProofreadScript = document.getElementById('vw-proofread-script');
-        if (vwProofreadScript) {
-            this.setState({ loaded: true });
-        } else {
-            const script = document.createElement("script");
-            script.id = 'vw-proofread-script'
-            script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-proofread/v2.0.8.js";
-            script.async = true;
-            script.onload = () => this.setState({ loaded: true });
-            document.body.appendChild(script);
-        }
-    }
+    // componentDidMount = () => {
+    //     const vwProofreadScript = document.getElementById('vw-proofread-script');
+    //     if (vwProofreadScript) {
+    //         this.setState({ loaded: true });
+    //     } else {
+    //         const script = document.createElement("script");
+    //         script.id = 'vw-proofread-script'
+    //         script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-proofread/v2.0.8.js";
+    //         script.async = true;
+    //         script.onload = () => this.setState({ loaded: true });
+    //         document.body.appendChild(script);
+    //     }
+    // }
     render() {
         if (!this.props.apiKey) return null;
         const { video } = querstring.parse(window.location.search);
