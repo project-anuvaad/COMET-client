@@ -37,13 +37,15 @@ class Translated extends React.Component {
     state = {
         selectedVideo: null,
         isAssignProjectLeaderModalOpen: false,
-        selectMultipleLanguagesModalOpen: false,
+        selectLanguagesForOneVideoModalOpen: false,
+        selectLangusgesForMultipleVideosModalOpen: false,
         addUsersToMultipleVideosModalOpen: false,
         exportMultipleVideosModalOpen: false,
         createFolderModalOpen: false,
         changeFolderNameModalOpen: false,
         moveVideoModalOpen: false,
         searchUsersFilter: '',
+        selectedVideoLangCodes: [],
     }
 
     constructor(props) {
@@ -94,6 +96,17 @@ class Translated extends React.Component {
         this.debouncedUsersSearch();
     }
 
+    onAssignUsersToOneVideoArticles = (codes) => {
+        this.setState({ selectLanguagesForOneVideoModalOpen: false });
+        const existedCodes = this.props.selectedVideo.articles.map(a => {
+            if (a.tts) return `${a.langCode}-tts`;
+            return a.langCode;
+        });
+        const filteredCodes = codes.filter(code => !existedCodes.includes(code));
+        this.setState({ selectedVideoLangCodes: filteredCodes });
+        this.props.setAddMultipleHumanVoiceModalVisible(true);
+    }
+
     onAddHumanVoice = (data) => {
         const { video } = this.props.selectedVideo;
         this.props.setAddMultipleHumanVoiceModalVisible(false);
@@ -119,9 +132,14 @@ class Translated extends React.Component {
         this.props.updateVideoProjectLeaders(selectedVideo._id, projectLeaders);
     }
     
-    onSelectMultipleLanguages = (codes) => {
-        this.setState({ selectMultipleLanguagesModalOpen: false });
-        this.props.submitMultipleLanguages(codes)
+    onSelectLanguagesForOneVideo = (codes) => {
+        this.setState({ selectLanguagesForOneVideoModalOpen: false });
+        this.props.addLangsToOneVideo(this.props.selectedVideo, codes);
+    }
+
+    onSelectLanguagesForMultipleVideos = (codes) => {
+        this.setState({ selectLangusgesForMultipleVideosModalOpen: false });
+        this.props.addLangsToMultipleVideos(codes);
     }
 
     onMultiExport = (voiceVolume, normalizeAudio, downloadZip) => {
@@ -247,20 +265,36 @@ class Translated extends React.Component {
         />
     )
 
+    _renderSelectLanguagesForOneVideoModal() {
+        if (!this.state.selectLanguagesForOneVideoModalOpen) return null;
+        return (
+            <SelectMultipleLanguagesModal
+                multi={false}
+                open={this.state.selectLanguagesForOneVideoModalOpen}
+                onClose={() => this.setState({ selectLanguagesForOneVideoModalOpen: false })}
+                onSubmit={(codes) => this.onSelectLanguagesForOneVideo(codes)}
+                onAssignUsers={(codes) => this.onAssignUsersToOneVideoArticles(codes)}
+            />
+        )
+    }
 
     _renderAddHumanVoiceModal() {
+        if (!this.props.addMultipleHumanVoiceModalVisible) return null;
         const users = this.getTranslators();
         const verifiers = this.getVerifiers();
         const { selectedVideo } = this.props;
         if (!selectedVideo) return null;
-        const disabledLanguages = this.props.selectedVideo && this.props.selectedVideo.articles ? this.props.selectedVideo.articles.map(a => a.langCode) : [];
+        let disabledLanguages = this.props.selectedVideo && this.props.selectedVideo.articles ? this.props.selectedVideo.articles.map(a => a.tts ? `${a.langCode}-tts` : a.langCode) : [];
+        disabledLanguages = disabledLanguages.concat(this.state.selectedVideoLangCodes);
         return (
             <AddMultipleHumanVoiceModal
                 title={this.getButtonTitle() + ' In:'}
+                initialCodes={this.state.selectedVideoLangCodes}
                 open={this.props.addMultipleHumanVoiceModalVisible}
                 onClose={() => {
                     this.onAssignUsersBlur();
                     this.props.setAddMultipleHumanVoiceModalVisible(false);
+                    this.setState({ selectedVideoLangCodes: [] });
                 }}
                 users={users}
                 verifiers={verifiers}
@@ -276,12 +310,12 @@ class Translated extends React.Component {
         )
     }
 
-    _renderSelectMultipleLanguagesModal() {
+    _renderSelectLanguagesForMultipleVideosModal() {
         return (
             <SelectMultipleLanguagesModal
-                open={this.state.selectMultipleLanguagesModalOpen}
-                onClose={() => this.setState({ selectMultipleLanguagesModalOpen: false })}
-                onSubmit={(codes) => this.onSelectMultipleLanguages(codes)}
+                open={this.state.selectLangusgesForMultipleVideosModalOpen}
+                onClose={() => this.setState({ selectLangusgesForMultipleVideosModalOpen: false })}
+                onSubmit={(codes) => this.onSelectLanguagesForMultipleVideos(codes)}
             />
         )
     }
@@ -295,7 +329,7 @@ class Translated extends React.Component {
         let disabledLanguages = [];
         selectedTranslatedArticles.forEach((ta) => {
             ta.articles.forEach((a) => {
-                disabledLanguages.push(a.langCode);
+                disabledLanguages.push(a.tts ? `${a.langCode}-tts` : a.langCode);
             });
         });
         disabledLanguages = Array.from(new Set(disabledLanguages.map(JSON.stringify))).map(
@@ -413,7 +447,7 @@ class Translated extends React.Component {
                 }}
                 open={this.state.moveVideoModalOpen}
                 onClose={() => {
-                    this.setState({ moveVideoModalOpen: false });
+                    this.setState({ selectedVideo: null, moveVideoModalOpen: false });
                 }}
                 onMoveVideo={(folderId) => {
                     this.props.updateVideoFolder(this.state.selectedVideo._id, folderId);
@@ -572,7 +606,7 @@ class Translated extends React.Component {
                                     {this.props.selectedCount > 0 && (
                                         <React.Fragment>
                                             <Separator />
-                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ selectMultipleLanguagesModalOpen: true })}>
+                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ selectLangusgesForMultipleVideosModalOpen: true })}>
                                                 <Icon name="add" size="small" color="blue" /> Assign multiple languages to selected videos
                                             </span>
                                         </React.Fragment>
@@ -664,7 +698,8 @@ class Translated extends React.Component {
                                             buttonTitle={buttonTitle}
                                             onButtonClick={() => {
                                                 this.props.setSelectedVideo(translatedArticle);
-                                                this.props.setAddMultipleHumanVoiceModalVisible(true);
+                                                this.setState({ selectLanguagesForOneVideoModalOpen: true });
+                                                // this.props.setAddMultipleHumanVoiceModalVisible(true);
                                             }}
                                             showWhatsappIcon
                                             whatsappIconContent={(
@@ -703,7 +738,8 @@ class Translated extends React.Component {
                             </Grid.Row>
 
                             {this._renderAddHumanVoiceModal()}
-                            {this._renderSelectMultipleLanguagesModal()}
+                            {this._renderSelectLanguagesForOneVideoModal()}
+                            {this._renderSelectLanguagesForMultipleVideosModal()}
                             {this._renderAddUsersToMultipleVideosModal()}
                             {this._renderExportMultipleVideosModal()}
                             {this._renderCreateFolderModal()}
@@ -760,7 +796,8 @@ const mapDispatchToProps = (dispatch) => ({
     deleteArticle: (articleId) => dispatch(videoActions.deleteArticle(articleId)),
     generateTranslatableArticles: (videoId, originalArticleId, data) => dispatch(videoActions.generateTranslatableArticles(videoId, originalArticleId, data, 'multi')),
     addUsersToMultipleVideos: (data) => dispatch(videoActions.addUsersToMultipleVideos(data)),
-    submitMultipleLanguages: (codes) => dispatch(videoActions.submitMultipleLanguages(codes)),
+    addLangsToMultipleVideos: (codes) => dispatch(videoActions.addLangsToMultipleVideos(codes)),
+    addLangsToOneVideo: (selectedVideo, codes) => dispatch(videoActions.addLangsToOneVideo(selectedVideo, codes)),
     updateVideoProjectLeaders: (videoId, projectLeaders) => dispatch(videoActions.updateVideoProjectLeaders(videoId, projectLeaders)),
     searchUsers: (organizationId, query) => dispatch(organizationActions.searchUsers(organizationId, query)),
     setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),

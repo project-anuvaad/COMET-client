@@ -1,5 +1,4 @@
 import React from "react";
-// import PropTypes from "prop-types";
 import {
   Modal,
   ModalContent,
@@ -8,11 +7,7 @@ import {
   Dropdown,
   Grid,
 } from "semantic-ui-react";
-import {
-  isoLangsArray,
-  TTSLangs,
-  signLangsArray,
-} from "../../utils/langs";
+import { isoLangsArray, TTSLangs, signLangsArray } from "../../utils/langs";
 
 const languagesOptions = isoLangsArray
   .concat([...TTSLangs, ...signLangsArray])
@@ -30,6 +25,10 @@ class SelectMultipleLanguagesModal extends React.Component {
   onSubmit = () => {
     this.props.onSubmit(this.state.codes);
   };
+
+  onAssignUsers = () => {
+    this.props.onAssignUsers(this.state.codes);
+  }
 
   render() {
     return (
@@ -59,6 +58,7 @@ class SelectMultipleLanguagesModal extends React.Component {
         </ModalContent>
         <ModalActions>
           <Button onClick={this.props.onClose}>Cancel</Button>
+          {!this.props.muli && <Button color="blue" onClick={this.onAssignUsers}>Assign to people</Button>}
           <Button color="blue" onClick={this.onSubmit}>
             Go
           </Button>
