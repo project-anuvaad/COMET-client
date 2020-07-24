@@ -6,32 +6,33 @@ import * as articleActions from '../../../actions/article'
 import { APP_ENV } from '../../../shared/constants';
 import LoadingComponent from '../../../shared/components/LoaderComponent';
 import routes from '../../../shared/routes';
+import vwTranslate from '@videowiki/vw-translate';
 
 class TranslateArticle extends React.Component {
 
     state = {
-        loaded: false,
+        loaded: true,
     }
     componentWillMount = () => {
         this.props.fetchUserApiKey(this.props.organization._id)
-    }
-
-    componentDidMount = () => {
-        const vwTranslateScript = document.getElementById('vw-translate-script');
-        if (vwTranslateScript) {
-            this.setState({ loaded: true });
-        } else {
-            const script = document.createElement("script");
-            script.id = 'vw-translate-script'
-            script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-translate/v2.0.15.js";
-            script.async = true;
-            script.onload = () => this.setState({ loaded: true });
-            document.body.appendChild(script);
-        }
-
         const { articleId } = this.props.match.params;
         this.props.fetchArticleById(articleId);
     }
+
+    // componentDidMount = () => {
+    //     const vwTranslateScript = document.getElementById('vw-translate-script');
+    //     if (vwTranslateScript) {
+    //         this.setState({ loaded: true });
+    //     } else {
+    //         const script = document.createElement("script");
+    //         script.id = 'vw-translate-script'
+    //         script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-translate/v2.0.15.js";
+    //         script.async = true;
+    //         script.onload = () => this.setState({ loaded: true });
+    //         document.body.appendChild(script);
+    //     }
+
+    // }
 
     render() {
         const { articleId } = this.props.match.params;

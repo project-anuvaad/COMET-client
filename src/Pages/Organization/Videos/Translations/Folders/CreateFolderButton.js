@@ -7,9 +7,10 @@ export default class CreateFolderButton extends React.Component {
       <span style={{ display: "flex", justifyContent: 'space-between' }}>
         {this.props.openedFolder && (
           <Button
-            color="green"
+            primary
             size="tiny"
             basic
+            style={{ marginRight: 10 }}
             onClick={this.props.onChangeNameClick}
           >
             <Icon name="edit" />
@@ -18,7 +19,7 @@ export default class CreateFolderButton extends React.Component {
         )}
 
         <Button
-          color="green"
+          primary
           size="tiny"
           basic
           onClick={this.props.onCreateClick}
