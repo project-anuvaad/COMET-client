@@ -58,7 +58,7 @@ class SelectMultipleLanguagesModal extends React.Component {
         </ModalContent>
         <ModalActions>
           <Button onClick={this.props.onClose}>Cancel</Button>
-          {!this.props.muli && <Button color="blue" onClick={this.onAssignUsers}>Assign to people</Button>}
+          {!this.props.multi && <Button color="blue" onClick={this.onAssignUsers}>Assign to people</Button>}
           <Button color="blue" onClick={this.onSubmit}>
             Go
           </Button>

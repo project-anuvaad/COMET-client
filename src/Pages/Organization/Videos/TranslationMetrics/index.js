@@ -287,7 +287,6 @@ class Translation extends React.Component {
     if (!this.state.selectLanguagesForOneVideoModalOpen) return null;
     return (
         <SelectMultipleLanguagesModal
-            multi={false}
             open={this.state.selectLanguagesForOneVideoModalOpen}
             onClose={() => this.setState({ selectLanguagesForOneVideoModalOpen: false })}
             onSubmit={(codes) => this.onSelectLanguagesForOneVideo(codes)}

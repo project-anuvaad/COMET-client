@@ -269,7 +269,6 @@ class Translated extends React.Component {
         if (!this.state.selectLanguagesForOneVideoModalOpen) return null;
         return (
             <SelectMultipleLanguagesModal
-                multi={false}
                 open={this.state.selectLanguagesForOneVideoModalOpen}
                 onClose={() => this.setState({ selectLanguagesForOneVideoModalOpen: false })}
                 onSubmit={(codes) => this.onSelectLanguagesForOneVideo(codes)}
@@ -313,6 +312,7 @@ class Translated extends React.Component {
     _renderSelectLanguagesForMultipleVideosModal() {
         return (
             <SelectMultipleLanguagesModal
+                multi
                 open={this.state.selectLangusgesForMultipleVideosModalOpen}
                 onClose={() => this.setState({ selectLangusgesForMultipleVideosModalOpen: false })}
                 onSubmit={(codes) => this.onSelectLanguagesForMultipleVideos(codes)}
