@@ -111,6 +111,7 @@ class Translated extends React.Component {
     }
 
     onMoveVideo = (video) => {
+        this.props.fetchMoveVideoMainFolders();
         this.setState({ selectedVideo: video, moveVideoModalOpen: true });
     }
 
@@ -629,7 +630,14 @@ class Translated extends React.Component {
                                     {this.props.selectedCount > 0 && (
                                         <React.Fragment>
                                             <Separator />
-                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ moveMultipleVideosModalOpen: true })}>
+                                            <span 
+                                            href="javascript:void(0);" 
+                                            style={{ cursor: 'pointer' }} 
+                                                onClick={() => {
+                                                    this.props.fetchMoveVideoMainFolders();
+                                                    this.setState({ moveMultipleVideosModalOpen: true })
+                                                }}
+                                                >
                                                 <Icon name="add" size="small" color="blue" /> Move selected videos
                                             </span>
                                         </React.Fragment>
