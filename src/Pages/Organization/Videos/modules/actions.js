@@ -881,9 +881,15 @@ export const generateTranslatableArticle = (originalArticleId, langCode, langNam
 }
 
 export const generateTranslatableArticles = (videoId, originalArticleId, data, mode = 'single') => (dispatch, getState) => {
-    const funcArray = []
+    const translatedArticle = getState()[moduleName].translatedArticles.find(a => a.video._id === videoId);
+    const existedCodes = translatedArticle.articles.map(a => {
+        if (a.tts) return `${a.langCode}-tts`;
+        return a.langCode;
+    });
+    const filteredData = data.filter(d => !existedCodes.includes(d.language));
+    const funcArray = [];
 
-    data.forEach(d => {
+    filteredData.forEach(d => {
         funcArray.push(cb => {
             const langCode = d.language
             const langName = d.languageName
@@ -937,7 +943,44 @@ export const generateTranslatableArticles = (videoId, originalArticleId, data, m
     })
 }
 
-export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
+export const addLangsToOneVideo = (selectedVideo, codes) => (dispatch, getState) => {
+    const existedCodes = selectedVideo.articles.map(a => {
+        if (a.tts) return `${a.langCode}-tts`;
+        return a.langCode;
+    });
+    const filteredCodes = codes.filter(code => !existedCodes.includes(code));
+    const codesFuncArray = [];
+    filteredCodes.forEach(filteredCode => {
+        const params = {}
+        const langCodeParts = filteredCode.split('-');
+        if (langCodeParts.length === 1) {
+            if (signLangsArray.find(l => l.code === filteredCode)) {
+                params.signLang = true;
+            } 
+            params.lang = filteredCode;
+        } else {
+            params.lang = langCodeParts[0];
+            if (langCodeParts[1] === 'tts') {
+                params.tts = true;
+            }
+        }
+        codesFuncArray.push(cb => {
+            requestAgent
+                .post(Api.translate.generateTranslatableArticle(selectedVideo.originalArticle._id), params)
+                .then((res) => {cb()})
+                .catch(err => {
+                    cb()
+                    console.log(err);
+                })
+        })
+    });
+
+    async.series(codesFuncArray, () => {
+        window.location.href = routes.organziationTranslationMetrics(selectedVideo.video._id);
+    });
+}
+
+export const addLangsToMultipleVideos = (codes) => (dispatch, getState) => {
     const { translatedArticles } = getState()[moduleName];
     const selectedTranslatedArticles = translatedArticles.filter(ta => ta.video.selected)
     const articlesFuncArray = []
@@ -945,7 +988,10 @@ export const submitMultipleLanguages = (codes) => (dispatch, getState) => {
     selectedTranslatedArticles.forEach(selectedTranslatedArticle => {
         articlesFuncArray.push(cb => {
             const langsFuncArray = []
-            const existedCodes = selectedTranslatedArticle.articles.map(a => a.langCode)
+            const existedCodes = selectedTranslatedArticle.articles.map(a => {
+                if (a.tts) return `${a.langCode}-tts`;
+                return a.langCode;
+            })
             const filteredCodes = codes.filter(code => !existedCodes.includes(code))
 
             filteredCodes.forEach(filteredCode => {

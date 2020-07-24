@@ -35,6 +35,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
       dropdownOptions: languagesOptions.slice(),
       isDisabledAddLang: true,
       selectedVideosAllLangs: [],
+      initialCodesSaved: false,
       data: [
         {
           language: "",
@@ -61,7 +62,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
       this.setState({ dropdownOptions: availableLangs });
     }
     if (
-        this.props.selectedTranslatedArticles &&
+      this.props.selectedTranslatedArticles &&
       this.props.selectedTranslatedArticles.length > 0
     ) {
       let data = [];
@@ -97,7 +98,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
           data,
           isDisabledAddLang: false,
           selectedVideosAllLangs: languages,
-        }); // selectedVideosAllLangs when multiVideos prop equals true
+        });
       }
     }
   }
@@ -155,6 +156,39 @@ class AddMultipleHumanVoiceModal extends React.Component {
         nextProps.disabledLanguages
       );
       this.setState({ dropdownOptions: availableLangs });
+    }
+
+    if (!nextProps.multiVideos && !this.state.initialCodesSaved) {
+      let data = [];
+      nextProps.initialCodes.forEach((langCode) => {
+        data.push({
+          language: langCode,
+          languageName: "",
+          tts: langCode.split("-").pop() === "tts" ? true : false,
+          searchValue: "",
+          voiceTranslators: [],
+          textTranslators: [],
+          verifiers: [],
+          new: false,
+        });
+      });
+      const isDisabledAddLang = data.length > 0 ? false : true;
+      data =
+        data.length > 0
+          ? data
+          : [
+              {
+                language: "",
+                languageName: "",
+                searchValue: "",
+                tts: false,
+                voiceTranslators: [],
+                textTranslators: [],
+                verifiers: [],
+                new: false,
+              },
+            ];
+      this.setState({ data, isDisabledAddLang, initialCodesSaved: true });
     }
   };
 
