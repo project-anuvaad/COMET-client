@@ -43,6 +43,7 @@ class Translated extends React.Component {
         createFolderModalOpen: false,
         changeFolderNameModalOpen: false,
         moveVideoModalOpen: false,
+        moveMultipleVideosModalOpen: false,
         searchUsersFilter: '',
     }
 
@@ -397,6 +398,7 @@ class Translated extends React.Component {
     }
 
     _renderMoveVideoModal() {
+        if (!this.state.moveVideoModalOpen) return null;
         return (
             <MoveVideoModal
                 mainFolders={this.props.moveVideoMainFolders}
@@ -418,6 +420,37 @@ class Translated extends React.Component {
                 onMoveVideo={(folderId) => {
                     this.props.updateVideoFolder(this.state.selectedVideo._id, folderId);
                     this.setState({ selectedVideo: null, moveVideoModalOpen: false });
+                }}
+                onLoadMoreFolders={() => {
+                    this.props.loadMoreMoveVideoFolders();
+                }}
+            />
+        );
+    }
+
+    _renderMoveMultipleVideosModal() {
+        if (!this.state.moveMultipleVideosModalOpen) return null;
+        return (
+            <MoveVideoModal
+                mainFolders={this.props.moveVideoMainFolders}
+                openedFolder={this.props.moveVideoOpenedFolder}
+                moveVideoLoading={this.props.moveVideoLoading}
+                moveVideoCurrentPageNumber={this.props.moveVideoCurrentPageNumber}
+                moveVideoTotalPagesCount={this.props.moveVideoTotalPagesCount}
+                onOpenHomePage={() => {
+                    this.props.setMoveVideoOpenedFolder(null);
+                    this.props.fetchMoveVideoMainFolders();
+                }}
+                onOpenFolder={(id) => {
+                    this.props.fetchMoveVideoOpenedFolder(id);
+                }}
+                open={this.state.moveMultipleVideosModalOpen}
+                onClose={() => {
+                    this.setState({ moveMultipleVideosModalOpen: false });
+                }}
+                onMoveVideo={(folderId) => {
+                    this.props.updateVideosFolder(folderId);
+                    this.setState({ moveMultipleVideosModalOpen: false });
                 }}
                 onLoadMoreFolders={() => {
                     this.props.loadMoreMoveVideoFolders();
@@ -593,6 +626,14 @@ class Translated extends React.Component {
                                             </span>
                                         </React.Fragment>
                                     )}
+                                    {this.props.selectedCount > 0 && (
+                                        <React.Fragment>
+                                            <Separator />
+                                            <span href="javascript:void(0);" style={{ cursor: 'pointer' }} onClick={() => this.setState({ moveMultipleVideosModalOpen: true })}>
+                                                <Icon name="add" size="small" color="blue" /> Move selected videos
+                                            </span>
+                                        </React.Fragment>
+                                    )}
                                 </div>
                             </Grid.Column>
                         </Grid.Row>
@@ -710,6 +751,7 @@ class Translated extends React.Component {
                             {this._renderChangeFolderNameModal()}
                             {this._renderAssignProjectLeader()}
                             {this._renderMoveVideoModal()}
+                            {this._renderMoveMultipleVideosModal()}
                         </LoaderComponent>
                     </RoleRenderer>
                 </Grid>
@@ -794,6 +836,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchMoveVideoMainFolders: () => dispatch(videoActions.fetchMoveVideoMainFolders()),
     fetchMoveVideoOpenedFolder: (id) => dispatch(videoActions.fetchMoveVideoOpenedFolder(id)),
     updateVideoFolder: (videoId, folderId) => dispatch(videoActions.updateVideoFolder(videoId, folderId)),
+    updateVideosFolder: (folderId) => dispatch(videoActions.updateVideosFolder(folderId)),
     loadMoreMoveVideoFolders: () => dispatch(videoActions.loadMoreMoveVideoFolders()),
     setMoveVideoOpenedFolder: (folder) => dispatch(videoActions.setMoveVideoOpenedFolder(folder)),
 })
