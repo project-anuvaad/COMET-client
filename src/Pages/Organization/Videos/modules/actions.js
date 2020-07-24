@@ -697,6 +697,35 @@ export const updateVideoFolder = (videoId, folderId) => (dispatch, getState) => 
         })
 }
 
+export const updateVideosFolder = (folderId) => (dispatch, getState) => {
+    dispatch(setVideoLoading(true));
+    const { translatedArticles } = getState()[moduleName];
+    const selectedTranslatedArticles = translatedArticles.filter(
+      (sta) => sta.video.selected
+    );
+    const updateVideosFolderFuncArray = [];
+    
+    selectedTranslatedArticles.forEach(article => {
+        updateVideosFolderFuncArray.push(cb => {
+            requestAgent
+                .put(Api.video.updateFolder(article.video._id), { folder: folderId })
+                .then((res) => {
+                    cb();
+                })
+                .catch((err) => {
+                    cb();
+                    NotificationService.responseError(err);
+                });
+        });
+    });
+
+    async.series(updateVideosFolderFuncArray, () => {
+        dispatch(setVideoLoading(false));
+        NotificationService.success('The videos are moved successfully!');
+        dispatch(fetchTranslatedArticles());
+    })
+}
+
 export const resendEmailToVideoReviewer = (videoId, userId) => () => {
     requestAgent
         .post(Api.video.resendEmailToReviewer(videoId), { userId })
