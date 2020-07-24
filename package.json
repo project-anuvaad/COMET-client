@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@sentry/browser": "^5.15.1",
-    "@videowiki/vw-proofread": "^2.0.11",
+    "@videowiki/vw-proofread": "^3.0.1",
     "@videowiki/vw-translate": "^3.0.1",
     "async": "^3.1.0",
     "classnames": "^2.2.6",
