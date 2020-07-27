@@ -10,7 +10,10 @@
     bottom: 1rem;
     right: 1rem;
 }
-
+#organization-dropdown-menu {
+    max-width: 100%;
+    box-shadow: none !important;;
+}
 .dashboard, .dashboard-content {
     background-color: #ecf5fe;
     // height: 100%;

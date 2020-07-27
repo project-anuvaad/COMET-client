@@ -316,20 +316,22 @@ class Dashboard extends React.Component {
                         </p> */}
                     </Dropdown.Header>
                     <Dropdown.Header>MY Organizations</Dropdown.Header>
-                    {user.organizationRoles.map((role) => (
-                        <Dropdown.Item
-                            active={organization._id === role.organization._id}
-                            key={`organization-dropdown-${role.organization._id}`}
-                            onClick={() => this.onSwitchOrganization(role)}
-                        >
-                            {role.organization.name}
-                            {organization._id !== role.organization._id && (
-                                <div className="pull-right">
-                                    <Icon name="arrow right" />
-                                </div>
-                            )}
-                        </Dropdown.Item>
-                    ))}
+                    <Dropdown.Menu scrolling id="organization-dropdown-menu">
+                        {user.organizationRoles.map((role) => (
+                            <Dropdown.Item
+                                active={organization._id === role.organization._id}
+                                key={`organization-dropdown-${role.organization._id}`}
+                                onClick={() => this.onSwitchOrganization(role)}
+                            >
+                                {role.organization.name}
+                                {organization._id !== role.organization._id && (
+                                    <div className="pull-right">
+                                        <Icon name="arrow right" />
+                                    </div>
+                                )}
+                            </Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
                         Create Organization
