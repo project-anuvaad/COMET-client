@@ -137,6 +137,7 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
             if (video.subtitle) {
                 req.attach('subtitle', video.subtitle);
             }
+
     
             req.on('progress', function (e) {
                 if (e.percent) {
@@ -170,7 +171,6 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
         } else {
             dispatch(uploadVideoDone(result[0]));
         }
-        console.log(result);
 
         const { uploadVideoForm } = getState().video;
         dispatch(setUploadVideoForm({ ...uploadVideoForm, videos: [] }));
@@ -179,6 +179,12 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
             dispatch(setUploadedVideos(result.reverse()));
         } else {
             dispatch(setUploadedVideos([]));
+        }
+        if (result.length === 1) {
+            if (result[0].subtitle) {
+                const video = result[0];
+                NotificationService.info(`The Video ${video.title} has moved directly to Proofreading stage since it has subtitles`, '', 7000)
+            }
         }
         // dispatch(resetUploadVideoForm());
     })

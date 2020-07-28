@@ -1,21 +1,22 @@
 import { NotificationManager } from 'react-notifications';
+const DEFAULT_TIMEOUT = 5000;
 
 class NotificationService {
 
-    info(msg, title) {
-        NotificationManager.info(msg, title);
+    info(msg, title, timeout = DEFAULT_TIMEOUT) {
+        NotificationManager.info(msg, title, timeout);
     }
 
-    error(msg, title) {
-        NotificationManager.error(msg, title);
+    error(msg, title, timeout = DEFAULT_TIMEOUT) {
+        NotificationManager.error(msg, title, timeout);
     }
 
-    success(msg, title) {
-        NotificationManager.success(msg, title);
+    success(msg, title, timeout = DEFAULT_TIMEOUT) {
+        NotificationManager.success(msg, title, timeout);
     }
 
-    warning(msg, title) {
-        NotificationManager.warning(msg, title);
+    warning(msg, title, timeout = DEFAULT_TIMEOUT) {
+        NotificationManager.warning(msg, title, timeout);
     }
 
     responseError(err) {
