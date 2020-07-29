@@ -5,7 +5,7 @@
   "dependencies": {
     "@sentry/browser": "^5.15.1",
     "@videowiki/vw-proofread": "^3.0.1",
-    "@videowiki/vw-translate": "^3.0.1",
+    "@videowiki/vw-translate": "^3.0.5",
     "async": "^3.1.0",
     "classnames": "^2.2.6",
     "clipboard-copy": "^3.0.0",
