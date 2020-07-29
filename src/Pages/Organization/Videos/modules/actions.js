@@ -967,7 +967,7 @@ export const addLangsToOneVideo = (selectedVideo, codes) => (dispatch, getState)
         codesFuncArray.push(cb => {
             requestAgent
                 .post(Api.translate.generateTranslatableArticle(selectedVideo.originalArticle._id), params)
-                .then((res) => {cb()})
+                .then((res) => {cb(null, res.body)})
                 .catch(err => {
                     cb()
                     console.log(err);
@@ -975,8 +975,12 @@ export const addLangsToOneVideo = (selectedVideo, codes) => (dispatch, getState)
         })
     });
 
-    async.series(codesFuncArray, () => {
-        window.location.href = routes.organziationTranslationMetrics(selectedVideo.video._id);
+    async.series(codesFuncArray, (err, result) => {
+        if (result && result.length === 1 && result[0].article) {
+            window.location.href = routes.translationArticle(result[0].article._id)
+        } else {
+            window.location.href = routes.organziationTranslationMetrics(selectedVideo.video._id);
+        }
     });
 }
 
