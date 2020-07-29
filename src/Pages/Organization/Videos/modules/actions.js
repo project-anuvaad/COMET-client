@@ -976,10 +976,28 @@ export const addLangsToOneVideo = (selectedVideo, codes) => (dispatch, getState)
     });
 
     async.series(codesFuncArray, (err, result) => {
-        if (result && result.length === 1 && result[0].article) {
-            window.location.href = routes.translationArticle(result[0].article._id)
+        const { singleTranslatedArticle } = getState()[moduleName];
+        if (singleTranslatedArticle) {
+            dispatch(fetchTranslationsCount(singleTranslatedArticle.video._id))
+            dispatch(fetchSigleTranslatedArticle(singleTranslatedArticle.video._id, {softLoad: true, cb: () => {
+                setTimeout(() => {
+                    if (result && result.length === 1 && result[0].article) {
+                        window.location.href = routes.translationArticle(result[0].article._id)
+                    } else {
+                        window.location.href = routes.organziationTranslationMetrics(selectedVideo.video._id);
+                    }
+                }, 1000);
+            }}))
         } else {
-            window.location.href = routes.organziationTranslationMetrics(selectedVideo.video._id);
+            dispatch(fetchTranslatedArticles({ cb: () => {
+                setTimeout(() => {
+                    if (result && result.length === 1 && result[0].article) {
+                        window.location.href = routes.translationArticle(result[0].article._id)
+                    } else {
+                        window.location.href = routes.organziationTranslationMetrics(selectedVideo.video._id);
+                    }
+                }, 1000);
+            }}))
         }
     });
 }
