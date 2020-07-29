@@ -530,6 +530,7 @@ class AddMultipleHumanVoiceModal extends React.Component {
                                 multiple
                                 search
                                 selection
+                                closeOnChange
                                 options={this.getVerifiersOptions(d.verifiers)}
                                 value={d.verifiers.map((v) => v._id)}
                                 onChange={(_, { value }) => {

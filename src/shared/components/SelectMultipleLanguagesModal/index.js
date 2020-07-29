@@ -46,6 +46,7 @@ class SelectMultipleLanguagesModal extends React.Component {
                   multiple
                   search
                   selection
+                  closeOnChange
                   options={this.state.dropdownOptions}
                   onChange={(_, { value }) => {
                     this.setState({ codes: value });
