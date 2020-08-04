@@ -175,12 +175,14 @@ export const updateLocalVideo = (videoId, newVideo) => (dispatch, getState) => {
     }
 }
 
-export const fetchVideos = () => (dispatch, getState) => {
+export const fetchVideos = ({ soft } = {}) => (dispatch, getState) => {
     // const { }
-    dispatch(setVideos([]))
+    if (!soft) {
+        dispatch(setVideos([]))
+        dispatch(setVideoLoading(true));
+    }
     const { videoStatusFilter, currentPageNumber, languageFilter, searchFilter } = getState()[moduleName];
     const { organization } = getState().organization;
-    dispatch(setVideoLoading(true));
     requestAgent
         .get(Api.video.getVideos({ organization: organization._id, langCode: languageFilter, status: videoStatusFilter, page: currentPageNumber, search: searchFilter }))
         .then((res) => {
@@ -188,7 +190,9 @@ export const fetchVideos = () => (dispatch, getState) => {
             dispatch(setVideos(videos));
             dispatch(setVideoLoading(false))
             dispatch(setTotalPagesCount(pagesCount || 1));
-            dispatch(setSelectedCount(0));
+            if (!soft) {
+                dispatch(setSelectedCount(0));
+            }
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -447,7 +451,8 @@ export const skipTranscribe = (video, cuttingBy) => (dispatch, getState) => {
         .post(Api.video.skipTranscribe(video._id), { organization: organization._id, cuttingBy })
         .then((res) => {
             if (cuttingBy === 'self') {
-                window.location.href = routes.convertProgressV2(video._id); 
+                NotificationService.success('We\'re automatically cutting the video for you.')
+                dispatch(fetchVideos())
             } else {
                 NotificationService.success('Videowiki\'s team will get it done shortly!')
                 dispatch(fetchVideos())

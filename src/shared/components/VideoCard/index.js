@@ -161,6 +161,7 @@ class VideoCard extends React.Component {
       titleRoute,
       rounded,
       subTitle,
+      status,
       cuttingBy,
       cuttingStartTime,
       cuttingEndTime,
@@ -242,6 +243,41 @@ class VideoCard extends React.Component {
           )}
           {/* <video src={url} controls preload={'false'} width={'100%'} /> */}
           {this.props.extra ? this.props.extra : ""}
+           {remainingMs > 0 && (
+            <div style={{ marginLeft: 20, marginRight: 20 }}>
+                <p>
+                {status === 'automated_cutting' && (
+                  <span>Automatically breaking your video <br /></span>
+                )}
+                  Will be done in:{" "}
+                  <span
+                    style={{ color: "green", fontWeight: "bold" }}
+                  >
+                    {" "}
+                    {moment().to(cuttingEndTime, true)}
+                  </span>
+                </p>
+                {status !== 'automated_cutting' && (
+                  <p>
+                    <Progress
+                      style={{ marginBottom: 10 }}
+                      color="blue"
+                      size="tiny"
+                      percent={cuttingEndTimePercentage}
+                    />
+                    <div
+                      style={{
+                        color: "#0e7ceb",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                      }}
+                    >
+                      {cuttingEndTimePercentage}%
+                    </div>
+                  </p>
+                )}
+              </div>
+            )}
           {(reviewers || verifiers) && (
             <div style={{ margin: 20 }}>
               {reviewers && reviewers.length > 0 && (
@@ -254,36 +290,6 @@ class VideoCard extends React.Component {
                           Videowiki's Team
                         </span>
                       </p>
-                      {remainingMs > 0 && (
-                        <React.Fragment>
-                          <p>
-                            Will be done in:{" "}
-                            <span
-                              style={{ color: "green", fontWeight: "bold" }}
-                            >
-                              {" "}
-                              {moment().to(cuttingEndTime, true)}
-                            </span>
-                          </p>
-                          <p>
-                            <Progress
-                              style={{ marginBottom: 10 }}
-                              color="blue"
-                              size="tiny"
-                              percent={cuttingEndTimePercentage}
-                            />
-                            <div
-                              style={{
-                                color: "#0e7ceb",
-                                fontWeight: "bold",
-                                textAlign: "center",
-                              }}
-                            >
-                              {cuttingEndTimePercentage}%
-                            </div>
-                          </p>
-                        </React.Fragment>
-                      )}
                       {/* cuttingEndTime */}
                     </React.Fragment>
                   ) : (
@@ -311,10 +317,14 @@ class VideoCard extends React.Component {
                   )}
                 </div>
               )}
+            </div>
+          )}
+         
               {verifiers && verifiers.length > 0 && (
                 <div
                   style={{
-                    marginTop: reviewers && reviewers.length > 0 ? 10 : 0,
+                    margin: 20,
+                    marginTop: 10,
                   }}
                 >
                   Approvers: &nbsp;&nbsp;
@@ -338,8 +348,6 @@ class VideoCard extends React.Component {
                   ))}
                 </div>
               )}
-            </div>
-          )}
           <Grid style={{ margin: 0 }}>
             <Grid.Row style={{ alignItems: "center" }}>
               <Grid.Column width={this.props.showSkip ? 8 : 10}>

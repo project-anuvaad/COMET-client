@@ -48,7 +48,7 @@ const TABS = {
 }
 
 const videoStatusMap = {
-    [TABS.CUT_VIDEO]: ['uploaded', 'uploading', 'cutting'],
+    [TABS.CUT_VIDEO]: ['uploaded', 'uploading', 'automated_cutting', 'cutting'],
     [TABS.PROOFREAD]: ['proofreading', 'converting'],
     [TABS.COMPLETED]: ['done'],
 }
@@ -88,7 +88,7 @@ class Review extends React.Component {
 
         this.debouncedSearch = debounce((searchTerm) => {
             this.props.setCurrentPageNumber(1);
-            this.props.fetchVideos();
+            this.props.fetchVideos({ loading: false });
             this.props.fetchVideosCount(this.props.organization._id);
         }, 500)
 
@@ -125,20 +125,28 @@ class Review extends React.Component {
         this.props.setVideoStatusFilter(videoStatusMap[activeTab || defaultTab]);
         this.props.fetchVideos();
         this.props.fetchVideosCount(this.props.organization._id);
-        this.videoUploadedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_UPLOADED, (data) => {
-            this.props.fetchVideos();
-            this.props.fetchVideosCount(this.props.organization._id);
-        })
+        // this.videoUploadedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_UPLOADED, (data) => {
+        //     this.props.fetchVideos();
+        //     this.props.fetchVideosCount(this.props.organization._id);
+        // })
 
-        this.videoTranscribedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed)
+        // this.videoTranscribedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed)
+        this.automaticVideoBreakDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone)
         this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
     }
 
     componentWillUnmount = () => {
-        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_UPLOADED)
-        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed);
-
+        // websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_UPLOADED)
+        // websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone);
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
+    }
+
+    onAutomaticVideoBreakingDone = (video) => {
+        NotificationService.success(`${video.title} has been broken successfully!`);
+        if (this.props.videos.some(v => v._id === video._id )) {
+            this.props.fetchVideos();
+        }
     }
 
     onVideoTranscribed = (video) => {
@@ -690,7 +698,7 @@ class Review extends React.Component {
                     <div style={{ margin: 50 }}>No videos requires proofreading</div>
                 ) : this.props.videos && this.props.videos.map((video) => {
                     const props = commonProps(video);
-                    const loading = video.status === 'converting'
+                    const loading = video.status === 'automated_cutting';
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.cutting === 1);
                     const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
 
