@@ -20,17 +20,18 @@ class UploadProgressBox extends React.Component {
     }
 
     componentDidMount = () => {
-        this.videoTranscribedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed)
         this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
+        this.automaticVideoBreakDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone)
         this.props.fetchUploadedVideos();
     }
 
     componentWillUnmount = () => {
-        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone);
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
+
     }
 
-    onVideoTranscribed = (video) => {
+    onAutomaticVideoBreakingDone = (video) => {
         this.updateUploadedVideos(video)
     }
 
@@ -74,9 +75,9 @@ class UploadProgressBox extends React.Component {
             window.location.href = routes.convertProgressV2(video._id)
         } else {
             this.props.skipTranscribe(video, 'self')
+            video.status = 'automated_cutting';
         }
-        this.props.transcribeVideo(video);
-        video.status = 'cutting';
+        // this.props.transcribeVideo(video);
         this.updateUploadedVideos({ ...video });
     }
 
@@ -101,7 +102,7 @@ class UploadProgressBox extends React.Component {
                 uploadedCount += 1;
             } else if (v.status === 'uploaded') {
                 uploadedCount += 1;
-            } else if (v.status === 'transcriping') {
+            } else if (v._id && ['automated_cutting', 'cutting'].indexOf(v.status) !== -1) {
                 transcribingCount += 1
             } else if (v._id && ['proofreading', 'converting'].indexOf(v.status) !== -1) {
                 transcribedCount += 1;
@@ -211,7 +212,7 @@ class UploadProgressBox extends React.Component {
                                     />
                                 )
                             }
-                            if (['uploaded', 'transcriping', 'cutting'].indexOf(video.status) !== -1) {
+                            if (['uploaded', 'transcriping', 'automated_cutting', 'cutting'].indexOf(video.status) !== -1) {
                                 return <VideoTranscribeCard
                                     video={video}
                                     animating={index === 0}
