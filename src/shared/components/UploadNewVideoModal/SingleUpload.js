@@ -5,6 +5,9 @@ import VideoPlayer from '../VideoPlayer';
 import { removeExtension } from '../../utils/helpers';
 import SuccessLottie from '../../lottie/success-animation.json';
 import Lottie from 'react-lottie';
+import MoveVideoModal from '../../../Pages/Organization/Videos/Translations/Folders/MoveVideoModal';
+import { connect } from 'react-redux';
+import * as videoActions from '../../../Pages/Organization/Videos/modules/actions';
 const FILE_PREVIEW_SIZE_LIMIT = 10 * 1024 * 1024;
 
 const INFO_ICON_TEXT = {
@@ -12,10 +15,21 @@ const INFO_ICON_TEXT = {
     NO_OF_SPEAKERS: 'How many speakers are speaking in the video?',
     LANGUAGE: 'Which language is the video in?',
     TRANCRIPT: 'Do you have a .srt or .vtt subtitle file for this video?',
-    BACKGROUND_MUSIC: 'Do you have the background music asset of this video? Your background music file will be automatically added to the translated video.'
+    BACKGROUND_MUSIC: 'Do you have the background music asset of this video? Your background music file will be automatically added to the translated video.',
+    FOLDER: 'What is the folder of the video?'
 }
 
 class SingleUpload extends React.Component {
+
+    state = {
+        folderName: null,
+        folderId: null,
+        moveVideoModalOpen: false,
+    }
+
+    componentWillMount = () => {
+        this.props.fetchMoveVideoMainFolders();
+    }
 
     onSubmit = () => {
         this.props.onSubmit(this.props.value);
@@ -149,10 +163,43 @@ class SingleUpload extends React.Component {
         )
     }
 
+    _renderMoveVideoModal() {
+        if (!this.state.moveVideoModalOpen) return null;
+        return (
+            <MoveVideoModal
+                mainFolders={this.props.moveVideoMainFolders}
+                openedFolder={this.props.moveVideoOpenedFolder}
+                moveVideoLoading={this.props.moveVideoLoading}
+                moveVideoCurrentPageNumber={this.props.moveVideoCurrentPageNumber}
+                moveVideoTotalPagesCount={this.props.moveVideoTotalPagesCount}
+                onOpenHomePage={() => {
+                    this.props.setMoveVideoOpenedFolder(null);
+                    this.props.fetchMoveVideoMainFolders();
+                }}
+                onOpenFolder={(id) => {
+                    this.props.fetchMoveVideoOpenedFolder(id);
+                }}
+                open={this.state.moveVideoModalOpen}
+                onClose={() => {
+                    this.setState({ selectedVideo: null, moveVideoModalOpen: false });
+                }}
+                onMoveVideo={(folderId, folderName) => {
+                    // this.props.updateVideoFolder(this.state.selectedVideo._id, folderId);
+                    this.setState({ moveVideoModalOpen: false, folderId, folderName });
+                    this.props.onChange({ folder: folderId })
+                }}
+                onLoadMoreFolders={() => {
+                    this.props.loadMoreMoveVideoFolders();
+                }}
+            />
+        );
+    }
+
     render() {
         const { langsOptions, speakersOptions } = this.props;
         return (
             <Grid style={{ margin: '1.5rem' }}>
+                {this._renderMoveVideoModal()}
                 <Grid.Row>
                     <Grid.Column width={9}>
                         {this.renderDropzone()}
@@ -214,6 +261,23 @@ class SingleUpload extends React.Component {
                                         name="langCode"
                                         options={langsOptions}
                                     />
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row className="form-group">
+                                <Grid.Column width={16}>
+                                    <div>
+                                        <div>Folder {this.renderInfoPopup(INFO_ICON_TEXT.TITLE)}</div>
+                                        <div>
+                                            <span style={{ marginRight: 10 }}>{this.state.folderName || 'Homepage'}</span>
+                                            <Button 
+                                                size="mini" 
+                                                onClick={() => {
+                                                    this.setState({ moveVideoModalOpen: true });
+                                                }}
+                                            >
+                                                Change</Button>
+                                        </div>
+                                    </div>
                                 </Grid.Column>
                             </Grid.Row>
                             <Grid.Row>
@@ -352,4 +416,21 @@ class SingleUpload extends React.Component {
     }
 }
 
-export default SingleUpload;
+const mapStateToProps = ({ organization, authentication, organizationVideos }) => ({
+    openedFolder: organizationVideos.openedFolder,
+    moveVideoMainFolders: organizationVideos.moveVideoMainFolders,
+    moveVideoOpenedFolder: organizationVideos.moveVideoOpenedFolder,
+    moveVideoLoading: organizationVideos.moveVideoLoading,
+    moveVideoCurrentPageNumber: organizationVideos.moveVideoCurrentPageNumber,
+    moveVideoTotalPagesCount: organizationVideos.moveVideoTotalPagesCount,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    fetchMoveVideoMainFolders: () => dispatch(videoActions.fetchMoveVideoMainFolders()),
+    fetchMoveVideoOpenedFolder: (id) => dispatch(videoActions.fetchMoveVideoOpenedFolder(id)),
+    updateVideoFolder: (videoId, folderId) => dispatch(videoActions.updateVideoFolder(videoId, folderId)),
+    loadMoreMoveVideoFolders: () => dispatch(videoActions.loadMoreMoveVideoFolders()),
+    setMoveVideoOpenedFolder: (folder) => dispatch(videoActions.setMoveVideoOpenedFolder(folder)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleUpload);

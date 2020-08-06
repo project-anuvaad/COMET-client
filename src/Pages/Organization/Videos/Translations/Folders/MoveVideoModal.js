@@ -2,11 +2,16 @@ import React from "react";
 import { Button, Modal, Checkbox, Grid } from "semantic-ui-react";
 
 export default class MoveVideoModal extends React.Component {
-  state = { openedMainFolder: null, selectedFolderId: null };
+  state = {
+    openedMainFolder: null,
+    selectedFolderId: null,
+    selecctecFolderName: null,
+  };
 
-  onCheckChange = (checked, id) => {
-    if (checked) this.setState({ selectedFolderId: id });
-    else this.setState({ selectedFolderId: null });
+  onCheckChange = (checked, id, name) => {
+    if (checked)
+      this.setState({ selectedFolderId: id, selectedFolderName: name });
+    else this.setState({ selectedFolderId: null, selectedFolderName: null });
   };
 
   renderSubFolders() {
@@ -21,7 +26,7 @@ export default class MoveVideoModal extends React.Component {
                 checked={this.state.selectedFolderId === f._id}
                 onChange={(e, { checked }) => {
                   this.props.onOpenFolder(f._id);
-                  this.onCheckChange(checked, f._id);
+                  this.onCheckChange(checked, f._id, f.name);
                 }}
               />
               <span
@@ -32,7 +37,7 @@ export default class MoveVideoModal extends React.Component {
                 }}
                 onClick={() => {
                   this.props.onOpenFolder(f._id);
-                  this.onCheckChange(true, f._id);
+                  this.onCheckChange(true, f._id, f.name);
                 }}
               >
                 {f.name}
@@ -57,7 +62,11 @@ export default class MoveVideoModal extends React.Component {
                 }
                 onChange={(e, { checked }) => {
                   this.props.onOpenFolder(this.props.openedFolder._id);
-                  this.onCheckChange(checked, this.props.openedFolder._id);
+                  this.onCheckChange(
+                    checked,
+                    this.props.openedFolder._id,
+                    this.props.openedFolder.name
+                  );
                 }}
               />
               <span
@@ -68,7 +77,11 @@ export default class MoveVideoModal extends React.Component {
                 }}
                 onClick={() => {
                   this.props.onOpenFolder(this.props.openedFolder._id);
-                  this.onCheckChange(true, this.props.openedFolder._id);
+                  this.onCheckChange(
+                    true,
+                    this.props.openedFolder._id,
+                    this.props.openedFolder.name
+                  );
                 }}
               >
                 {this.props.openedFolder.name}
@@ -90,7 +103,7 @@ export default class MoveVideoModal extends React.Component {
                   checked={this.state.selectedFolderId === f._id}
                   onChange={(e, { checked }) => {
                     this.props.onOpenFolder(f._id);
-                    this.onCheckChange(checked, f._id);
+                    this.onCheckChange(checked, f._id, f.name);
                   }}
                 />
                 <span
@@ -101,7 +114,7 @@ export default class MoveVideoModal extends React.Component {
                   }}
                   onClick={() => {
                     this.props.onOpenFolder(f._id);
-                    this.onCheckChange(true, f._id);
+                    this.onCheckChange(true, f._id, f.name);
                   }}
                 >
                   {f.name}
@@ -130,7 +143,8 @@ export default class MoveVideoModal extends React.Component {
                   this.props.onOpenFolder(this.props.openedFolder.parent._id);
                   this.onCheckChange(
                     checked,
-                    this.props.openedFolder.parent._id
+                    this.props.openedFolder.parent._id,
+                    this.props.openedFolder.parent.name
                   );
                 }}
               />
@@ -142,7 +156,11 @@ export default class MoveVideoModal extends React.Component {
                 }}
                 onClick={() => {
                   this.props.onOpenFolder(this.props.openedFolder.parent._id);
-                  this.onCheckChange(true, this.props.openedFolder.parent._id);
+                  this.onCheckChange(
+                    true,
+                    this.props.openedFolder.parent._id,
+                    this.props.openedFolder.parent.name
+                  );
                 }}
               >
                 {this.props.openedFolder.parent.name}
@@ -161,7 +179,11 @@ export default class MoveVideoModal extends React.Component {
                 }
                 onChange={(e, { checked }) => {
                   this.props.onOpenFolder(this.props.openedFolder._id);
-                  this.onCheckChange(checked, this.props.openedFolder._id);
+                  this.onCheckChange(
+                    checked,
+                    this.props.openedFolder._id,
+                    this.props.openedFolder.name
+                  );
                 }}
               />
               <span
@@ -172,7 +194,11 @@ export default class MoveVideoModal extends React.Component {
                 }}
                 onClick={() => {
                   this.props.onOpenFolder(this.props.openedFolder._id);
-                  this.onCheckChange(true, this.props.openedFolder._id);
+                  this.onCheckChange(
+                    true,
+                    this.props.openedFolder._id,
+                    this.props.openedFolder.name
+                  );
                 }}
               >
                 {this.props.openedFolder.name}
@@ -194,7 +220,7 @@ export default class MoveVideoModal extends React.Component {
                   checked={this.state.selectedFolderId === f._id}
                   onChange={(e, { checked }) => {
                     this.props.onOpenFolder(f._id);
-                    this.onCheckChange(checked, f._id);
+                    this.onCheckChange(checked, f._id, f.name);
                   }}
                 />
                 <span
@@ -205,7 +231,7 @@ export default class MoveVideoModal extends React.Component {
                   }}
                   onClick={() => {
                     this.props.onOpenFolder(f._id);
-                    this.onCheckChange(true, f._id);
+                    this.onCheckChange(true, f._id, f.name);
                   }}
                 >
                   {f.name}
@@ -243,7 +269,7 @@ export default class MoveVideoModal extends React.Component {
                     onChange={(e, { checked }) => {
                       this.setState({ openedMainFolder: null });
                       this.props.onOpenHomePage();
-                      this.onCheckChange(checked, null);
+                      this.onCheckChange(checked, null, null);
                     }}
                   />
                   <span
@@ -255,7 +281,7 @@ export default class MoveVideoModal extends React.Component {
                     onClick={() => {
                       this.setState({ openedMainFolder: null });
                       this.props.onOpenHomePage();
-                      this.onCheckChange(true, null);
+                      this.onCheckChange(true, null, null);
                     }}
                   >
                     Homepage
@@ -280,7 +306,7 @@ export default class MoveVideoModal extends React.Component {
                         onChange={(e, { checked }) => {
                           this.setState({ openedMainFolder: f });
                           this.props.onOpenFolder(f._id);
-                          this.onCheckChange(checked, f._id);
+                          this.onCheckChange(checked, f._id, f.name);
                         }}
                       />
                       <span
@@ -292,7 +318,7 @@ export default class MoveVideoModal extends React.Component {
                         onClick={() => {
                           this.setState({ openedMainFolder: f });
                           this.props.onOpenFolder(f._id);
-                          this.onCheckChange(true, f._id);
+                          this.onCheckChange(true, f._id, f.name);
                         }}
                       >
                         {f.name}
@@ -357,7 +383,10 @@ export default class MoveVideoModal extends React.Component {
               circular
               primary
               onClick={() =>
-                this.props.onMoveVideo(this.state.selectedFolderId)
+                this.props.onMoveVideo(
+                  this.state.selectedFolderId,
+                  this.state.selectedFolderName
+                )
               }
             >
               Move

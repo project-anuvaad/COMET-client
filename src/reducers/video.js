@@ -41,6 +41,7 @@ const INITIAL_STATE = {
         videos: [],
         subtitles: [],
         activeTabIndex: 0,
+        folder: null,
     },
     uploadedVideos: initialUploadedVideos,
 }

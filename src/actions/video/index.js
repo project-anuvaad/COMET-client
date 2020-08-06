@@ -118,6 +118,9 @@ export const abortAllVideoUploads = () => (dispatch, getState) => {
 export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
     const { uploadVideoForm } = getState().video;
     const { videos } = uploadVideoForm;
+
+    console.log('=================videos==================', videos);
+
     videos.forEach(v => {
         v.started = true;
     })
@@ -126,13 +129,14 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
     const uploadVideoFuncArray = [];
     videos.forEach((video, index) => {
         uploadVideoFuncArray.push((cb) => {
-            const { numberOfSpeakers, langCode, content, name } = video;
+            const { numberOfSpeakers, langCode, content, name, folder } = video;
             const req = requestAgent
             .post(Api.video.uploadVideo())
             .field('title', name)
             .field('numberOfSpeakers', numberOfSpeakers)
             .field('langCode', langCode)
             .field('organization', organization || '')
+            .field('folder', folder || '')
             .attach('video', content)
             if (video.subtitle) {
                 req.attach('subtitle', video.subtitle);
