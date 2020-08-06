@@ -26,6 +26,8 @@ import FoldersList from './Folders/FoldersList';
 import FolderCard from './Folders/FolderCard';
 import AssignReviewUsers from '../../../../shared/components/AssignReviewUsers';
 import MoveVideoModal from './Folders/MoveVideoModal';
+import websockets from '../../../../websockets';
+import NotificationService from '../../../../shared/utils/NotificationService';
 
 function Separator() {
     return (
@@ -66,6 +68,18 @@ class Translated extends React.Component {
         this.props.fetchMainFolders();
         this.props.fetchMoveVideoMainFolders();
         this.props.searchUsers(this.props.organization._id, { search: '' });
+        this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
+    }
+
+    componentWillUnmount = () => {
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
+    }
+
+    onVideoCompleted = (video) => {
+        if (this.props.translatedArticles && this.props.translatedArticles.some(a => a.video._id === video._id)) {
+            NotificationService.success(`"${video.title} is now ready for mass-transaltion"`)
+            this.props.fetchTranslatedArticles();
+        }
     }
 
     isVideoFocused = (video) => {
@@ -711,7 +725,7 @@ class Translated extends React.Component {
                         <LoaderComponent active={this.props.videosLoading}>
                             <Grid.Row>
                                 {this.props.translatedArticles.map((translatedArticle) => (
-                                    <Grid.Column width={4} key={`translated-article-container-${translatedArticle.video._id}`}>
+                                    <Grid.Column width={4} key={`translated-article-container-${translatedArticle.video._id}`} style={{ marginBottom: 30 }}>
                                         <VideoCard
                                             showOptions
                                             options={[
@@ -743,8 +757,13 @@ class Translated extends React.Component {
                                             thumbnailUrl={translatedArticle.video.thumbnailUrl}
                                             duration={translatedArticle.video.duration}
                                             title={translatedArticle.video.title}
+                                            
                                             titleRoute={routes.organziationTranslationMetrics(translatedArticle.video._id)}
                                             buttonTitle={buttonTitle}
+                                            status={translatedArticle.video.status}
+                                            convertStartTime={translatedArticle.video.convertStartTime}
+                                            convertEndTime={translatedArticle.video.convertEndTime}   
+                                            loading={translatedArticle.video.status === 'converting'}
                                             onButtonClick={() => {
                                                 this.props.setSelectedVideo(translatedArticle);
                                                 this.setState({ selectLanguagesForOneVideoModalOpen: true });

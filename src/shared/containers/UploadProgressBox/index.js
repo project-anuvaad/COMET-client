@@ -22,17 +22,23 @@ class UploadProgressBox extends React.Component {
     componentDidMount = () => {
         this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
         this.automaticVideoBreakDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone)
+        this.AITranscribeVideoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH, this.onAITranscribeVideoDone)
         this.props.fetchUploadedVideos();
     }
 
     componentWillUnmount = () => {
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone);
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH, this.onAITranscribeVideoDone);
 
     }
 
     onAutomaticVideoBreakingDone = (video) => {
         this.updateUploadedVideos(video)
+    }
+
+    onAITranscribeVideoDone = (video) => {
+        this.updateUploadedVideos(video);
     }
 
     onVideoCompleted = (video) => {
