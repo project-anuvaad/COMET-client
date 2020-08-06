@@ -77,7 +77,7 @@ class Translated extends React.Component {
 
     onVideoCompleted = (video) => {
         if (this.props.translatedArticles && this.props.translatedArticles.some(a => a.video._id === video._id)) {
-            NotificationService.success(`"${video.title} is now ready for mass-transaltion"`)
+            NotificationService.success(`"${video.title}" is now ready for mass-transaltion`)
             this.props.fetchTranslatedArticles();
         }
     }
