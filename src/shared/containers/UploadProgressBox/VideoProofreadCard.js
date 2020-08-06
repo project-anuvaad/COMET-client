@@ -71,7 +71,7 @@ export default class VideoProofreadCard extends React.Component {
                             )}
                             {video.status === 'converting' && (
                                 <small>
-                                    Processing your video for mass-transaltion
+                                    Processing your video for mass-translation
                                 </small>
                             )}
                         </p>

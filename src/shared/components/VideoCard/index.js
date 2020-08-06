@@ -337,7 +337,7 @@ class VideoCard extends React.Component {
       return  (
         <div style={{ marginLeft: 20, marginRight: 20 }}>
           <p>
-            <span>Processing your video for mass-transaltion<br /></span>
+            <span>Processing your video for mass-translation<br /></span>
             Will be done in:{" "}
             <span
               style={{ color: "green", fontWeight: "bold" }}
