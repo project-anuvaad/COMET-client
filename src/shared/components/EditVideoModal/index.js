@@ -2,6 +2,10 @@ import React from 'react';
 import { Icon, Modal, Popup, Grid, Input, Dropdown, Button } from 'semantic-ui-react';
 
 import { supportedLangs, isoLangsArray } from '../../constants/langs';
+import MoveVideoModal from '../../../Pages/Organization/Videos/Translations/Folders/MoveVideoModal';
+import { connect } from 'react-redux';
+import * as videoActions from '../../../Pages/Organization/Videos/modules/actions';
+
 const speakersOptions = Array.apply(null, { length: 10 }).map(Number.call, Number).map((a, index) => ({ value: index + 1, text: index + 1 }));
 let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true })).concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)))
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} ) ${lang.supported ? ' < Auto >' : ''}` }));
@@ -11,10 +15,27 @@ const INFO_ICON_TEXT = {
     NO_OF_SPEAKERS: 'How many speakers are speaking in the video?',
     LANGUAGE: 'Which language is the video in?',
     TRANCRIPT: 'Do you have a .srt or .vtt subtitle file for this video?',
-    BACKGROUND_MUSIC: 'Do you have the background music asset of this video? Your background music file will be automatically added to the translated video.'
+    BACKGROUND_MUSIC: 'Do you have the background music asset of this video? Your background music file will be automatically added to the translated video.',
+    FOLDER: 'What is the "Folder" of the video?',
 }
 
-export default class EditVideoModal extends React.Component {
+class EditVideoModal extends React.Component {
+    state = {
+        moveVideoModalOpen: false,
+        folderName: null,
+        folderId: null,
+        oldFolderCached: false
+    }
+
+    componentWillMount = () => {
+        this.props.fetchMoveVideoMainFolders();
+    }
+
+    componentWillUpdate(nextProps) {
+        if (nextProps.value && nextProps.value.folder && nextProps.value.folder._id !== this.state.folderId && !this.state.oldFolderCached) {
+            this.setState({ folderName: nextProps.value.folder.name, folderId: nextProps.value.folder._id, oldFolderCached: true });
+        }
+    }
 
     renderInfoPopup = (text) => {
         return (
@@ -49,10 +70,43 @@ export default class EditVideoModal extends React.Component {
         this.props.onChange({ [fieldName]: file });
     }
 
+    _renderMoveVideoModal() {
+        if (!this.state.moveVideoModalOpen) return null;
+        return (
+            <MoveVideoModal
+                mainFolders={this.props.moveVideoMainFolders}
+                openedFolder={this.props.moveVideoOpenedFolder}
+                moveVideoLoading={this.props.moveVideoLoading}
+                moveVideoCurrentPageNumber={this.props.moveVideoCurrentPageNumber}
+                moveVideoTotalPagesCount={this.props.moveVideoTotalPagesCount}
+                buttonContent='Select'
+                onOpenHomePage={() => {
+                    this.props.setMoveVideoOpenedFolder(null);
+                    this.props.fetchMoveVideoMainFolders();
+                }}
+                onOpenFolder={(id) => {
+                    this.props.fetchMoveVideoOpenedFolder(id);
+                }}
+                open={this.state.moveVideoModalOpen}
+                onClose={() => {
+                    this.setState({ moveVideoModalOpen: false });
+                }}
+                onMoveVideo={(folderId, folderName) => {
+                    this.setState({ moveVideoModalOpen: false, folderName, folderId });
+                    this.props.onChange({ folder: folderId || '' });
+                }}
+                onLoadMoreFolders={() => {
+                    this.props.loadMoreMoveVideoFolders();
+                }}
+            />
+        );
+    }
+
     render() {
         const { open, value, initialValue, onClose } = this.props;
         return (
             <Modal open={open} size="small" onClose={onClose}>
+                {this._renderMoveVideoModal()}
                 <Modal.Header>
                     {value ? value.title : 'Edit Video'}
                     <Button
@@ -129,6 +183,21 @@ export default class EditVideoModal extends React.Component {
                                             </strong>
                                         </small>
                                     )}
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row className="form-group">
+                                <Grid.Column width={4}>
+                                    Folder {this.renderInfoPopup(INFO_ICON_TEXT.FOLDER)}
+                                </Grid.Column>
+                                <Grid.Column width={12}>
+                                    <span style={{ marginRight: 10 }}>{this.state.folderName || 'Homepage'}</span>
+                                    <Button 
+                                        size="mini" 
+                                        onClick={() => {
+                                            this.setState({ moveVideoModalOpen: true });
+                                        }}
+                                    >
+                                        Change</Button>
                                 </Grid.Column>
                             </Grid.Row>
 
@@ -217,3 +286,21 @@ export default class EditVideoModal extends React.Component {
         )
     }
 }
+
+const mapStateToProps = ({ organizationVideos }) => ({
+    openedFolder: organizationVideos.openedFolder,
+    moveVideoMainFolders: organizationVideos.moveVideoMainFolders,
+    moveVideoOpenedFolder: organizationVideos.moveVideoOpenedFolder,
+    moveVideoLoading: organizationVideos.moveVideoLoading,
+    moveVideoCurrentPageNumber: organizationVideos.moveVideoCurrentPageNumber,
+    moveVideoTotalPagesCount: organizationVideos.moveVideoTotalPagesCount,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    fetchMoveVideoMainFolders: () => dispatch(videoActions.fetchMoveVideoMainFolders()),
+    fetchMoveVideoOpenedFolder: (id) => dispatch(videoActions.fetchMoveVideoOpenedFolder(id)),
+    loadMoreMoveVideoFolders: () => dispatch(videoActions.loadMoreMoveVideoFolders()),
+    setMoveVideoOpenedFolder: (folder) => dispatch(videoActions.setMoveVideoOpenedFolder(folder)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditVideoModal);

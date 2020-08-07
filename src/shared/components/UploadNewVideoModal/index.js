@@ -62,6 +62,8 @@ class UploadNewVideoModal extends React.Component {
                 langCode: DEFAULT_LANG_CODE,
                 selected: false,
                 hasSubtitle: false,
+                folder: null,
+                folderName: null
             }];
         }
 

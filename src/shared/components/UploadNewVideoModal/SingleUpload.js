@@ -16,14 +16,12 @@ const INFO_ICON_TEXT = {
     LANGUAGE: 'Which language is the video in?',
     TRANCRIPT: 'Do you have a .srt or .vtt subtitle file for this video?',
     BACKGROUND_MUSIC: 'Do you have the background music asset of this video? Your background music file will be automatically added to the translated video.',
-    FOLDER: 'What is the folder of the video?'
+    FOLDER: 'What is the "Folder" of the video?'
 }
 
 class SingleUpload extends React.Component {
 
     state = {
-        folderName: null,
-        folderId: null,
         moveVideoModalOpen: false,
     }
 
@@ -172,6 +170,7 @@ class SingleUpload extends React.Component {
                 moveVideoLoading={this.props.moveVideoLoading}
                 moveVideoCurrentPageNumber={this.props.moveVideoCurrentPageNumber}
                 moveVideoTotalPagesCount={this.props.moveVideoTotalPagesCount}
+                buttonContent='Select'
                 onOpenHomePage={() => {
                     this.props.setMoveVideoOpenedFolder(null);
                     this.props.fetchMoveVideoMainFolders();
@@ -184,8 +183,8 @@ class SingleUpload extends React.Component {
                     this.setState({ moveVideoModalOpen: false });
                 }}
                 onMoveVideo={(folderId, folderName) => {
-                    this.setState({ moveVideoModalOpen: false, folderId, folderName });
-                    this.props.onChange({ folder: folderId });
+                    this.setState({ moveVideoModalOpen: false });
+                    this.props.onChange({ folder: folderId, folderName });
                 }}
                 onLoadMoreFolders={() => {
                     this.props.loadMoreMoveVideoFolders();
@@ -265,9 +264,9 @@ class SingleUpload extends React.Component {
                             <Grid.Row className="form-group">
                                 <Grid.Column width={16}>
                                     <div>
-                                        <div>Folder {this.renderInfoPopup(INFO_ICON_TEXT.TITLE)}</div>
+                                        <div>Folder {this.renderInfoPopup(INFO_ICON_TEXT.FOLDER)}</div>
                                         <div>
-                                            <span style={{ marginRight: 10 }}>{this.state.folderName || 'Homepage'}</span>
+                                            <span style={{ marginRight: 10 }}>{this.props.value.folderName || 'Homepage'}</span>
                                             <Button 
                                                 size="mini" 
                                                 onClick={() => {
