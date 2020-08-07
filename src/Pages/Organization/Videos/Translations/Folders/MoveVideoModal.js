@@ -389,7 +389,7 @@ export default class MoveVideoModal extends React.Component {
                 )
               }
             >
-              Move
+              {this.props.buttonContent || 'Move'}
             </Button>
           </div>
         </Modal.Actions>

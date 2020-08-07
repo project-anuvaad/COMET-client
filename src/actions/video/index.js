@@ -119,8 +119,6 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
     const { uploadVideoForm } = getState().video;
     const { videos } = uploadVideoForm;
 
-    console.log('=================videos==================', videos);
-
     videos.forEach(v => {
         v.started = true;
     })

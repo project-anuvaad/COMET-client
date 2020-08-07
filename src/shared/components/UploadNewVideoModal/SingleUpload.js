@@ -181,12 +181,11 @@ class SingleUpload extends React.Component {
                 }}
                 open={this.state.moveVideoModalOpen}
                 onClose={() => {
-                    this.setState({ selectedVideo: null, moveVideoModalOpen: false });
+                    this.setState({ moveVideoModalOpen: false });
                 }}
                 onMoveVideo={(folderId, folderName) => {
-                    // this.props.updateVideoFolder(this.state.selectedVideo._id, folderId);
                     this.setState({ moveVideoModalOpen: false, folderId, folderName });
-                    this.props.onChange({ folder: folderId })
+                    this.props.onChange({ folder: folderId });
                 }}
                 onLoadMoreFolders={() => {
                     this.props.loadMoreMoveVideoFolders();
@@ -416,7 +415,7 @@ class SingleUpload extends React.Component {
     }
 }
 
-const mapStateToProps = ({ organization, authentication, organizationVideos }) => ({
+const mapStateToProps = ({ organizationVideos }) => ({
     openedFolder: organizationVideos.openedFolder,
     moveVideoMainFolders: organizationVideos.moveVideoMainFolders,
     moveVideoOpenedFolder: organizationVideos.moveVideoOpenedFolder,
@@ -428,7 +427,6 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
 const mapDispatchToProps = (dispatch) => ({
     fetchMoveVideoMainFolders: () => dispatch(videoActions.fetchMoveVideoMainFolders()),
     fetchMoveVideoOpenedFolder: (id) => dispatch(videoActions.fetchMoveVideoOpenedFolder(id)),
-    updateVideoFolder: (videoId, folderId) => dispatch(videoActions.updateVideoFolder(videoId, folderId)),
     loadMoreMoveVideoFolders: () => dispatch(videoActions.loadMoreMoveVideoFolders()),
     setMoveVideoOpenedFolder: (folder) => dispatch(videoActions.setMoveVideoOpenedFolder(folder)),
 });

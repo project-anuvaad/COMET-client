@@ -6,6 +6,9 @@ import Dropzone from 'react-dropzone';
 import { matchVideosWithSubtitels, removeExtension, showMoreText } from '../../utils/helpers';
 import Tabs from '../Tabs';
 import LanguageDropdown from '../LanguageDropdown';
+import MoveVideoModal from '../../../Pages/Organization/Videos/Translations/Folders/MoveVideoModal';
+import { connect } from 'react-redux';
+import * as videoActions from '../../../Pages/Organization/Videos/modules/actions';
 
 const DEFAULT_LANG_CODE = 'en-US';
 const SPEAKERS_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -15,6 +18,10 @@ class MultipleUpload extends React.Component {
         bulkEditing: false,
         bulkEditingNumberOfSpeakers: 1,
         bulkEditingLangCode: DEFAULT_LANG_CODE,
+        // folderName: null,
+        // folderId: null,
+        moveVideoModalOpen: false,
+        selectFolderItemIndex: null,
     }
 
     onSaveBulkEditing = () => {
@@ -91,6 +98,39 @@ class MultipleUpload extends React.Component {
         this.props.onChange({ subtitles: subtitles.filter((s) => !s.selected) });
     }
 
+    _renderMoveVideoModal() {
+        if (!this.state.moveVideoModalOpen && this.state.selectFolderItemIndex === null) return null;
+        return (
+            <MoveVideoModal
+                mainFolders={this.props.moveVideoMainFolders}
+                openedFolder={this.props.moveVideoOpenedFolder}
+                moveVideoLoading={this.props.moveVideoLoading}
+                moveVideoCurrentPageNumber={this.props.moveVideoCurrentPageNumber}
+                moveVideoTotalPagesCount={this.props.moveVideoTotalPagesCount}
+                buttonContent='Select'
+                onOpenHomePage={() => {
+                    this.props.setMoveVideoOpenedFolder(null);
+                    this.props.fetchMoveVideoMainFolders();
+                }}
+                onOpenFolder={(id) => {
+                    this.props.fetchMoveVideoOpenedFolder(id);
+                }}
+                open={this.state.moveVideoModalOpen}
+                onClose={() => {
+                    this.setState({ moveVideoModalOpen: false, selectFolderItemIndex: null });
+                }}
+                onMoveVideo={(folderId, folderName) => {
+                    this.setState({ moveVideoModalOpen: false });
+                    this.onMultiVideoItemChange(this.state.selectFolderItemIndex, 'folder', folderId);
+                    this.onMultiVideoItemChange(this.state.selectFolderItemIndex, 'folderName', folderName);
+                }}
+                onLoadMoreFolders={() => {
+                    this.props.loadMoreMoveVideoFolders();
+                }}
+            />
+        );
+    }
+
     renderMultipleVidoesTable = () => {
         let { videos, subtitles } = this.props.value;
         const { langsOptions } = this.props;
@@ -116,6 +156,7 @@ class MultipleUpload extends React.Component {
                         <Table.HeaderCell style={backgroundStyle}>Title of the video</Table.HeaderCell>
                         <Table.HeaderCell style={backgroundStyle}>Speakers</Table.HeaderCell>
                         <Table.HeaderCell style={backgroundStyle}>Language</Table.HeaderCell>
+                        <Table.HeaderCell style={backgroundStyle}>Folder</Table.HeaderCell>
                         <Table.HeaderCell style={backgroundStyle}>Subtitle</Table.HeaderCell>
                         {/* <Table.HeaderCell style={backgroundStyle} /> */}
                     </Table.Row>
@@ -127,7 +168,7 @@ class MultipleUpload extends React.Component {
                                 <Checkbox checked={video.selected} onChange={(e, { checked }) => this.onMultiVideoItemChange(index, 'selected', checked)} />
                             </Table.Cell>
                             {/* View/Edit video name */}
-                            <Table.Cell width="4">
+                            <Table.Cell width="3">
 
                                 <Input
                                     type="text"
@@ -163,6 +204,18 @@ class MultipleUpload extends React.Component {
                                     onChange={(value) => { this.onMultiVideoItemChange(index, 'langCode', value); }}
                                     options={langsOptions}
                                 />
+                            </Table.Cell>
+                            <Table.Cell width="3">
+                                <div>
+                                    <span style={{ marginRight: 10 }}>{video.folderName || 'Homepage'}</span>
+                                    <Button 
+                                        size="mini" 
+                                        onClick={() => {
+                                            this.setState({ moveVideoModalOpen: true, selectFolderItemIndex: index });
+                                        }}
+                                    >
+                                        Change</Button>
+                                </div>
                             </Table.Cell>
                             <Table.Cell className="ceneterd-cell">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -432,6 +485,7 @@ class MultipleUpload extends React.Component {
         const marginSpace = { margin: 10 }
         return (
             <Grid style={{ margin: 0 }} className="multi-upload-video">
+                {this._renderMoveVideoModal()}
                 <Grid.Row style={{ padding: 0 }}>
                     <Grid.Column width={16} style={{ padding: 0 }}>
                         {!videos || videos.length === 0 ? (
@@ -496,4 +550,20 @@ class MultipleUpload extends React.Component {
     }
 }
 
-export default MultipleUpload;
+const mapStateToProps = ({ organizationVideos }) => ({
+    openedFolder: organizationVideos.openedFolder,
+    moveVideoMainFolders: organizationVideos.moveVideoMainFolders,
+    moveVideoOpenedFolder: organizationVideos.moveVideoOpenedFolder,
+    moveVideoLoading: organizationVideos.moveVideoLoading,
+    moveVideoCurrentPageNumber: organizationVideos.moveVideoCurrentPageNumber,
+    moveVideoTotalPagesCount: organizationVideos.moveVideoTotalPagesCount,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    fetchMoveVideoMainFolders: () => dispatch(videoActions.fetchMoveVideoMainFolders()),
+    fetchMoveVideoOpenedFolder: (id) => dispatch(videoActions.fetchMoveVideoOpenedFolder(id)),
+    loadMoreMoveVideoFolders: () => dispatch(videoActions.loadMoreMoveVideoFolders()),
+    setMoveVideoOpenedFolder: (folder) => dispatch(videoActions.setMoveVideoOpenedFolder(folder)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MultipleUpload);
