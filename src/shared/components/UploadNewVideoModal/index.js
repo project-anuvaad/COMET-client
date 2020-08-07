@@ -63,7 +63,7 @@ class UploadNewVideoModal extends React.Component {
                 selected: false,
                 hasSubtitle: false,
                 folder: null,
-                folderName: null
+                folderName: null,
             }];
         }
 

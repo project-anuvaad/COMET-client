@@ -57,7 +57,7 @@ class SingleUpload extends React.Component {
         reader.onabort = () => console.log('file reading was aborted')
         reader.onerror = () => console.log('file reading has failed')
         reader.onload = () => {
-            this.props.onChange({ base64: reader.result });
+            this.props.onChange({ base64: reader.result, folderId: null, folderName: null });
         }
         reader.readAsDataURL(file)
     }
@@ -268,7 +268,8 @@ class SingleUpload extends React.Component {
                                         <div>
                                             <span style={{ marginRight: 10 }}>{this.props.value.folderName || 'Homepage'}</span>
                                             <Button 
-                                                size="mini" 
+                                                style={{ padding: 5, fontSize: '.7rem' }}
+                                                primary
                                                 onClick={() => {
                                                     this.setState({ moveVideoModalOpen: true });
                                                 }}

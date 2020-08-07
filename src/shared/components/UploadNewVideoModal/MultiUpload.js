@@ -18,8 +18,6 @@ class MultipleUpload extends React.Component {
         bulkEditing: false,
         bulkEditingNumberOfSpeakers: 1,
         bulkEditingLangCode: DEFAULT_LANG_CODE,
-        // folderName: null,
-        // folderId: null,
         moveVideoModalOpen: false,
         selectFolderItemIndex: null,
     }

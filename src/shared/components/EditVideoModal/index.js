@@ -192,7 +192,8 @@ class EditVideoModal extends React.Component {
                                 <Grid.Column width={12}>
                                     <span style={{ marginRight: 10 }}>{this.state.folderName || 'Homepage'}</span>
                                     <Button 
-                                        size="mini" 
+                                        style={{ padding: 5, fontSize: '.7rem' }}
+                                        primary
                                         onClick={() => {
                                             this.setState({ moveVideoModalOpen: true });
                                         }}
