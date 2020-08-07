@@ -263,6 +263,7 @@ export const deleteSelectedVideos = () => (dispatch, getState) => {
 
 export const updateVideo = (videoId, changes) => (dispatch) => {
     dispatch(setVideoLoading(true));
+    changes.folder && changes.folder._id ? changes.folder = changes.folder._id : changes.folder = '';
     const req = requestAgent
         .patch(Api.video.updateVideoById(videoId));
     Object.keys(changes).forEach(key => {

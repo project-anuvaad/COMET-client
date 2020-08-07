@@ -22,19 +22,10 @@ const INFO_ICON_TEXT = {
 class EditVideoModal extends React.Component {
     state = {
         moveVideoModalOpen: false,
-        folderName: null,
-        folderId: null,
-        oldFolderCached: false
     }
 
     componentWillMount = () => {
         this.props.fetchMoveVideoMainFolders();
-    }
-
-    componentWillUpdate(nextProps) {
-        if (nextProps.value && nextProps.value.folder && nextProps.value.folder._id !== this.state.folderId && !this.state.oldFolderCached) {
-            this.setState({ folderName: nextProps.value.folder.name, folderId: nextProps.value.folder._id, oldFolderCached: true });
-        }
     }
 
     renderInfoPopup = (text) => {
@@ -92,8 +83,8 @@ class EditVideoModal extends React.Component {
                     this.setState({ moveVideoModalOpen: false });
                 }}
                 onMoveVideo={(folderId, folderName) => {
-                    this.setState({ moveVideoModalOpen: false, folderName, folderId });
-                    this.props.onChange({ folder: folderId || '' });
+                    this.setState({ moveVideoModalOpen: false });
+                    this.props.onChange({ folder: { ...this.props.value.folder, _id: folderId, name: folderName } });
                 }}
                 onLoadMoreFolders={() => {
                     this.props.loadMoreMoveVideoFolders();
@@ -190,7 +181,7 @@ class EditVideoModal extends React.Component {
                                     Folder {this.renderInfoPopup(INFO_ICON_TEXT.FOLDER)}
                                 </Grid.Column>
                                 <Grid.Column width={12}>
-                                    <span style={{ marginRight: 10 }}>{this.state.folderName || 'Homepage'}</span>
+                                    <span style={{ marginRight: 10 }}>{this.props.value.folder ? this.props.value.folder.name : 'Homepage'}</span>
                                     <Button 
                                         style={{ padding: 5, fontSize: '.7rem' }}
                                         primary
