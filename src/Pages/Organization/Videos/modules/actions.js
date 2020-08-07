@@ -325,7 +325,7 @@ export const fetchTranslatedArticles = ({ softLoad, cb } = {}) => (dispatch, get
             const videoId = querystring.parse(window.location.search).video;
             if (videoId) {
                 const videoIndex = videos.findIndex(v => v.video._id === videoId)
-                if (videoId !== -1) {
+                if (videoIndex !== -1) {
                     const video = videos.splice(videoIndex, 1)[0]
                     videos = [video].concat(videos)
                 } 
