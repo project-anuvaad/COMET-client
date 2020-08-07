@@ -132,19 +132,28 @@ class Review extends React.Component {
 
         // this.videoTranscribedSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed)
         this.automaticVideoBreakDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone)
+        this.AITranscribeVideoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH, this.onAITranscribeVideoDone)
         this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
     }
 
     componentWillUnmount = () => {
         // websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_UPLOADED)
         // websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_TRANSCRIBED, this.onVideoTranscribed);
-        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone);
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH, this.onAITranscribeVideoDone);
+    }
+    
+    onAITranscribeVideoDone = (video) => {
+        if (this.props.videos.some(v => v._id === video._id )) {
+            NotificationService.success(`"${video.title}" has been transcribed successfully!`);
+            this.props.fetchVideos();
+        }
     }
 
     onAutomaticVideoBreakingDone = (video) => {
-        NotificationService.success(`${video.title} has been broken successfully!`);
         if (this.props.videos.some(v => v._id === video._id )) {
+            NotificationService.success(`"${video.title}" has been broken successfully!`);
             this.props.fetchVideos();
         }
     }
@@ -160,7 +169,7 @@ class Review extends React.Component {
     onVideoCompleted = (video) => {
         this.props.fetchVideos();
         this.props.fetchVideosCount(this.props.organization._id);
-        NotificationService.success(`The video "${video.title}" has been converted successfully!`);
+        NotificationService.success(`"${video.title}" has been converted successfully!`);
     }
 
     onTabChange = tab => {
@@ -660,38 +669,6 @@ class Review extends React.Component {
             onSelectChange: (selected) => this.onSelectChange(video, selected),
 
         })
-        // if (this.state.activeTab === TABS.TRANSCRIBE) {
-        //     renderedComp = (
-        //         this.props.videos && this.props.videos.length === 0 ? (
-        //             <div style={{ margin: 50 }}>No videos requires preview</div>
-        //         ) : this.props.videos && this.props.videos.map((video) => {
-        //             const loading = ['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1;
-        //             const props = commonProps(video);
-        //             const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.transcribe === 1);
-        //             const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
-        //             return (
-        //                 <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
-        //                     <VideoCard
-        //                         {...props}
-        //                         {...video}
-        //                         showSkip={!loading}
-        //                         loading={loading}
-        //                         disabled={loading}
-        //                         buttonTitle="Transcribe"
-        //                         onButtonClick={() => this.onSkipTranscribeClick(video)}
-        //                         onSkipClick={() => this.onSkipTranscribeClick(video)}
-        //                         focused={animate}
-        //                         // Animate if it's not loading and there's only 1 video uploaded and it's in AI Transcribe stage
-        //                         animateButton={animate}
-        //                         showWhatsappIcon={!loading}
-        //                         whatsappIconTarget={whatsappIconTarget}
-        //                         whatsappIconContent={'Transcribe on WhatsApp'}
-        //                     />
-        //                 </Grid.Column>
-        //             )
-        //         })
-        //     )
-        // } else 
         if (this.state.activeTab === TABS.CUT_VIDEO) {
             renderedComp = (
                 this.props.videos && this.props.videos.length === 0 ? (
@@ -734,7 +711,7 @@ class Review extends React.Component {
                     <div style={{ margin: 50 }}>No videos requires proofreading</div>
                 ) : this.props.videos && this.props.videos.map((video) => {
                     const props = commonProps(video);
-                    const loading = video.status === 'converting'
+                    const loading = video.status === 'converting' || video.AITranscriptionLoading;
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.proofread === 1);
                     const whatsappIconTarget = generateWhatsappProofreadLink(video._id);
 

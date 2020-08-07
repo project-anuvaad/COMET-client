@@ -1,7 +1,8 @@
 import { push } from 'connected-react-router';
 import * as actionTypes from './types';
-import Api from '../../../../shared/api';
 import async from 'async';
+import querystring from 'query-string';
+import Api from '../../../../shared/api';
 import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import routes from '../../../../shared/routes';
@@ -302,7 +303,7 @@ export const deleteArticle = (articleId, videoId) => (dispatch, getState) => {
         })
 }
 
-export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getState) => {
+export const fetchTranslatedArticles = ({ softLoad, cb } = {}) => (dispatch, getState) => {
     if (!softLoad) {
         dispatch(setVideoLoading(true));
         dispatch(setTranslatedArticles([]))
@@ -319,7 +320,15 @@ export const fetchTranslatedArticles = ({ softLoad, cb} = {}) => (dispatch, getS
     requestAgent
         .get(Api.article.getTranslatedArticles(params))
         .then((res) => {
-            const { videos, pagesCount } = res.body;
+            let { videos, pagesCount } = res.body;
+            const videoId = querystring.parse(window.location.search).video;
+            if (videoId) {
+                const videoIndex = videos.findIndex(v => v.video._id === videoId)
+                if (videoId !== -1) {
+                    const video = videos.splice(videoIndex, 1)[0]
+                    videos = [video].concat(videos)
+                } 
+            }
             dispatch(setTranslatedArticles(videos));
             dispatch(setTotalPagesCount(pagesCount || 1));
             dispatch(setSelectedCount(0));

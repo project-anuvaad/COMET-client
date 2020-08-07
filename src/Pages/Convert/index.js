@@ -1,65 +1,100 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import querstring from 'query-string';
-import { fetchUserApiKey } from '../../actions/authentication';
-import routes from '../../shared/routes';
-import { APP_ENV } from '../../shared/constants';
-import LoadingComponent from '../../shared/components/LoaderComponent';
-import vwProofread from '@videowiki/vw-proofread';
+import React from "react";
+import { connect } from "react-redux";
+import querstring from "query-string";
+import { fetchUserApiKey } from "../../actions/authentication";
+import routes from "../../shared/routes";
+import { APP_ENV } from "../../shared/constants";
+import LoadingComponent from "../../shared/components/LoaderComponent";
+import { fetchVideoById } from "../../actions/video";
 
 class Convert extends React.Component {
-    state = {
-        loaded: true,
-    }
+  state = {
+    loaded: false,
+    vwComp: null,
+  };
 
-    componentWillMount = () => {
-        this.props.fetchUserApiKey(this.props.organization._id)
-    }
+  componentWillMount = () => {
+    const { video } = querstring.parse(window.location.search);
+    this.props.fetchVideoById(video);
+    this.props.fetchUserApiKey(this.props.organization._id);
+  };
 
-    // componentDidMount = () => {
-    //     const vwProofreadScript = document.getElementById('vw-proofread-script');
-    //     if (vwProofreadScript) {
-    //         this.setState({ loaded: true });
-    //     } else {
-    //         const script = document.createElement("script");
-    //         script.id = 'vw-proofread-script'
-    //         script.src = "https://videowiki-microapps.s3-eu-west-1.amazonaws.com/vw-proofread/v2.0.8.js";
-    //         script.async = true;
-    //         script.onload = () => this.setState({ loaded: true });
-    //         document.body.appendChild(script);
-    //     }
-    // }
-    render() {
-        if (!this.props.apiKey) return null;
-        const { video } = querstring.parse(window.location.search);
-        return (
-            <div>
-                {!this.state.loaded && (
-                    <LoadingComponent active={true}></LoadingComponent>
-                )}
-                {this.props.apiKey && this.props.apiKey.key && (
-                    <vw-proofread
-                        apiKey={this.props.apiKey.key}
-                        apiRoot={APP_ENV.API_ROOT}
-                        videoId={video}
-                        backRoute={`${routes.organizationVideos()}?activeTab=proofread`}
-                        finishRedirectRoute={`${routes.organziationReview()}?activeTab=proofread`}
-                        websocketServerUrl={APP_ENV.WEBSOCKET_SERVER_URL}
-                    ></vw-proofread>
-                )}
-            </div>
-        )
+  componentWillReceiveProps = (nextProps) => {
+    const { video } = querstring.parse(window.location.search);
+    if (
+      nextProps.apiKey &&
+      nextProps.apiKey.key &&
+      nextProps.video &&
+      nextProps.video._id === video &&
+      !this.state.loaded
+    ) {
+      import("@videowiki/vw-proofread").then((a) => {
+        this.setState({
+          loaded: true,
+        });
+        const el = document.createElement("vw-proofread");
+        el.apiRoot = APP_ENV.API_ROOT;
+        el.apiKey = this.props.apiKey.key;
+        el.videoId = video;
+        el.websocketServerUrl = APP_ENV.WEBSOCKET_SERVER_URL;
+        el.backRoute = `${routes.organizationVideos()}?activeTab=proofread`;
+        el.finishRedirectRoute = this.getFinishRedirectRoute();
+        document.getElementById('vw-proofread-container').appendChild(el);
+      });
     }
+  };
+
+  getFinishRedirectRoute = () => {
+    const { video } = this.props;
+    if (video.status === "cutting") {
+      return `${routes.organziationReview()}?activeTab=proofread`;
+    }
+    return `${routes.organziationTranslations()}?video=${video._id}`;
+  };
+
+//   renderVwProofread = () => {
+//     const { video } = querstring.parse(window.location.search);
+//     return (
+//       <vw-proofread
+//         apiKey={this.props.apiKey.key}
+//         apiRoot={APP_ENV.API_ROOT}
+//         videoId={video}
+//         backRoute={`${routes.organizationVideos()}?activeTab=proofread`}
+//         finishRedirectRoute={this.getFinishRedirectRoute()}
+//         websocketServerUrl={APP_ENV.WEBSOCKET_SERVER_URL}
+//       ></vw-proofread>
+//     );
+//   };
+
+  render() {
+    if (!this.props.apiKey) return null;
+
+    return (
+      <div id="vw-proofread-container">
+        {!this.state.loaded ||
+          (!this.props.video && (
+            <LoadingComponent active={true}></LoadingComponent>
+          ))}
+        {/* {this.props.apiKey &&
+          this.props.apiKey.key &&
+            this.props.video &&
+          this.renderVwProofread()} */}
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = ({ organization, authentication }) => ({
-    organization: organization.organization,
-    user: authentication.user,
-    apiKey: authentication.apiKey,
-})
+const mapStateToProps = ({ organization, video, authentication }) => ({
+  organization: organization.organization,
+  user: authentication.user,
+  apiKey: authentication.apiKey,
+  video: video.video,
+});
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchUserApiKey: (organizationId) => dispatch(fetchUserApiKey(organizationId))
-})
+  fetchUserApiKey: (organizationId) =>
+    dispatch(fetchUserApiKey(organizationId)),
+  fetchVideoById: (id) => dispatch(fetchVideoById(id)),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Convert)
+export default connect(mapStateToProps, mapDispatchToProps)(Convert);

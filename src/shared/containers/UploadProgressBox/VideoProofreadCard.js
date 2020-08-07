@@ -11,7 +11,7 @@ export default class VideoProofreadCard extends React.Component {
     render() {
 
         const { video, index } = this.props;
-        const loading = video.status === 'converting';
+        const loading = video.status === 'converting' || video.AITranscriptionLoading;
 
         return (
             <Grid.Row>
@@ -63,11 +63,17 @@ export default class VideoProofreadCard extends React.Component {
                             />
                         </div>
                         <p>
-                            {loading ? (
-                                <small> <strong>Congratulations!</strong> your video is being finalized</small>
-                            ) : (
-                                    <small> <strong>Congratulations!</strong> your video moved to the next stage</small>
-                                )}
+                            {video.AITranscriptionLoading && (
+                                <small>Your video is being automatically transcribed</small>
+                            )}
+                            {video.status == 'proofreading' && !video.AITranscriptionLoading && (
+                                <small> <strong>Congratulations!</strong> your video moved to the next stage</small>
+                            )}
+                            {video.status === 'converting' && (
+                                <small>
+                                    Processing your video for mass-translation
+                                </small>
+                            )}
                         </p>
 
                     </Card>

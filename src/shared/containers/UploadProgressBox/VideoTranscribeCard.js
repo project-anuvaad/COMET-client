@@ -7,10 +7,10 @@ import AnimatedButton from '../../components/AnimatedButton';
 export default class VideoTranscribeCard extends React.Component {
 
     render() {
-        const SUBTABS = [{ title: `AI Transcribe` }, { title: `Proofread` }, { title: `Completed` }];
+        const SUBTABS = [{ title: `Transcribe` }, { title: `Proofread` }, { title: `Completed` }];
 
         const { video, index } = this.props;
-        const loading = video.status === 'transcriping';
+        const loading = ['transcriping', 'automated_cutting'].indexOf(video.status) !== -1;
 
         return (
             <Grid.Row>
@@ -21,7 +21,7 @@ export default class VideoTranscribeCard extends React.Component {
                             <VideoStages activeStage="transcribe" />
                         </div>
                         <div>
-                            <TranscribeStages activeStage="ai transcribe" activeColor="#0e7ceb" />
+                            <TranscribeStages activeStage="break video" activeColor="#0e7ceb" />
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
@@ -32,7 +32,7 @@ export default class VideoTranscribeCard extends React.Component {
                             </p>
                             <Popup
                                 basic
-                                content="AI Transcribe Video"
+                                content="Break Video"
                                 trigger={(
                                     <AnimatedButton
                                         animating={this.props.animating && !loading}
@@ -49,11 +49,15 @@ export default class VideoTranscribeCard extends React.Component {
                             />
                         </div>
                         <p>
-                            {loading ? (
-                                <small>Your video is being transcribed </small>
-                            ) : (
-                                    <small> Your video is now uploaded and ready to be transcribed</small>
-                                )}
+                            {loading && (
+                                <small>Your video is being automatically broken </small>
+                            )}
+                            {video.status === 'cutting' && (
+                                <small>Your video has been broken into slides</small>
+                            )}
+                            {video.status === 'uploaded' && (
+                                <small> Your video is now uploaded and ready to be broken into slides</small>
+                            )}
                         </p>
                     </Card>
                 </Grid.Column>

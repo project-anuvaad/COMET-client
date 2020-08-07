@@ -25,7 +25,90 @@ import AnimatedButton from "../AnimatedButton";
 class VideoCard extends React.Component {
   state = {
     hovering: false,
+    cuttingRemainingMs: 0,
   };
+
+  componentDidMount = () => {
+    const { status } = this.props;
+    if (['cutting', 'automated_cutting'].indexOf(status) !== -1) {
+      const { cuttingEndTime } = this.props;
+      const cuttingRemainingMs = cuttingEndTime ? cuttingEndTime - Date.now() : 0;
+      if (cuttingRemainingMs > 0) {
+        this.updateCuttingRemainingMs();
+        this.cuttingRemainingMsInterval = setInterval(this.updateCuttingRemainingMs, 2000);
+      }
+    }
+
+    if (['proofreading'].indexOf(status) !== -1) {
+      const { transcribeEndTime } = this.props;
+      const transcribeRemainingMs = transcribeEndTime ? transcribeEndTime - Date.now() : 0;
+      if (transcribeRemainingMs > 0) {
+        this.updateTranscribeRemainingMs();
+        this.transcribeRemainingMsInterval = setInterval(this.updateTranscribeRemainingMs, 2000);
+      }
+    }
+
+    if (['converting'].indexOf(status) !== -1) {
+      const { convertEndTime } = this.props;
+      const convertRemainingMs = convertEndTime ? convertEndTime - Date.now() : 0;
+      if (convertRemainingMs > 0) {
+        this.updateConvertRemainingMs();
+        this.convertRemainingMsInterval = setInterval(this.updateConvertRemainingMs, 2000);
+      }
+    }
+  }
+  
+  componentWillUnmount = () => {
+    if (this.cuttingRemainingMsInterval) {
+      clearInterval(this.cuttingRemainingMsInterval);
+      this.cuttingRemainingMsInterval = null;
+    }
+    if (this.transcribeRemainingMsInterval) {
+      clearInterval(this.transcribeRemainingMsInterval);
+      this.transcribeRemainingMsInterval = null;
+    }
+    if (this.convertRemainingMsInterval) {
+      clearInterval(this.convertRemainingMsInterval);
+      this.convertRemainingMsInterval = null;
+    }
+  }
+
+   updateCuttingRemainingMs = () => {
+    const { cuttingEndTime } = this.props;
+    const cuttingRemainingMs = cuttingEndTime ? cuttingEndTime - Date.now() : 0;
+    console.log('cuttingRemainingMs ', cuttingRemainingMs);
+    if (cuttingRemainingMs < 0 && this.cuttingRemainingMsInterval) {
+      clearInterval(this.cuttingRemainingMsInterval);
+      this.cuttingRemainingMsInterval = null;
+    }
+    else {
+      this.setState({ cuttingRemainingMs });
+    }
+  }
+
+  updateTranscribeRemainingMs = () => {
+    const { transcribeEndTime } = this.props;
+    const transcribeRemainingMs = transcribeEndTime ? transcribeEndTime - Date.now() : 0;
+    if (transcribeRemainingMs < 0 && this.transcribeRemainingMsInterval) {
+      clearInterval(this.transcribeRemainingMsInterval);
+      this.transcribeRemainingMsInterval = null;
+    }
+    else {
+      this.setState({ transcribeRemainingMs });
+    }
+  }
+
+  updateConvertRemainingMs = () => {
+    const { convertEndTime } = this.props;
+    const convertRemainingMs = convertEndTime ? convertEndTime - Date.now() : 0;
+    if (convertRemainingMs < 0 && this.convertRemainingMsInterval) {
+      clearInterval(this.convertRemainingMsInterval);
+      this.convertRemainingMsInterval = null;
+    }
+    else {
+      this.setState({ convertRemainingMs });
+    }
+  }
 
   isHovering = () => {
     return this.state.hovering || this.props.focused;
@@ -142,6 +225,150 @@ class VideoCard extends React.Component {
     );
   };
 
+  renderCuttingEndTimeProgress = () => {
+    const { cuttingStartTime, cuttingEndTime, status } = this.props;
+    if (!cuttingStartTime || !cuttingEndTime) return null;
+
+    const { cuttingRemainingMs } = this.state;
+    const cuttingEndTimePercentage = parseInt(
+      cuttingRemainingMs > 0
+        ? 100 - (cuttingRemainingMs / (cuttingEndTime - cuttingStartTime)) * 100
+        : 99
+    );
+
+    if (cuttingRemainingMs > 0) {
+      return  (
+        <div style={{ marginLeft: 20, marginRight: 20 }}>
+          <p>
+          {status === 'automated_cutting' && (
+            <span>Automatically breaking your video <br /></span>
+          )}
+            Will be done in:{" "}
+            <span
+              style={{ color: "green", fontWeight: "bold" }}
+            >
+              {" "}
+              {moment().to(cuttingEndTime, true)}
+            </span>
+          </p>
+          <div>
+            <Progress
+              style={{ marginBottom: 10 }}
+              color="blue"
+              size="tiny"
+              percent={cuttingEndTimePercentage}
+            />
+            <div
+              style={{
+                color: "#0e7ceb",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {cuttingEndTimePercentage}%
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return null;
+}
+
+ renderTranscribeEndTimeProgress = () => {
+    const { transcribeStartTime, transcribeEndTime, status } = this.props;
+    if (!transcribeStartTime || !transcribeEndTime) return null;
+
+    const { transcribeRemainingMs } = this.state;
+    const transcribeEndTimePercentage = parseInt(
+      transcribeRemainingMs > 0
+        ? 100 - (transcribeRemainingMs / (transcribeEndTime - transcribeStartTime)) * 100
+        : 99
+    );
+
+    if (transcribeRemainingMs > 0) {
+      return  (
+        <div style={{ marginLeft: 20, marginRight: 20 }}>
+          <p>
+            <span>Automatically transcribing your video <br /></span>
+            Will be done in:{" "}
+            <span
+              style={{ color: "green", fontWeight: "bold" }}
+            >
+              {" "}
+              {moment().to(transcribeEndTime, true)}
+            </span>
+          </p>
+          <div>
+            <Progress
+              style={{ marginBottom: 10 }}
+              color="blue"
+              size="tiny"
+              percent={transcribeEndTimePercentage}
+            />
+            <div
+              style={{
+                color: "#0e7ceb",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {transcribeEndTimePercentage}%
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    return null;
+  }
+           
+ renderVideoConvertingDoneProgress = () => {
+    const { convertStartTime, convertEndTime, status } = this.props;
+    if (!convertStartTime || !convertEndTime) return null;
+
+    const { convertRemainingMs } = this.state;
+    const convertEndTimePercentage = parseInt(
+      convertRemainingMs > 0
+        ? 100 - (convertRemainingMs / (convertEndTime - convertStartTime)) * 100
+        : 99
+    );
+
+    if (convertRemainingMs > 0) {
+      return  (
+        <div style={{ marginLeft: 20, marginRight: 20 }}>
+          <p>
+            <span>Processing your video for mass-translation<br /></span>
+            Will be done in:{" "}
+            <span
+              style={{ color: "green", fontWeight: "bold" }}
+            >
+              {" "}
+              {moment().to(convertEndTime, true)}
+            </span>
+          </p>
+          <div>
+            <Progress
+              style={{ marginBottom: 10 }}
+              color="blue"
+              size="tiny"
+              percent={convertEndTimePercentage}
+            />
+            <div
+              style={{
+                color: "#0e7ceb",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {convertEndTimePercentage}%
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return null;
+  }
+
   render() {
     const {
       showOptions,
@@ -163,17 +390,10 @@ class VideoCard extends React.Component {
       subTitle,
       status,
       cuttingBy,
-      cuttingStartTime,
-      cuttingEndTime,
     } = this.props;
 
     const isHovering = this.isHovering();
-    const remainingMs = cuttingEndTime ? cuttingEndTime - Date.now() : 0;
-    const cuttingEndTimePercentage = parseInt(
-      remainingMs > 0
-        ? 100 - (remainingMs / (cuttingEndTime - cuttingStartTime)) * 100
-        : 99
-    );
+
 
     return (
       <div
@@ -243,41 +463,11 @@ class VideoCard extends React.Component {
           )}
           {/* <video src={url} controls preload={'false'} width={'100%'} /> */}
           {this.props.extra ? this.props.extra : ""}
-           {remainingMs > 0 && (
-            <div style={{ marginLeft: 20, marginRight: 20 }}>
-                <p>
-                {status === 'automated_cutting' && (
-                  <span>Automatically breaking your video <br /></span>
-                )}
-                  Will be done in:{" "}
-                  <span
-                    style={{ color: "green", fontWeight: "bold" }}
-                  >
-                    {" "}
-                    {moment().to(cuttingEndTime, true)}
-                  </span>
-                </p>
-                {status !== 'automated_cutting' && (
-                  <p>
-                    <Progress
-                      style={{ marginBottom: 10 }}
-                      color="blue"
-                      size="tiny"
-                      percent={cuttingEndTimePercentage}
-                    />
-                    <div
-                      style={{
-                        color: "#0e7ceb",
-                        fontWeight: "bold",
-                        textAlign: "center",
-                      }}
-                    >
-                      {cuttingEndTimePercentage}%
-                    </div>
-                  </p>
-                )}
-              </div>
-            )}
+
+          {(status === 'automated_cutting' || status === 'cutting') && this.renderCuttingEndTimeProgress()}
+          {status === 'proofreading' && this.renderTranscribeEndTimeProgress()}
+          {status === 'converting' && this.renderVideoConvertingDoneProgress()}
+
           {(reviewers || verifiers) && (
             <div style={{ margin: 20 }}>
               {reviewers && reviewers.length > 0 && (
@@ -358,8 +548,8 @@ class VideoCard extends React.Component {
                   basic={!isHovering}
                   color={"blue"}
                   size="small"
-                  disabled={loading}
-                  loading={disabled}
+                  disabled={loading || disabled}
+                  loading={loading || disabled}
                   className={`action-button`}
                   animation="moema"
                   animating={this.props.animateButton}

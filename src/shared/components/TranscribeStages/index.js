@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-const SUBTABS = [{ title: `AI Transcribe` }, { title: `Proofread` }, { title: `Completed` }];
+const SUBTABS = [{ title: `Break Video` }, { title: `Proofread` }, { title: `Completed` }];
 function generateStyle(item, activeStage, activeColor) {
     const styles = {
         display: 'inline-block',
