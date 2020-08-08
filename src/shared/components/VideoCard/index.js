@@ -76,14 +76,11 @@ class VideoCard extends React.Component {
    updateCuttingRemainingMs = () => {
     const { cuttingEndTime } = this.props;
     const cuttingRemainingMs = cuttingEndTime ? cuttingEndTime - Date.now() : 0;
-    console.log('cuttingRemainingMs ', cuttingRemainingMs);
     if (cuttingRemainingMs < 0 && this.cuttingRemainingMsInterval) {
       clearInterval(this.cuttingRemainingMsInterval);
       this.cuttingRemainingMsInterval = null;
     }
-    else {
-      this.setState({ cuttingRemainingMs });
-    }
+    this.setState({ cuttingRemainingMs });
   }
 
   updateTranscribeRemainingMs = () => {
@@ -93,9 +90,7 @@ class VideoCard extends React.Component {
       clearInterval(this.transcribeRemainingMsInterval);
       this.transcribeRemainingMsInterval = null;
     }
-    else {
-      this.setState({ transcribeRemainingMs });
-    }
+    this.setState({ transcribeRemainingMs });
   }
 
   updateConvertRemainingMs = () => {
@@ -105,9 +100,7 @@ class VideoCard extends React.Component {
       clearInterval(this.convertRemainingMsInterval);
       this.convertRemainingMsInterval = null;
     }
-    else {
-      this.setState({ convertRemainingMs });
-    }
+    this.setState({ convertRemainingMs });
   }
 
   isHovering = () => {
@@ -275,7 +268,7 @@ class VideoCard extends React.Component {
 }
 
  renderTranscribeEndTimeProgress = () => {
-    const { transcribeStartTime, transcribeEndTime, status } = this.props;
+    const { transcribeStartTime, transcribeEndTime, status, AITranscriptionLoading } = this.props;
     if (!transcribeStartTime || !transcribeEndTime) return null;
 
     const { transcribeRemainingMs } = this.state;
@@ -318,7 +311,15 @@ class VideoCard extends React.Component {
         </div>
       )
     }
-
+    if (AITranscriptionLoading) {
+      return (
+        <div style={{ marginLeft: 20, marginRight: 20 }}>
+            <p>
+              Finalizing your transcription, please wait...
+            </p>
+          </div>
+      )
+    }
     return null;
   }
            
@@ -366,7 +367,13 @@ class VideoCard extends React.Component {
         </div>
       )
     }
-    return null;
+    return (
+      <div style={{ marginLeft: 20, marginRight: 20 }}>
+          <p>
+            Finalizing everything for you, please wait...
+          </p>
+      </div>
+    )
   }
 
   render() {
