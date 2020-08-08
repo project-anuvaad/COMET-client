@@ -62,6 +62,17 @@ class Translated extends React.Component {
         }, 500);
     }
     componentWillMount = () => {
+        this.props.setOpenedFolder(null);
+
+        this.props.setBreadcrumbFolder(null);
+        this.props.setBreadcrumbCurrentPageNumber(1);
+        this.props.setBreadcrumbTotalPagesCount(1);
+
+        this.props.setSubfolders([]);
+        this.props.setSubfoldersLoading(false);
+
+        this.props.setTotalPagesCount(1);
+
         this.props.setSearchFilter('');
         this.props.setCurrentPageNumber(1);
         this.props.fetchTranslatedArticles();
