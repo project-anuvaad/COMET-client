@@ -11,8 +11,25 @@ export default class FoldersList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.breadcrumbFolder) {
-      this.setState({ selectedSubfolderName: nextProps.breadcrumbFolder.name });
-      this.setState({ selectedSubfolderId: nextProps.breadcrumbFolder._id });
+      if (nextProps.breadcrumbFolder.topFolder) {
+        this.setState({
+          selectedMainFolderName: nextProps.breadcrumbFolder.topFolder.name,
+        });
+        this.setState({
+          selectedMainFolderId: nextProps.breadcrumbFolder.topFolder._id,
+        });
+        this.setState({
+          selectedSubfolderName: nextProps.breadcrumbFolder.name,
+        });
+        this.setState({ selectedSubfolderId: nextProps.breadcrumbFolder._id });
+      } else {
+        this.setState({
+          selectedMainFolderName: nextProps.breadcrumbFolder.name,
+        });
+        this.setState({
+          selectedMainFolderId: nextProps.breadcrumbFolder._id,
+        });
+      }
     }
 
     if (nextProps.openedFolder) {
@@ -97,11 +114,15 @@ export default class FoldersList extends React.Component {
                 color: "#041c34",
                 fontSize: "0.9rem",
                 cursor: "pointer",
-                textDecoration: 'underline'
+                textDecoration: "underline",
               }}
               onClick={() => {
-                this.setState({ selectedMainFolderName: this.state.selectedMainFolderName });
-                this.setState({ selectedMainFolderId: this.state.selectedMainFolderId });
+                this.setState({
+                  selectedMainFolderName: this.state.selectedMainFolderName,
+                });
+                this.setState({
+                  selectedMainFolderId: this.state.selectedMainFolderId,
+                });
                 this.props.onOpenMainFolder(this.state.selectedMainFolderId);
               }}
             >
@@ -189,11 +210,12 @@ export default class FoldersList extends React.Component {
             </React.Fragment>
           )}
 
-        {this.props.breadcrumbFolder && (
-          <Breadcrumb.Divider icon="right chevron" />
-        )}
+        {this.props.breadcrumbFolder &&
+          this.props.breadcrumbFolder.topFolder && (
+            <Breadcrumb.Divider icon="right chevron" />
+          )}
 
-        {this.props.breadcrumbFolder && (
+        {this.props.breadcrumbFolder && this.props.breadcrumbFolder.topFolder && (
           <React.Fragment>
             <Breadcrumb.Section>
               <Dropdown

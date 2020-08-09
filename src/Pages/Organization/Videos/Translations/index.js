@@ -62,8 +62,6 @@ class Translated extends React.Component {
         }, 500);
     }
     componentWillMount = () => {
-        this.props.setOpenedFolder(null);
-
         this.props.setBreadcrumbFolder(null);
         this.props.setBreadcrumbCurrentPageNumber(1);
         this.props.setBreadcrumbTotalPagesCount(1);
@@ -72,12 +70,24 @@ class Translated extends React.Component {
         this.props.setSubfoldersLoading(false);
 
         this.props.setTotalPagesCount(1);
+        this.props.setCurrentPageNumber(1);
 
         this.props.setSearchFilter('');
-        this.props.setCurrentPageNumber(1);
+
+        const folderId = querystring.parse(window.location.search).folder;
+        if (folderId) {
+            this.props.setOpenedFolder(folderId);
+
+            this.props.fetchSubfolders();
+            this.props.fetchBreadcrumbFolder();
+        } else {
+            this.props.setOpenedFolder(null);
+        }
+
         this.props.fetchTranslatedArticles();
         this.props.fetchMainFolders();
         this.props.fetchMoveVideoMainFolders();
+
         this.props.searchUsers(this.props.organization._id, { search: '' });
         this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
     }

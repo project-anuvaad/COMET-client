@@ -1351,6 +1351,8 @@ export const fetchSubfolders = () => (dispatch, getState) => {
         })
         .catch((err) => {
             NotificationService.responseError(err);
+            dispatch(setOpenedFolder(null));
+            dispatch(fetchTranslatedArticles());
         });
 }
 
@@ -1371,6 +1373,8 @@ export const fetchBreadcrumbFolder = () => (dispatch, getState) => {
         })
         .catch((err) => {
             NotificationService.responseError(err);
+            dispatch(setOpenedFolder(null));
+            dispatch(fetchTranslatedArticles());
         });
 }
 
