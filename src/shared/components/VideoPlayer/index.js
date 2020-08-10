@@ -96,7 +96,7 @@ export default class VideoPlayer extends React.Component {
                 onMouseLeave={() => this.setState({ hovering: false })}
             >
                 {!started && thumbnail && (
-                    <img src={thumbnail} style={{ width: '100%' }} />
+                    <img src={thumbnail} style={{ width: '100%', maxHeight: 250 }} />
                 )}
 
                 <video
