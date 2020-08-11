@@ -28,10 +28,10 @@ class Convert extends React.Component {
       nextProps.video._id === video &&
       !this.state.loaded
     ) {
+      this.setState({
+        loaded: true,
+      });
       import("@videowiki/vw-proofread").then((a) => {
-        this.setState({
-          loaded: true,
-        });
         const el = document.createElement("vw-proofread");
         el.apiRoot = APP_ENV.API_ROOT;
         el.apiKey = this.props.apiKey.key;
