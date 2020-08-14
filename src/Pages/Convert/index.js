@@ -70,7 +70,7 @@ class Convert extends React.Component {
     if (!this.props.apiKey) return null;
 
     return (
-      <div id="vw-proofread-container">
+      <div id="vw-proofread-container" style={{ minHeight: '100%', height: '100%'}}>
         {!this.state.loaded ||
           (!this.props.video && (
             <LoadingComponent active={true}></LoadingComponent>
