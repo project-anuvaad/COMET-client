@@ -162,7 +162,7 @@ class Review extends React.Component {
         if (this.props.videos.map((video) => video._id).indexOf(video._id) !== -1) {
             this.props.fetchVideos();
             this.props.fetchVideosCount(this.props.organization._id);
-            NotificationService.info(`${video.title} available in the "Proofread" stage`);
+            NotificationService.info(`${video.title} is now available in the "Proofread" stage`);
         }
     }
 

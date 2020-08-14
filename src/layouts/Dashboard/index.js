@@ -149,11 +149,11 @@ class Dashboard extends React.Component {
         if (this.props.organization) {
             this.props.fetchOrganization(this.props.organization._id)
         }
-        this.websocketConnection = websockets.createWebsocketConnection(APP_ENV.WEBSOCKET_SERVER_URL, {
-            path: '/socket.io',
-            transports: ['websocket'],
-            secure: true,
-        })
+        // this.websocketConnection = websockets.createWebsocketConnection(APP_ENV.WEBSOCKET_SERVER_URL, {
+        //     path: '/socket.io',
+        //     transports: ['websocket'],
+        //     secure: true,
+        // })
         if (this.props.userToken && this.props.organization && this.props.organization._id) {
             websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
                 console.log('============ auth seccuess');
@@ -170,7 +170,7 @@ class Dashboard extends React.Component {
                 fileUtils.downloadFile(url);
             });
 
-            this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 60 * 1000, immediate: true }, () => {
+            this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 30 * 1000, immediate: true }, () => {
                 websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
             })
         }
@@ -205,12 +205,9 @@ class Dashboard extends React.Component {
     }
 
     componentWillUnmount = () => {
-        if (this.websocketConnection) {
-            websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS);
-            websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED);
-            websockets.unsubscribeFromEvent(websockets.websocketsEvents.DOWNLOAD_FILE);
-            websockets.disconnectConnection();
-        }
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.DOWNLOAD_FILE);
         this.props.stopJob(AUTHENTICATE_USER_JOB);
     }
 

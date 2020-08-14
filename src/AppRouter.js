@@ -6,7 +6,7 @@ import {
   Switch,
 } from 'react-router-dom'
 import './App.css';
-import { populateAppEnv } from './shared/constants'
+import { populateAppEnv, APP_ENV } from './shared/constants'
 import routes from './shared/routes';
 
 import Header from './shared/components/Header';
@@ -16,6 +16,7 @@ import LoaderComponent from './shared/components/LoaderComponent';
 import LazyRoute from './LazyRoute';
 import DashboardLayout from './layouts/Dashboard';
 import * as authenticationActions from './actions/authentication';
+import websockets from './websockets';
 
 const Home = () => import('./Pages/LandingPage/Home');
 const FAQ = () => import('./Pages/LandingPage/FAQ');
@@ -57,7 +58,14 @@ class AppRouter extends React.Component {
   componentDidMount = () => {
     populateAppEnv()
       .then((data) => {
-        this.setState({ envLoaded: true })
+        websockets.createWebsocketConnection(APP_ENV.WEBSOCKET_SERVER_URL, {
+            path: '/socket.io',
+            transports: ['websocket'],
+            secure: true,
+        })
+        setTimeout(() => {
+          this.setState({ envLoaded: true })
+        }, 100);
         console.log('got env data', data)
         if (this.props.isAuthenticated) {
           this.props.getUserDetails();
