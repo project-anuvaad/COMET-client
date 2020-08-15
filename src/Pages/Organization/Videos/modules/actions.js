@@ -1067,124 +1067,164 @@ export const addLangsToMultipleVideos = (codes) => (dispatch, getState) => {
 }
 
 export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
-    console.log('add to multiple videos', data)
+    console.log('add to multiple videos', data);
+    const submitData = {};
     const { translatedArticles } = getState()[moduleName];
     const selectedTranslatedArticles = translatedArticles.filter(
       (sta) => sta.video.selected
     );
     let updateArticlesData = data
       .filter((d) => !d.new)
-      .map((filtered) => ({ ...filtered, articlesToUpdate: [] }));
-    let createNewArticlesData = data.filter((d) => d.new);
+      .map((filtered) => ({ ...filtered, translatedArticles: [] }));
     updateArticlesData.forEach((d) => {
-      selectedTranslatedArticles.forEach((sta) => {
-        sta.articles.forEach((a) => {
-        if (
-            (d.language.split('-')[0] === a.langCode && d.tts === a.tts) ||
-            (d.languageName && d.languageName === a.langName)
-          ) {
-            d.articlesToUpdate.push(a);
-          }
-        });
-      });
-    });
-  
-    let updateArticlesDataFuncArray = [];
-    updateArticlesData.forEach((d) => {
-      updateArticlesDataFuncArray.push((cb1) => {
-        let articlesToUpdateFuncArray = [];
-        d.articlesToUpdate.forEach((a) => {
-          articlesToUpdateFuncArray.push((cb2) => {
-            utils
-              .updateTranslatedArticleUsers(
-                a._id,
-                [],
-                d.textTranslators,
-                d.verifiers
-              )
-              .then(() => {
-                cb2();
-              })
-              .catch((err) => {
-                cb2();
-                console.log(err);
-                NotificationService.responseError(err);
-              });
-          });
-        });
-  
-        async
-          .series(articlesToUpdateFuncArray)
-          .then(() => {
-            cb1();
-          })
-          .catch((err) => {
-            cb1();
-            console.log(err);
-          });
-      });
-    });
-  
-    async
-      .series(updateArticlesDataFuncArray)
-      .then(() => {
-        let selectedTranslatedArticlesFuncArray = [];
-        selectedTranslatedArticles.forEach((a) => {
-          selectedTranslatedArticlesFuncArray.push((cb3) => {
-            const createNewArticlesDataFuncArray = [];
-  
-            createNewArticlesData.forEach((d) => {
-              createNewArticlesDataFuncArray.push((cb4) => {
-                const langCode = d.language;
-                const langName = d.languageName;
-                const textTranslators = d.textTranslators;
-                const verifiers = d.verifiers;
-  
-                utils
-                  .addHumanVoiceOver(
-                    a.originalArticle._id,
-                    langCode,
-                    langName,
-                    [],
-                    textTranslators,
-                    verifiers
-                  )
-                  .then(() => {
-                    cb4();
-                  })
-                  .catch((err) => {
-                    cb4();
-                    console.log(err);
-                    NotificationService.responseError(err);
-                  });
-              });
+        selectedTranslatedArticles.forEach((sta) => {
+            sta.articles.forEach((a) => {
+            if (
+                (d.language.split('-')[0] === a.langCode && d.tts === a.tts) ||
+                (d.languageName && d.languageName === a.langName)
+            ) {
+                d.translatedArticles.push(a._id);
+            }
             });
-  
-            async
-              .series(createNewArticlesDataFuncArray)
-              .then(() => {
-                cb3();
-              })
-              .catch((err) => {
-                cb3();
-                console.log(err);
-              });
-          });
         });
-  
-        async
-          .series(selectedTranslatedArticlesFuncArray)
-          .then(() => {
+    });
+    let createNewArticlesData = data.filter((d) => d.new);
+    createNewArticlesData = { createNewArticlesData: createNewArticlesData, originalArticles: selectedTranslatedArticles.map(a => a.originalArticle._id) }
+
+    submitData.createData = createNewArticlesData;
+    submitData.updateData = updateArticlesData;
+
+    console.log(submitData);
+
+    requestAgent
+        .post(Api.article.bulkTranslate(), submitData)
+        .then(res => {
             window.location.href = routes.organziationTranslations();
-          })
-          .catch((err) => {
+        })
+        .catch(err => {
             console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-};  
+        });
+};
+
+// export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
+//     console.log('add to multiple videos', data)
+//     const { translatedArticles } = getState()[moduleName];
+//     const selectedTranslatedArticles = translatedArticles.filter(
+//       (sta) => sta.video.selected
+//     );
+//     let updateArticlesData = data
+//       .filter((d) => !d.new)
+//       .map((filtered) => ({ ...filtered, articlesToUpdate: [] }));
+//     let createNewArticlesData = data.filter((d) => d.new);
+//     updateArticlesData.forEach((d) => {
+//       selectedTranslatedArticles.forEach((sta) => {
+//         sta.articles.forEach((a) => {
+//         if (
+//             (d.language.split('-')[0] === a.langCode && d.tts === a.tts) ||
+//             (d.languageName && d.languageName === a.langName)
+//           ) {
+//             d.articlesToUpdate.push(a);
+//           }
+//         });
+//       });
+//     });
+  
+//     let updateArticlesDataFuncArray = [];
+//     updateArticlesData.forEach((d) => {
+//       updateArticlesDataFuncArray.push((cb1) => {
+//         let articlesToUpdateFuncArray = [];
+//         d.articlesToUpdate.forEach((a) => {
+//           articlesToUpdateFuncArray.push((cb2) => {
+//             utils
+//               .updateTranslatedArticleUsers(
+//                 a._id,
+//                 [],
+//                 d.textTranslators,
+//                 d.verifiers
+//               )
+//               .then(() => {
+//                 cb2();
+//               })
+//               .catch((err) => {
+//                 cb2();
+//                 console.log(err);
+//                 NotificationService.responseError(err);
+//               });
+//           });
+//         });
+  
+//         async
+//           .series(articlesToUpdateFuncArray)
+//           .then(() => {
+//             cb1();
+//           })
+//           .catch((err) => {
+//             cb1();
+//             console.log(err);
+//           });
+//       });
+//     });
+  
+//     async
+//       .series(updateArticlesDataFuncArray)
+//       .then(() => {
+//         let selectedTranslatedArticlesFuncArray = [];
+//         selectedTranslatedArticles.forEach((a) => {
+//           selectedTranslatedArticlesFuncArray.push((cb3) => {
+//             const createNewArticlesDataFuncArray = [];
+  
+//             createNewArticlesData.forEach((d) => {
+//               createNewArticlesDataFuncArray.push((cb4) => {
+//                 const langCode = d.language;
+//                 const langName = d.languageName;
+//                 const textTranslators = d.textTranslators;
+//                 const verifiers = d.verifiers;
+  
+//                 utils
+//                   .addHumanVoiceOver(
+//                     a.originalArticle._id,
+//                     langCode,
+//                     langName,
+//                     [],
+//                     textTranslators,
+//                     verifiers
+//                   )
+//                   .then(() => {
+//                     cb4();
+//                   })
+//                   .catch((err) => {
+//                     cb4();
+//                     console.log(err);
+//                     NotificationService.responseError(err);
+//                   });
+//               });
+//             });
+  
+//             async
+//               .series(createNewArticlesDataFuncArray)
+//               .then(() => {
+//                 cb3();
+//               })
+//               .catch((err) => {
+//                 cb3();
+//                 console.log(err);
+//               });
+//           });
+//         });
+  
+//         async
+//           .series(selectedTranslatedArticlesFuncArray)
+//           .then(() => {
+//             window.location.href = routes.organziationTranslations();
+//           })
+//           .catch((err) => {
+//             console.log(err);
+//           });
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+// }; 
   
 
 export const setSelectedCount = count => ({

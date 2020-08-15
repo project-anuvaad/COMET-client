@@ -55,6 +55,8 @@ export default {
         getUserTranslations: (params) => `${APP_ENV.API_ROOT}/article/translations/by_user?${querystring.encode(params)}`,
         findAndReplaceText: (articleId) => `${APP_ENV.API_ROOT}/article/${articleId}/text/replace`,
 
+        bulkTranslate: () => `${APP_ENV.API_ROOT}/article/bulkTranslate`,
+
     },
     comments: {
         getCommentsByArticleId: (articleId, params) => `${APP_ENV.API_ROOT}/article/${articleId}/comments?${querystring.encode(params)}`,
