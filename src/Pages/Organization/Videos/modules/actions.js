@@ -1068,6 +1068,15 @@ export const addLangsToMultipleVideos = (codes) => (dispatch, getState) => {
 
 export const addUsersToMultipleVideos = (data) => (dispatch, getState) => {
     console.log('add to multiple videos', data);
+
+    data.forEach(d => {
+        const { lang, langName, tts, signLang } = utils.getLangParams(d.language, d.languageName);
+        d.lang = lang;
+        d.langName = langName;
+        d.tts = tts;
+        d.signLang = signLang;
+    });
+
     const submitData = {};
     const { translatedArticles } = getState()[moduleName];
     const selectedTranslatedArticles = translatedArticles.filter(
