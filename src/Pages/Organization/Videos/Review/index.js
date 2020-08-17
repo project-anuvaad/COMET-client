@@ -684,8 +684,8 @@ class Review extends React.Component {
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                             <VideoCard
-                                {...props}
                                 {...video}
+                                {...props}
                                 loading={loading}
                                 disabled={loading}
                                 onButtonClick={() => {
@@ -720,8 +720,8 @@ class Review extends React.Component {
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                             <VideoCard
-                                {...props}
                                 {...video}
+                                {...props}
                                 loading={loading}
                                 disabled={loading}
                                 onButtonClick={() => this.navigateToConvertProgresss(video._id)}
@@ -746,8 +746,8 @@ class Review extends React.Component {
                     return (
                         <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                             <VideoCard
-                                {...props}
                                 {...video}
+                                {...props}
                                 buttonTitle="Re-review"
                                 onButtonClick={() => this.onReReviewVideo(video)}
                             />
