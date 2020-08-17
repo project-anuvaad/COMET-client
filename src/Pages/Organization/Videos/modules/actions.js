@@ -6,7 +6,7 @@ import Api from '../../../../shared/api';
 import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import routes from '../../../../shared/routes';
-import { setUploadVideoForm } from '../../../../actions/video';
+import { setUploadVideoForm, fetchUploadedVideos } from '../../../../actions/video';
 import { signLangsArray } from '../../../../shared/utils/langs';
 import * as utils from './utils';
 
@@ -466,6 +466,7 @@ export const skipTranscribe = (video, cuttingBy) => (dispatch, getState) => {
                 NotificationService.success('Videowiki\'s team will get it done shortly!')
                 dispatch(fetchVideos())
             }
+            dispatch(fetchUploadedVideos())
         })
         .catch((err) => {
             NotificationService.responseError(err);

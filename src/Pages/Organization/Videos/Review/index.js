@@ -167,9 +167,11 @@ class Review extends React.Component {
     }
 
     onVideoCompleted = (video) => {
-        this.props.fetchVideos();
-        this.props.fetchVideosCount(this.props.organization._id);
-        NotificationService.success(`"${video.title}" has been converted successfully!`);
+        if (this.props.videos.map((video) => video._id).indexOf(video._id) !== -1) {
+            this.props.fetchVideos();
+            this.props.fetchVideosCount(this.props.organization._id);
+            NotificationService.success(`"${video.title}" has been converted successfully!`);
+        }
     }
 
     onTabChange = tab => {
