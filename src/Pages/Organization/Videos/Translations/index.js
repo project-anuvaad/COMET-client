@@ -79,11 +79,11 @@ class Translated extends React.Component {
         this.props.fetchMainFolders();
         this.props.fetchMoveVideoMainFolders();
         this.props.searchUsers(this.props.organization._id, { search: '' });
-        this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
+        this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_CONVERT_TO_ARTICLE_FINISH, this.onVideoCompleted)
     }
 
     componentWillUnmount = () => {
-        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_CONVERT_TO_ARTICLE_FINISH, this.onVideoCompleted);
     }
 
     onVideoCompleted = (video) => {

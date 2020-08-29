@@ -375,6 +375,7 @@ export const fetchSigleTranslatedArticle = (videoId, { softLoad, cb } = {}) => (
         .then((res) => {
             const { videos } = res.body;
             dispatch(setSingleTranslatedArticle(videos[0]))
+            dispatch(setTranslatedArticles(videos));
             cb();
             dispatch(setVideoLoading(false))
         })

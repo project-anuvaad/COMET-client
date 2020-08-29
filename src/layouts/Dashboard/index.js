@@ -107,8 +107,7 @@ function getNavLinks(user, organization) {
             title: 'API Keys',
             route: routes.organizationAPIKeys(),
             roles: [
-                'admin',
-                'project_leader',
+                'owner'
             ],
             icon: 'key',
         },
