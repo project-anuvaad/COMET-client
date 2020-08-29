@@ -137,6 +137,9 @@ export const uploadMultiVideos = ({ organization }) => (dispatch, getState) => {
             if (video.subtitle) {
                 req.attach('subtitle', video.subtitle);
             }
+            if (video.backgroundMusic) {
+                req.attach('backgroundMusic', video.backgroundMusic);
+            }
 
     
             req.on('progress', function (e) {
