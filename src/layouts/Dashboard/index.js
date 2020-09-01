@@ -145,6 +145,11 @@ class Dashboard extends React.Component {
         this.props.setNewOrganizationLogo(null);
         this.props.setNewOrganizationName('');
         this.props.fetchUserApiKey(this.props.organization._id)
+        this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 10 * 1000, immediate: true }, () => {
+            if (this.props.organization && this.props.organization._id && this.props.userToken) {
+                websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
+            }
+        })
         if (this.props.organization) {
             this.props.fetchOrganization(this.props.organization._id)
         }
@@ -153,26 +158,40 @@ class Dashboard extends React.Component {
         //     transports: ['websocket'],
         //     secure: true,
         // })
-        if (this.props.userToken && this.props.organization && this.props.organization._id) {
-            websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
-                console.log('============ auth seccuess');
-            })
-            websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED, (data) => {
-                NotificationService.info('Session expired, please login');
-                setTimeout(() => {
-                    this.props.history.push(routes.logout());
-                }, 1000);
-            })
+        websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
+            console.log('============ auth seccuess');
+        })
+        websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED, (data) => {
+            NotificationService.info('Session expired, please login');
+            setTimeout(() => {
+                this.props.history.push(routes.logout());
+            }, 1000);
+        })
 
-            websockets.subscribeToEvent(websockets.websocketsEvents.DOWNLOAD_FILE, ({ url }) => {
-                console.log('Downloading file', url);
-                fileUtils.downloadFile(url);
-            });
+        websockets.subscribeToEvent(websockets.websocketsEvents.DOWNLOAD_FILE, ({ url }) => {
+            console.log('Downloading file', url);
+            fileUtils.downloadFile(url);
+        });
 
-            this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 30 * 1000, immediate: true }, () => {
-                websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
-            })
-        }
+
+        // if (this.props.userToken && this.props.organization && this.props.organization._id) {
+        //     websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
+        //         console.log('============ auth seccuess');
+        //     })
+        //     websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED, (data) => {
+        //         NotificationService.info('Session expired, please login');
+        //         setTimeout(() => {
+        //             this.props.history.push(routes.logout());
+        //         }, 1000);
+        //     })
+
+        //     websockets.subscribeToEvent(websockets.websocketsEvents.DOWNLOAD_FILE, ({ url }) => {
+        //         console.log('Downloading file', url);
+        //         fileUtils.downloadFile(url);
+        //     });
+
+           
+        // }
         if (!this.props.userGuidingShowed && this.props.user && this.props.user.showUserGuiding) {
             this.props.setUserGuidingTutorialModalOpen(true);
             this.props.setUserGuidingShowed(true)
