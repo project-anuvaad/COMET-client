@@ -11,6 +11,7 @@ const {
   WEBSOCKET_SERVER_URL,
   VIDEOWIKI_WHATSAPP_NUMBER,
   FRONTEND_HOST_NAME,
+  SENTRY_DSN,
 } = process.env;
 
 const jsonContent = JSON.stringify({
@@ -18,6 +19,7 @@ const jsonContent = JSON.stringify({
   WEBSOCKET_SERVER_URL,
   VIDEOWIKI_WHATSAPP_NUMBER,
   FRONTEND_HOST_NAME,
+  SENTRY_DSN,
 });
 
 fs.writeFileSync("./build/app_env.json", jsonContent);

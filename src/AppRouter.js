@@ -17,6 +17,7 @@ import LazyRoute from './LazyRoute';
 import DashboardLayout from './layouts/Dashboard';
 import * as authenticationActions from './actions/authentication';
 import websockets from './websockets';
+import * as Sentry from '@sentry/browser';
 
 const Home = () => import('./Pages/LandingPage/Home');
 const FAQ = () => import('./Pages/LandingPage/FAQ');
@@ -63,6 +64,9 @@ class AppRouter extends React.Component {
             transports: ['websocket'],
             secure: true,
         })
+        if (process.env.NODE_ENV === 'production' && APP_ENV.SENTRY_DSN) {
+          Sentry.init({ dsn: APP_ENV.SENTRY_DSN });
+        }
         setTimeout(() => {
           this.setState({ envLoaded: true })
         }, 100);

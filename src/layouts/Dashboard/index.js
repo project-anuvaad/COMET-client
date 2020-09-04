@@ -197,7 +197,7 @@ class Dashboard extends React.Component {
             this.props.setUserGuidingShowed(true)
         }
         const { user, organization } = this.props;
-        if (user && process.env.NODE_ENV === 'production') {
+        if (user && process.env.NODE_ENV === 'production' && APP_ENV.SENTRY_DSN) {
             Sentry.configureScope(function (scope) {
                 const userInfo = {
                     email: user.email,

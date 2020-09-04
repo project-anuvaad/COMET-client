@@ -13,11 +13,6 @@ import '../node_modules/semantic-ui-css/semantic.min.css'
 
 import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
-import * as Sentry from '@sentry/browser';
-
-if (process.env.NODE_ENV === 'production') {
-  Sentry.init({ dsn: "https://6967cf8c8d3a4e0697740a2cb9ca7118@sentry.io/5175765" });
-}
 
 ReactDOM.render(
   <Provider store={store}>
