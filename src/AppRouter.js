@@ -70,7 +70,6 @@ class AppRouter extends React.Component {
         setTimeout(() => {
           this.setState({ envLoaded: true })
         }, 100);
-        console.log('got env data', data)
         if (this.props.isAuthenticated) {
           this.props.getUserDetails();
         }
@@ -371,6 +370,7 @@ const mapStateToProps = ({ authentication }) => ({
 
 const mapDispatchToProps = dispatch => ({
   getUserDetails: () => dispatch(authenticationActions.getUserDetails()),
+  getIsSuperUser: () => dispatch(authenticationActions.getIsSuperUser()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppRouter);

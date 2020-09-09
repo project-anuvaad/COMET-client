@@ -57,6 +57,21 @@ const setApiKey = (key) => ({
     payload: key,
 })
 
+const setIsSuperUser = (isSuperUser) => ({
+    type: actionTypes.SET_IS_SUPER_USER,
+    payload: isSuperUser,
+})
+
+export const getIsSuperUser = () => (dispatch) => {
+    requestAgent.get(Api.user.getIsSuperUser())
+    .then((res) => {
+        const { isSuperUser } = res.body;
+        dispatch(setIsSuperUser(isSuperUser));
+    })
+    .catch(err => {
+    })
+}
+
 export const getUserDetails = () => (dispatch) => {
     dispatch(setGetUserDetailsLoading(true))
     requestAgent.get(Api.user.getUserDetails())
