@@ -107,6 +107,7 @@ export default {
         subscribeToApiDocs: () => `${APP_ENV.API_ROOT}/user/subscribe_api_docs`,
         resetPassword: () => `${APP_ENV.API_ROOT}/user/resetPassword`,
         getUserDetails: () => `${APP_ENV.API_ROOT}/user/getUserDetails`,
+        getIsSuperUser: () => `${APP_ENV.API_ROOT}/user/isSuperUser`,
         updatePassword: (userId) => `${APP_ENV.API_ROOT}/user/${userId}/password`,
         updateShowUserGuiding: () => `${APP_ENV.API_ROOT}/user/showUserGuiding`,
     },

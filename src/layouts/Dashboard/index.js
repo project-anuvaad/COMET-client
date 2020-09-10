@@ -13,6 +13,7 @@ import { APP_ENV } from '../../shared/constants';
 
 import NotificationService from '../../shared/utils/NotificationService';
 import * as organizationActions from '../../actions/organization';
+import * as authetnicationActions from '../../actions/authentication';
 import * as pollerActions from '../../actions/poller';
 
 import { redirectToSwitchOrganization, fetchUserApiKey, updateShowUserGuiding } from '../../actions/authentication'
@@ -145,6 +146,7 @@ class Dashboard extends React.Component {
         this.props.setNewOrganizationLogo(null);
         this.props.setNewOrganizationName('');
         this.props.fetchUserApiKey(this.props.organization._id)
+        this.props.getIsSuperUser();
         this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 10 * 1000, immediate: true }, () => {
             if (this.props.organization && this.props.organization._id && this.props.userToken) {
                 websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
@@ -306,6 +308,24 @@ class Dashboard extends React.Component {
         </Modal>
     )
 
+    renderCreateOrganizationDropdownItem = () => {
+        const comp = (
+            <React.Fragment>
+                <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
+                    Create Organization
+                </Dropdown.Item>
+                <Dropdown.Divider />
+            </React.Fragment>
+        )
+        if (!APP_ENV.DISABLE_PUBLIC_ORGANIZATIONS || parseInt(APP_ENV.DISABLE_PUBLIC_ORGANIZATIONS) !== 1) {
+            return comp;
+        }
+        if (this.props.isSuperUser) {
+            return comp;
+        }
+        return null;
+    }
+
     renderUserDropdown = () => {
         const { user, organization } = this.props;
         if (!user) return;
@@ -348,10 +368,7 @@ class Dashboard extends React.Component {
                         ))}
                     </Dropdown.Menu>
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
-                        Create Organization
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
+                    {this.renderCreateOrganizationDropdownItem()}
                     <Dropdown.Item onClick={() => this.props.history.push('/logout')}  >
                         <Icon name="log out" />
                         Logout
@@ -583,6 +600,7 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = ({ authentication, organization, video, router, }) => ({
     user: authentication.user,
+    isSuperUser: authentication.isSuperUser,
     userToken: authentication.token,
     organization: organization.organization,
     newOrganizationName: organization.newOrganizationName,
@@ -599,6 +617,7 @@ const mapStateToProps = ({ authentication, organization, video, router, }) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     
+    getIsSuperUser: () => dispatch(authetnicationActions.getIsSuperUser()),
     respondToOrganizationInvitationAuth: (organizationId) => dispatch(organizationActions.respondToOrganizationInvitationAuth(organizationId)),
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),

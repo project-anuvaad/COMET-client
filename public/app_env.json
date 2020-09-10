@@ -2,5 +2,6 @@
     "API_ROOT": "http://localhost:4000/api",
     "WEBSOCKET_SERVER_URL": "ws://localhost:4000",
     "VIDEOWIKI_WHATSAPP_NUMBER": "27600136875",
-    "FRONTEND_HOST_NAME": "tvw.tvw.localhost"
+    "FRONTEND_HOST_NAME": "tvw.localhost",
+    "DISABLE_PUBLIC_ORGANIZATIONS": "1"
 }

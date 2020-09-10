@@ -14,6 +14,7 @@ const INITIAL_STATE = {
     resetPasswordLoading: false,
     subscribeToApiDocsLoading: false,
     apiKey: null,
+    isSuperUser: false,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -74,6 +75,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, resetPasswordLoading: action.payload };
         case actionTypes.SET_USER_API_KEY:
             return { ...state, apiKey: action.payload };
+        case actionTypes.SET_IS_SUPER_USER:
+            return { ...state, isSuperUser: action.payload };
         case actionTypes.SET_SUBSCRIBE_TO_API_DOCS_LOADING:
             return { ...state, subscribeToApiDocsLoading: action.payload };
         default:
