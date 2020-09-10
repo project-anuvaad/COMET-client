@@ -56,7 +56,9 @@
     "superagent": "^5.1.0",
     "superagent-use": "^0.1.0",
     "swagger-ui-react": "^3.24.3",
-    "typewriter-effect": "^2.12.1"
+    "typewriter-effect": "^2.12.1",
+    "fabric": "1.6.2",
+    "react-color": "^2.18.1"
   },
   "scripts": {
     "start": "pm2 start server.js --name tvw_frontend",

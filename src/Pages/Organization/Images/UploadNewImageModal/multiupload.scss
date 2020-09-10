@@ -1,0 +1,48 @@
+.multi-upload-video {
+
+    .centered-cell {
+        text-align: center !important;
+    }
+    .video-lang-cell {
+        display: flex;
+        justify-content: space-around;
+        align-content: center;
+        align-items: center;
+    }
+    .video-lang-cell-edit {
+        visibility: hidden;
+    }
+
+    .video-row:hover .video-lang-cell-edit {
+        visibility: visible;
+    }
+
+    #upload-tabs {
+        background-color: #CCD7E3 !important;
+
+        .tab-item {
+            color: #041c34 !important;
+            background-color: #CCD7E3 !important;
+            opacity: 0.4;
+            &.active {
+                color: black !important;
+                background-color: white !important;
+                opacity: 1;
+            }
+        }
+    }
+
+    .subtitles-table {
+        margin-top: 0 !important;
+        thead tr th{
+            background-color: #d4e0ed !important;
+            color: #999999 !important;
+        }
+
+    }
+
+    table.table td {
+        border-right: none !important;
+        border-left: none !important;
+    }
+}

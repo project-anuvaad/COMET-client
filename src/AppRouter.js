@@ -28,6 +28,7 @@ const ResetPassword = () => import('./Pages/ResetPassword');
 const Demo = () => import('./Pages/Demo');
 const Convert = () => import('./Pages/Convert');
 const Logout = () => import('./Pages/Logout');
+const AnnotatePage = () => import('./Pages/AnnotatePage');
 
 const Article = () => import('./Pages/Organization/Article');
 
@@ -38,6 +39,8 @@ const OrganizationFAQs = () => import('./Pages/Organization/FAQs');
 const OrganizationReview = () => import('./Pages/Organization/Videos/Review');
 const OrganzationTranslations = () => import('./Pages/Organization/Videos/Translations');
 const OrganizationTranslationMetrics = () => import('./Pages/Organization/Videos/TranslationMetrics');
+const OrganizationImageAnnotation = () => import('./Pages/Organization/Images/Annotation');
+const OrganizationImageTranslation = () => import('./Pages/Organization/Images/Translations');
 const OrganizationTips = () => import('./Pages/Organization/Tips');
 const OrganzaitionTasksTranslations = () => import('./Pages/Organization/Tasks/Translations');
 const OrganzaitionTasksReviews = () => import('./Pages/Organization/Tasks/Reviews');
@@ -130,6 +133,13 @@ class AppRouter extends React.Component {
                 path={routes.convertProgressV2()}
                 title="Convert Video"
                 loader={Convert}
+              />
+
+              <LazyRoute
+                exact
+                path={routes.annotateImage()}
+                title="Annotate Image"
+                loader={AnnotatePage}
               />
               {/* <LazyRoute exact path={routes.demo()} title="Demo" loader={Demo} /> */}
               <LazyRoute
@@ -321,6 +331,36 @@ class AppRouter extends React.Component {
                   'approve_translations'
                 ]}
                 loader={OrganizationTranslationMetrics}
+                layout={DashboardLayout}
+              />
+
+              <LazyRoute
+                exact
+                path={routes.organizationImages()}
+                isPrivateRoute={true}
+                title="Organziation: Images"
+                authorize={[]}
+                loader={OrganizationImageAnnotation}
+                layout={DashboardLayout}
+              />
+
+              <LazyRoute
+                exact
+                path={routes.organizationImageAnnotation()}
+                isPrivateRoute={true}
+                title="Organziation: Annotate"
+                authorize={[]}
+                loader={OrganizationImageAnnotation}
+                layout={DashboardLayout}
+              />
+
+              <LazyRoute
+                exact
+                path={routes.organizationImageTranslation()}
+                isPrivateRoute={true}
+                title="Organziation: Translations"
+                authorize={[]}
+                loader={OrganizationImageTranslation}
                 layout={DashboardLayout}
               />
               {/* ==== End Organization routes === */}

@@ -19,11 +19,15 @@ export default {
     organizationTips: () => '/organization/tips',
     noiseCancellation: () => '/organization/noisecancellation',
     organizationVideos: () => '/organization/videos',
+    organizationImages: () => '/organization/images',
     organizationArticle: (articleId = ':articleId') => `/organization/article/${articleId}`,
     organizationArchive: () => `/organization/archive`,
 
     organziationReview: () => `/organization/videos/review`,
     organziationTranslations: (params) => `/organization/videos/translations${params ? `?${querystring.encode(params)}` : ''}`,
+
+    organizationImageAnnotation: () => '/organization/images/annotate',
+    organizationImageTranslation: () => '/organization/images/translations',
     
     // organizationTasks: () => '/organization/tasks',
     organziationTasksReview: () => `/organization/tasks/review`,
@@ -36,4 +40,6 @@ export default {
     translationInvitation: () => `/invitations/translate`,
     textTranslationInvitation: () => `/invitations/translateText`,
     invitationsRoute: (organizationId = ':organizationId') => `/invitations/${organizationId}`,
+
+    annotateImage: (imageId) => `/annotate${imageId ? `?image=${imageId}` : ''}`,
 }
