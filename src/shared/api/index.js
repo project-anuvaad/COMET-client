@@ -24,6 +24,13 @@ export default {
         updateProjectLeaders: (videoId) => `${APP_ENV.API_ROOT}/video/${videoId}/projectLeaders`,
         updateFolder: id => `${APP_ENV.API_ROOT}/video/${id}/folder`,
     },
+
+    image: {
+        uploadImage: () => `${APP_ENV.API_ROOT}/image/upload`,
+        getImages: (params = {}) => `${APP_ENV.API_ROOT}/image?${querystring.encode(params)}`,
+        updateImageById: (id) => `${APP_ENV.API_ROOT}/image/${id}`,
+    },
+
     noiseCancellationVideos: {
         getVideos: (params = {}) => `${APP_ENV.API_ROOT}/noiseCancellationVideo?${querystring.encode(params)}`,
         uploadVideo: () => `${APP_ENV.API_ROOT}/noiseCancellationVideo`,
