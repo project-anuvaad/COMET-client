@@ -4,6 +4,7 @@ import requestAgent from "../../shared/utils/requestAgent";
 import NotificationService from "../../shared/utils/NotificationService";
 import asyncSeries from "async/series";
 import organization from "../../reducers/organization";
+import routes from "../../shared/routes";
 import { SET_SEARCH_FILTER } from "../../Pages/Organization/Tasks/modules/types";
 
 export const setUploadImageForm = (uploadImageForm) => ({
@@ -75,9 +76,50 @@ export const uploadImages = (organization) => (dispatch, getState) => {
   });
 };
 
+const setImage = (image) => ({
+  type: actionTypes.SET_IMAGE,
+  payload: image,
+});
+
+export const fetchImageById = (id) => (dispatch) => {
+  dispatch(setImage(null));
+  requestAgent
+    .get(Api.image.getById(id))
+    .then((res) => {
+      const { image } = res.body;
+      dispatch(setImage(image));
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Some thing went wrong");
+      dispatch(setImagesLoading(false));
+    });
+};
+
+export const updateImageGroups = (id, groups) => (dispatch) => {
+  requestAgent
+    .put(Api.image.updateImageGroups(id), {
+      groups,
+    })
+    .then((res) => {
+      const { image } = res.body;
+      dispatch(setImage(image));
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Some thing went wrong");
+      dispatch(setImagesLoading(false));
+    });
+};
+
+export const setStatus = (status) => ({
+  type: actionTypes.SET_STATUS,
+  payload: status,
+});
+
 export const fetchImages = () => (dispatch, getState) => {
   const { organization } = getState().organization;
-  const { currentPageNumber, searchFilter } = getState().image;
+  const { currentPageNumber, searchFilter, status } = getState().image;
   dispatch(setImagesLoading(true));
   requestAgent
     .get(
@@ -85,6 +127,7 @@ export const fetchImages = () => (dispatch, getState) => {
         organization: organization._id,
         page: currentPageNumber,
         search: searchFilter,
+        status,
       })
     )
     .then((res) => {
@@ -114,6 +157,22 @@ export const updateImage = (id, chnages) => (dispatch, getState) => {
         dispatch(setImages(oldImages));
         NotificationService.success(`The image has been updated succeefully`);
       }
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Some thing went wrong");
+    });
+};
+
+export const updateImageStatus = (id, status) => (dispatch, getState) => {
+  requestAgent
+    .put(Api.image.updateImageStatus(id), { status })
+    .then((res) => {
+      const { image } = res.body;
+      NotificationService.success("Recorded successfully");
+      setTimeout(() => {
+        window.location.href = routes.organizationImageAnnotation();
+      }, 1000);
     })
     .catch((err) => {
       console.log(err);

@@ -6,10 +6,12 @@ const INITIAL_STATE = {
   totalPagesCount: 1,
   imagesLoading: false,
   searchFilter: "",
+  status: "",
   uploadImageForm: {
     activeTabIndex: 0,
     images: [],
   },
+  image: null,
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -30,6 +32,10 @@ export default function (state = INITIAL_STATE, action) {
       return { ...state, imagesLoading: action.payload };
     case actionTypes.SET_SEARCH_FILTER:
       return { ...state, searchFilter: action.payload };
+    case actionTypes.SET_IMAGE:
+      return { ...state, image: action.payload };
+    case actionTypes.SET_STATUS:
+      return { ...state, status: action.payload };
     default:
       return state;
   }

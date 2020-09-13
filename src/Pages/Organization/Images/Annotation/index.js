@@ -13,6 +13,7 @@ import {
   setCurrentPageNumber,
   setSearchFilter,
   updateImage,
+  setStatus,
 } from "../../../../actions/image";
 import { debounce } from "../../../../shared/utils/helpers";
 
@@ -24,6 +25,7 @@ class Annotation extends React.Component {
 
   componentDidMount() {
     this.props.setSearchFilter("");
+    this.props.setStatus("uploaded");
     this.props.fetchImages();
   }
 
@@ -151,6 +153,7 @@ const mapStateToProps = ({ image, organization }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  setStatus: (status) => dispatch(setStatus(status)),
   fetchImages: () => dispatch(fetchImages()),
   updateImage: (imageId, changes) => dispatch(updateImage(imageId, changes)),
   setCurrentPageNumber: (pageNumber) =>

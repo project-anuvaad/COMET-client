@@ -2,11 +2,15 @@ body {
   margin: 1rem;
 }
 
-.image-container,
-.tools-container,
-.text-box-container,
 .boxes-list-container {
-  border: 0.12rem solid #c6c6c6;
+  height: 500px;
+  max-height: 500px;
+  overflow-y: scroll;
+}
+.image-container,
+.tools-container
+{
+  border: 1px dashed black;
   box-sizing: border-box;
 }
 
@@ -17,20 +21,23 @@ body {
 .tools-container {
   display: flex;
   justify-content: space-around;
-  margin-top: 1rem;
   padding: 1rem;
+  height: 100%;
 
   .shapes-container {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    button {
+      margin-bottom: 10px;
+    }
   }
 }
 
 .text-box-container {
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
 
   .text-box-row,
   .text-color-row {
@@ -51,11 +58,17 @@ body {
   align-items: center;
 
   .box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem;
-    text-align: center;
-    width: 70%;
-    border: 0.12rem solid #c6c6c6;
-    margin-top: 1rem;
+    background: #d4e0ed;
+    border: 2px solid;
+    border-radius: 8px;
+    color: #666666;
+    height: 50px;
+    width: 100%;
+    margin: 0.5rem;;
     cursor: pointer;
   }
 }

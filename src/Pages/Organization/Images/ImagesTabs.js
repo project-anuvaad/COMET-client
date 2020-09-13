@@ -31,32 +31,6 @@ class ImagesTabs extends React.Component {
     }
   };
 
-  // componentWillReceiveProps = (nextProps) => {
-  //   if (
-  //     this.props.uploadState === "loading" &&
-  //     nextProps.uploadState === "done"
-  //   ) {
-  //     NotificationService.success("Uploaded successfully");
-  //     this.setState({ uploadFormOpen: false });
-  //     this.props.fetchVideos();
-  //     this.props.fetchVideosCount();
-  //   }
-  //   if (
-  //     this.props.uploadState === "loading" &&
-  //     nextProps.uploadState === "failed"
-  //   ) {
-  //     NotificationService.error(nextProps.uploadError);
-  //     this.setState({ uploadFormOpen: false });
-  //   }
-  //   if (nextProps.videosCounts) {
-  //     if (nextProps.videosCounts.total === 0 && !this.state.animating) {
-  //       this.setState({ animating: true });
-  //     } else if (this.state.animating && nextProps.videosCounts.total !== 0) {
-  //       this.setState({ animating: false });
-  //     }
-  //   }
-  // };
-
   componentWillUnmount = () => {
     if (this.animateInterval) {
       clearInterval(this.animateInterval);

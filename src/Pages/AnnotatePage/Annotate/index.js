@@ -1,5 +1,14 @@
 import React from "react";
-import { Grid, Button, Input, Form, Icon, TextArea } from "semantic-ui-react";
+import {
+  Grid,
+  Button,
+  Input,
+  Form,
+  Icon,
+  TextArea,
+  Popup,
+  Card,
+} from "semantic-ui-react";
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import ColorPickerModal from "./ColorPickerModal";
@@ -44,29 +53,105 @@ class Annotate extends React.Component {
   };
 
   componentDidMount() {
-    const self = this;
-    fabric.Image.fromURL(
-      "https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/IMG-20200827-WA0000.jpg",
-      function (oImg) {
-        oImg.selectable = false;
-        canvas = new fabric.Canvas("canvas", CANVAS_OPTIONS);
-        canvas.setWidth(oImg.width);
-        canvas.setHeight(oImg.height);
-        canvas.setBackgroundImage(oImg);
-        self.setState({
-          actionStatus: ACTION_BUTTONS.rectangle,
-        });
-        self.initializeColors();
-        self.setInintialGroups();
-        self.onObjectSelected();
-        self.onSelectionCleared();
-        self.onObjectModified();
-        self.getCoordinates();
-        canvas.renderAll();
-      }
-    );
+    this.init(this.props.imageUrl, this.props.defaultGroups);
   }
 
+  init = (image, groups) => {
+    const { displayWidth, displayHeight } = this.props;
+    const self = this;
+    fabric.Image.fromURL(image, (oImg) => {
+      oImg.selectable = false;
+      canvas = new fabric.Canvas("canvas", CANVAS_OPTIONS);
+      if (displayWidth) {
+        oImg.setWidth(displayWidth);
+      }
+      if (displayHeight) {
+        oImg.setHeight(displayHeight);
+      }
+      canvas.setWidth(oImg.width);
+      canvas.setHeight(oImg.height);
+      canvas.setBackgroundImage(oImg);
+      self.setState({
+        actionStatus: ACTION_BUTTONS.selection,
+      });
+      self.onObjectSelected();
+      self.onSelectionCleared();
+      self.onObjectModified();
+      self.getCoordinates();
+      canvas.renderAll();
+      if (groups) {
+        setTimeout(() => self.setInintialGroups(groups), 100);
+      }
+    });
+  };
+
+  setInintialGroups = (groups) => {
+    const addedGroups = [];
+    groups.forEach((group) => {
+      const groupObjects = [];
+      group.objects.forEach((object) => {
+        switch (object.type) {
+          case "circle":
+            const circle = new fabric.Circle({
+              ...object,
+            });
+            groupObjects.push(circle);
+            break;
+          case "rect":
+            const rect = new fabric.Rect({
+              ...object,
+            });
+            groupObjects.push(rect);
+            break;
+          case "text":
+            const text = new fabric.Text(object.text || "", {
+              ...object,
+            });
+            groupObjects.push(text);
+            break;
+          default:
+            break;
+        }
+      });
+      const { objects, ...rest } = group;
+      const addedGroup = new fabric.Group(groupObjects, {
+        ...rest,
+        uniqueId: uuidv4(),
+      });
+      // Include uniqueId in toObject calls
+      addedGroup.toObject = (function (toObject) {
+        return function () {
+          return fabric.util.object.extend(toObject.call(this), {
+            uniqueId: this.uniqueId,
+            _id: this._id,
+          });
+        };
+      })(addedGroup.toObject);
+      addedGroups.push(addedGroup);
+      canvas.add(addedGroup);
+    });
+    canvas.renderAll();
+    this.setState({ groups: addedGroups });
+    // const initialGroups = groups;
+    // if (initialGroups) {
+    //   fabric.util.enlivenObjects(initialGroups, function (groups) {
+    //     groups.forEach(function (group) {
+    //       group.toObject = (function (toObject) {
+    //         return function () {
+    //           return fabric.util.object.extend(toObject.call(this), {
+    //             uniqueId: this.uniqueId,
+    //           });
+    //         };
+    //       })(group.toObject);
+    //       group.set({ selectable: false });
+    //       canvas.add(group);
+    //     });
+    //     canvas.renderAll();
+    //     console.log(canvas.toObject().objects)
+    //     self.setState({ groups: canvas.toObject().objects });
+    //   });
+    // }
+  };
   getCoordinates = () => {
     const self = this;
     let startPoints = {};
@@ -101,6 +186,7 @@ class Annotate extends React.Component {
             return function () {
               return fabric.util.object.extend(toObject.call(this), {
                 uniqueId: this.uniqueId,
+                _id: this._id,
               });
             };
           })(currentGroup.toObject);
@@ -136,6 +222,7 @@ class Annotate extends React.Component {
             return function () {
               return fabric.util.object.extend(toObject.call(this), {
                 uniqueId: this.uniqueId,
+                _id: this._id,
               });
             };
           })(currentGroup.toObject);
@@ -205,6 +292,7 @@ class Annotate extends React.Component {
       })
       .on("mouse:up", function (o) {
         self.setState({ mouseDown: false });
+        console.log("mouseup");
         if (Object.keys(currentObj).length) {
           if (
             (currentObj["obj"].width === 0 || currentObj["obj"].height === 0) &&
@@ -212,9 +300,11 @@ class Annotate extends React.Component {
           ) {
             canvas.remove(canvas.item(canvas.toObject().objects.length - 1));
             canvas.renderAll();
+            const groups = canvas.toObject().objects;
+            self.props.onChange({ groups });
             self.setState({
               actionStatus: ACTION_BUTTONS.rectangle,
-              groups: canvas.toObject().objects,
+              groups,
             });
             return;
           } else {
@@ -223,13 +313,15 @@ class Annotate extends React.Component {
               return false;
             }
             currentObj["fun"]();
+            canvas.isDrawingMode = false;
+            canvas.renderAll();
+            const groups = canvas.toObject().objects;
+            self.props.onChange({ groups });
             self.setState({
-              groups: canvas.toObject().objects,
+              groups,
               actionStatus: ACTION_BUTTONS.selection,
               mouseMove: false,
             });
-            canvas.isDrawingMode = false;
-            canvas.renderAll();
             self.cropImageAndExractColors();
           }
         }
@@ -238,10 +330,8 @@ class Annotate extends React.Component {
 
   cropImageAndExractColors = () => {
     const ao = canvas.getActiveObject();
-    console.log(ao.toObject());
     if (ao) {
-      const url =
-        "https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/IMG-20200827-WA0000.jpg";
+      const url = this.props.imageUrl;
       const left = canvas.getActiveObject().left;
       const top = canvas.getActiveObject().top;
       const width = canvas.getActiveObject().width;
@@ -249,72 +339,68 @@ class Annotate extends React.Component {
       const angle = canvas.getActiveObject().angle;
       const groupId = canvas.getActiveObject().uniqueId;
 
-      console.log(left, top, width, height, angle);
-      fetch(
-        `http://localhost:5000/getColors?groupId=${groupId}&url=${url}&left=${left}&top=${top}&width=${width}&height=${height}&angle=${angle}`
-      )
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            const { groupId, colors } = result;
-            const hexColors = [];
-            colors.forEach((rgb) => {
-              hexColors.push(rgbToHex(rgb));
-            });
-            let groupsColors;
-            groupsColors = JSON.parse(localStorage.getItem("colors")) || [];
-            const groupColors = groupsColors.find(
-              (gc) => gc.groupId === groupId
-            );
-            if (groupColors) {
-              groupColors.hexColors = hexColors;
-            }
-            groupsColors.push({ groupId, hexColors });
-            localStorage.setItem("colors", JSON.stringify(groupsColors));
-            const groupIndex = canvas
-              .toObject()
-              .objects.findIndex((group) => group.uniqueId === groupId);
-            canvas.item(groupIndex).item(0).set({ fill: hexColors[0] });
-            canvas.item(groupIndex).item(1).set({ fill: hexColors[1] });
-            this.setState({ selectedTextColor: hexColors[1] });
-            this.setState({ selectedBackgroundColor: hexColors[0] });
-            canvas.renderAll();
-            localStorage.setItem(
-              "initialGroups",
-              JSON.stringify(canvas.toObject().objects)
-            );
-          },
-          (error) => {
-            console.log(error);
+      this.props
+        .getColors({ left, top, width, height, angle })
+        .then(({ colors }) => {
+          const hexColors = [];
+          colors.forEach((rgb) => {
+            hexColors.push(rgbToHex(rgb));
+          });
+          let groupsColors;
+          groupsColors = JSON.parse(localStorage.getItem("colors")) || [];
+          const groupColors = groupsColors.find((gc) => gc.groupId === groupId);
+          if (groupColors) {
+            groupColors.hexColors = hexColors;
           }
-        );
-    }
-  };
-
-  initializeColors = () => {
-    if (!localStorage.getItem("colors")) {
-      localStorage.setItem("colors", JSON.stringify([]));
-    }
-  };
-
-  setInintialGroups = () => {
-    const self = this;
-    const initialGroups = JSON.parse(localStorage.getItem("initialGroups"));
-    if (initialGroups) {
-      fabric.util.enlivenObjects(initialGroups, function (groups) {
-        groups.forEach(function (group) {
-          group.toObject = (function (toObject) {
-            return function () {
-              return fabric.util.object.extend(toObject.call(this), {
-                uniqueId: this.uniqueId,
-              });
-            };
-          })(group.toObject);
-          group.set({ selectable: false });
-          canvas.add(group);
+          groupsColors.push({ groupId, hexColors });
+          localStorage.setItem("colors", JSON.stringify(groupsColors));
+          const groupIndex = canvas
+            .toObject()
+            .objects.findIndex((group) => group.uniqueId === groupId);
+          canvas.item(groupIndex).item(0).set({ fill: hexColors[0] });
+          canvas.item(groupIndex).item(1).set({ fill: hexColors[1] });
+          this.setState({ selectedTextColor: hexColors[1] });
+          this.setState({ selectedBackgroundColor: hexColors[0] });
+          canvas.renderAll();
         });
-        self.setState({ groups: canvas.toObject().objects });
-      });
+      // fetch(
+      //   `http://localhost:5000/getColors?groupId=${groupId}&url=${url}&left=${left}&top=${top}&width=${width}&height=${height}&angle=${angle}`
+      // )
+      //   .then((res) => res.json())
+      //   .then(
+      //     (result) => {
+      //       const { groupId, colors } = result;
+      //       const hexColors = [];
+      //       colors.forEach((rgb) => {
+      //         hexColors.push(rgbToHex(rgb));
+      //       });
+      //       let groupsColors;
+      //       groupsColors = JSON.parse(localStorage.getItem("colors")) || [];
+      //       const groupColors = groupsColors.find(
+      //         (gc) => gc.groupId === groupId
+      //       );
+      //       if (groupColors) {
+      //         groupColors.hexColors = hexColors;
+      //       }
+      //       groupsColors.push({ groupId, hexColors });
+      //       localStorage.setItem("colors", JSON.stringify(groupsColors));
+      //       const groupIndex = canvas
+      //         .toObject()
+      //         .objects.findIndex((group) => group.uniqueId === groupId);
+      //       canvas.item(groupIndex).item(0).set({ fill: hexColors[0] });
+      //       canvas.item(groupIndex).item(1).set({ fill: hexColors[1] });
+      //       this.setState({ selectedTextColor: hexColors[1] });
+      //       this.setState({ selectedBackgroundColor: hexColors[0] });
+      //       canvas.renderAll();
+      //       localStorage.setItem(
+      //         "initialGroups",
+      //         JSON.stringify(canvas.toObject().objects)
+      //       );
+      //     },
+      //     (error) => {
+      //       console.log(error);
+      //     }
+      //   );
     }
   };
 
@@ -333,6 +419,7 @@ class Annotate extends React.Component {
       fill: OBJECTS_OPTIONS.defaultFillColor,
       strokeWidth: OBJECTS_OPTIONS.defaultStrokeWidth,
       selectable: false,
+      opacity: 0.8,
     });
   };
 
@@ -351,6 +438,7 @@ class Annotate extends React.Component {
       fill: OBJECTS_OPTIONS.defaultFillColor,
       strokeWidth: OBJECTS_OPTIONS.defaultStrokeWidth,
       selectable: false,
+      opacity: 0.8,
     });
   };
 
@@ -369,6 +457,7 @@ class Annotate extends React.Component {
       fill: OBJECTS_OPTIONS.defaultFillColor,
       strokeWidth: OBJECTS_OPTIONS.defaultStrokeWidth,
       selectable: false,
+      opacity: 0.8,
     });
   };
 
@@ -376,6 +465,9 @@ class Annotate extends React.Component {
     this.setState({ text: value });
     canvas.getActiveObject().item(1).set({ text: value });
     canvas.renderAll();
+    const groups = canvas.toObject().objects;
+    this.setState({ groups });
+    this.props.onChange({ groups });
   };
 
   onFontSizeChange = (value) => {
@@ -402,6 +494,8 @@ class Annotate extends React.Component {
       canvas.getActiveObject().item(1).set({ fontWeight: "bold" });
     }
     canvas.renderAll();
+    const groups = canvas.toObject().objects;
+    this.props.onChange({ groups });
   };
 
   toggleTextDecoration = () => {
@@ -417,6 +511,8 @@ class Annotate extends React.Component {
       canvas.getActiveObject().item(1).set({ textDecoration: "underline" });
     }
     canvas.renderAll();
+    const groups = canvas.toObject().objects;
+    this.props.onChange({ groups });
   };
 
   toggleFontStyle = () => {
@@ -431,8 +527,9 @@ class Annotate extends React.Component {
       });
       canvas.getActiveObject().item(1).set({ fontStyle: "italic" });
     }
-
     canvas.renderAll();
+    const groups = canvas.toObject().objects;
+    this.props.onChange({ groups });
   };
 
   onColorPickerOpen = (colorType) => {
@@ -443,11 +540,12 @@ class Annotate extends React.Component {
   };
 
   onBoxSelected = (i) => {
+    console.log("on box selected");
     canvas.setActiveObject(canvas.item(i));
     const ao = canvas.getActiveObject();
     this.setState({
       text: ao.item(1).text,
-      selectedGroupId: ao.toObject().uniqueId,
+      selectedGroupId: ao.get("uniqueId"),
       fontSize: ao.item(1).get("fontSize"),
       selectedTextColor: ao.item(1).fill,
       selectedBackgroundColor: ao.item(0).fill,
@@ -489,6 +587,7 @@ class Annotate extends React.Component {
   onObjectSelected = () => {
     const self = this;
     canvas.on("object:selected", function () {
+      console.log("on object selected");
       const ao = canvas.getActiveObject();
       if (ao) {
         self.setState({ objectNotSelected: false });
@@ -499,7 +598,7 @@ class Annotate extends React.Component {
         self.setState({
           presetColors,
           text: ao.item(1).text,
-          selectedGroupId: ao.toObject().uniqueId,
+          selectedGroupId: ao.get("uniqueId"),
           fontSize: ao.item(1).get("fontSize"),
           selectedTextColor: ao.item(1).fill,
           selectedBackgroundColor: ao.item(0).fill,
@@ -530,7 +629,27 @@ class Annotate extends React.Component {
     const self = this;
     canvas.on("object:modified", function () {
       self.cropImageAndExractColors();
+      const groups = canvas.toObject().objects;
+      self.props.onChange({ groups });
     });
+  };
+
+  changeSelectedGroupColor = (colorType, color) => {
+    if (colorType === "text") {
+      this.setState({ color: color.hex, selectedTextColor: color });
+      canvas.getActiveObject().item(1).set({
+        fill: color,
+      });
+    } else if (colorType === "background") {
+      this.setState({
+        color: color,
+        selectedBackgroundColor: color,
+      });
+      canvas.getActiveObject().item(0).set({
+        fill: color,
+      });
+    }
+    canvas.renderAll();
   };
 
   _renderColorPickerModal() {
@@ -546,21 +665,9 @@ class Annotate extends React.Component {
           this.setState({ isColorPickerModalOpen: false });
         }}
         onChangeComplete={(color) => {
-          if (this.state.colorType === "text") {
-            this.setState({ color: color.hex, selectedTextColor: color.hex });
-            canvas.getActiveObject().item(1).set({
-              fill: color.hex,
-            });
-          } else if (this.state.colorType === "background") {
-            this.setState({
-              color: color.hex,
-              selectedBackgroundColor: color.hex,
-            });
-            canvas.getActiveObject().item(0).set({
-              fill: color.hex,
-            });
-          }
-          canvas.renderAll();
+          this.changeSelectedGroupColor(this.state.colorType, color.hex);
+          const groups = canvas.toObject().objects;
+          this.props.onChange({ groups });
         }}
         color={this.state.color}
         presetColors={presetColors}
@@ -582,8 +689,11 @@ class Annotate extends React.Component {
             "initialGroups",
             JSON.stringify(canvas.toObject().objects)
           );
+          const groups = canvas.toObject().objects;
+
+          this.props.onChange({ groups });
           this.setState({
-            groups: canvas.toObject().objects,
+            groups,
             isDeleteShapeModalOpen: false,
           });
         }}
@@ -602,19 +712,19 @@ class Annotate extends React.Component {
     return (
       <Grid>
         <Grid.Row>
-          <Grid.Column width={10}>
-            <div className="image-container">
-              <canvas id="canvas"></canvas>
-            </div>
-
+          <Grid.Column width={2}>
             <div className="tools-container">
               <div className="shapes-container">
-                <span className="bold" style={{ marginRight: ".5rem" }}>
-                  Shapes:
-                </span>
+                <Button
+                  fluid
+                  primary={this.state.actionStatus === ACTION_BUTTONS.selection}
+                  onClick={this.onSelectionClick}
+                >
+                  Selection
+                </Button>
                 <Button
                   className="rect"
-                  size="mini"
+                  fluid
                   primary={this.state.actionStatus === ACTION_BUTTONS.rectangle}
                   onClick={this.onRectClick}
                 >
@@ -622,7 +732,7 @@ class Annotate extends React.Component {
                 </Button>
                 <Button
                   className="circle"
-                  size="mini"
+                  fluid
                   primary={this.state.actionStatus === ACTION_BUTTONS.circle}
                   onClick={this.onCircleClick}
                 >
@@ -631,142 +741,215 @@ class Annotate extends React.Component {
                 <Button
                   id="oval"
                   className="oval"
-                  size="mini"
+                  fluid
                   primary={this.state.actionStatus === ACTION_BUTTONS.oval}
                   onClick={this.onOvalClick}
                 >
                   Oval
                 </Button>
               </div>
-              <div>
-                <span className="bold" style={{ marginRight: ".5rem" }}>
-                  Actions:
-                </span>
-                <Button
-                  size="mini"
-                  primary={this.state.actionStatus === ACTION_BUTTONS.selection}
-                  onClick={this.onSelectionClick}
-                >
-                  Selection
-                </Button>
-                <Button
-                  size="mini"
-                  primary={this.state.actionStatus === ACTION_BUTTONS.save}
-                  onClick={this.onSaveImage}
-                >
-                  Save Image
-                </Button>
-              </div>
+            </div>
+          </Grid.Column>
+          <Grid.Column width={8}>
+            <div className="image-container">
+              <canvas id="canvas"></canvas>
             </div>
           </Grid.Column>
           <Grid.Column width={6}>
             <div className="text-box-container">
               {this.state.selectedGroupId ? (
                 <React.Fragment>
-                  <div className="bold">Box {selectedGroupIndex + 1}</div>
-                  <div className="text-box-row">
-                    <Form>
-                      <TextArea
-                        placeholder="Text goes here..."
-                        value={this.state.text}
-                        onChange={(e, { value }) => {
-                          this.onTextChange(value);
-                        }}
-                      />
-                    </Form>
-                  </div>
-
-                  <div className="font-size-row" style={{ display: "flex" }}>
-                    <div style={{ marginRight: "1rem" }}>
-                      <span className="bold" style={{ marginRight: ".5rem" }}>
-                        Text:
-                      </span>
-                      <Input
-                        style={{ width: "5rem" }}
-                        size="mini"
-                        type="number"
-                        min="1"
-                        value={this.state.fontSize}
-                        onChange={(e, { value }) => {
-                          this.onFontSizeChange(value);
-                        }}
-                      />
-                    </div>
-                    <Button
-                      size="mini"
-                      basic
-                      primary={
-                        this.state.fontWeightStatus === FONT_WEIGHT_BUTTONS.bold
-                      }
-                      onClick={this.toggleFontWeight}
-                    >
-                      <Icon name="bold" />
-                    </Button>
-                    <Button
-                      size="mini"
-                      basic
-                      primary={
-                        this.state.fontStyleStatus === FONT_STYLE_BUTTONS.italic
-                      }
-                      onClick={this.toggleFontStyle}
-                    >
-                      <Icon name="italic" />
-                    </Button>
-                    <Button
-                      size="mini"
-                      basic
-                      primary={
-                        this.state.textDecorationStatus ===
-                        TEXT_DECORATION_BUTTONS.underline
-                      }
-                      onClick={this.toggleTextDecoration}
-                    >
-                      <Icon name="underline" />
-                    </Button>
-                  </div>
-
-                  <div
-                    className="text-color-row"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <div className="bold" style={{ marginRight: "1rem" }}>
-                      Color:
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <span>Text:</span>
-                      <Button
-                        style={{
-                          marginLeft: "1rem",
-                          backgroundColor: this.state.selectedTextColor,
-                          border: "1px solid black",
-                        }}
-                        onClick={() => {
-                          this.onColorPickerOpen("text");
-                        }}
-                      ></Button>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <span>Background:</span>
-                      <Button
-                        style={{
-                          marginLeft: "1rem",
-                          backgroundColor: this.state.selectedBackgroundColor,
-                          border: "1px solid black",
-                        }}
-                        onClick={() => {
-                          this.onColorPickerOpen("background");
-                        }}
-                      ></Button>
-                    </div>
-                  </div>
+                  <Grid>
+                    <Grid.Row>
+                      <Grid.Column width={16}>
+                        <Card fluid>
+                          <Card.Header
+                            style={{
+                              backgroundColor: "rgb(212, 224, 237)",
+                              borderRadius: 0,
+                              height: 50,
+                            }}
+                          >
+                            <h4 style={{ padding: "1rem" }}>
+                              Box {selectedGroupIndex + 1}
+                            </h4>
+                          </Card.Header>
+                          <div>
+                            <div
+                              style={{ height: "100%" }}
+                            >
+                              <TextArea
+                                style={{
+                                  height: "100%",
+                                  width: "100%",
+                                  padding: "1rem",
+                                  border: 'none',
+                                }}
+                                placeholder="Text goes here..."
+                                value={this.state.text}
+                                onChange={(e, { value }) => {
+                                  this.onTextChange(value);
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </Card>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                      <Grid.Column width={16}>
+                        <Grid>
+                          <Grid.Row>
+                            <Grid.Column width={8}>
+                              <Grid>
+                                <Grid.Row>
+                                  <Grid.Column width={6}>
+                                    <strong>Font Size:</strong>
+                                  </Grid.Column>
+                                  <Grid.Column width={10}>
+                                    <Input
+                                      fluid
+                                      style={{ width: "5rem" }}
+                                      size="mini"
+                                      type="number"
+                                      min="1"
+                                      value={this.state.fontSize}
+                                      onChange={(e, { value }) => {
+                                        this.onFontSizeChange(value);
+                                      }}
+                                    />
+                                  </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                  <Grid.Column width={6}>
+                                    <div>
+                                      <strong>Style:</strong>
+                                    </div>
+                                  </Grid.Column>
+                                  <Grid.Column width={10}>
+                                    <Button
+                                      size="mini"
+                                      basic
+                                      primary={
+                                        this.state.fontWeightStatus ===
+                                        FONT_WEIGHT_BUTTONS.bold
+                                      }
+                                      onClick={this.toggleFontWeight}
+                                    >
+                                      <Icon name="bold" />
+                                    </Button>
+                                    <Button
+                                      size="mini"
+                                      basic
+                                      primary={
+                                        this.state.fontStyleStatus ===
+                                        FONT_STYLE_BUTTONS.italic
+                                      }
+                                      onClick={this.toggleFontStyle}
+                                    >
+                                      <Icon name="italic" />
+                                    </Button>
+                                    <Button
+                                      size="mini"
+                                      basic
+                                      primary={
+                                        this.state.textDecorationStatus ===
+                                        TEXT_DECORATION_BUTTONS.underline
+                                      }
+                                      onClick={this.toggleTextDecoration}
+                                    >
+                                      <Icon name="underline" />
+                                    </Button>
+                                  </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                  <Grid.Column width={6}>
+                                    Text Color:
+                                  </Grid.Column>
+                                  <Grid.Column width={10}>
+                                    <Button
+                                      style={{
+                                        marginLeft: "1rem",
+                                        backgroundColor: this.state
+                                          .selectedTextColor,
+                                        border: "1px solid black",
+                                      }}
+                                      onClick={() => {
+                                        this.onColorPickerOpen("text");
+                                      }}
+                                    ></Button>
+                                  </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                  <Grid.Column width={6}>
+                                    Background Color:
+                                  </Grid.Column>
+                                  <Grid.Column width={10}>
+                                    <Button
+                                      style={{
+                                        marginLeft: "1rem",
+                                        backgroundColor: this.state
+                                          .selectedBackgroundColor,
+                                        border: "1px solid black",
+                                      }}
+                                      onClick={() => {
+                                        this.onColorPickerOpen("background");
+                                      }}
+                                    ></Button>
+                                    <div>
+                                      <Popup
+                                        position="top center"
+                                        trigger={
+                                          <Button
+                                            icon="refresh"
+                                            role="Swap colors"
+                                            basic
+                                            style={{
+                                              position: "absolute",
+                                              top: "-2.5rem",
+                                              right: 0,
+                                            }}
+                                            onClick={() => {
+                                              // Swap colors of background and text
+                                              const {
+                                                selectedBackgroundColor,
+                                                selectedTextColor,
+                                              } = this.state;
+                                              this.changeSelectedGroupColor(
+                                                "text",
+                                                selectedBackgroundColor
+                                              );
+                                              this.changeSelectedGroupColor(
+                                                "background",
+                                                selectedTextColor
+                                              );
+                                              const groups = canvas.toObject()
+                                                .objects;
+                                              this.props.onChange({
+                                                groups,
+                                              });
+                                            }}
+                                          />
+                                        }
+                                        content={"Swap Colors"}
+                                      />
+                                    </div>
+                                  </Grid.Column>
+                                </Grid.Row>
+                              </Grid>
+                            </Grid.Column>
+                          </Grid.Row>
+                        </Grid>
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
                 </React.Fragment>
               ) : (
-                <React.Fragment>No boxes selected</React.Fragment>
+                <React.Fragment></React.Fragment>
               )}
             </div>
 
             <div className="boxes-list-container">
-              <span className="bold">Boxes</span>
               {this.state.groups.map((group, i) => (
                 <div
                   style={{
