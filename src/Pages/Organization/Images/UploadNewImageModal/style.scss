@@ -1,0 +1,26 @@
+.upload-modal {
+    .header {
+        padding-left: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .header-tabs {
+        display: inline-block;
+        padding: 1rem;
+        padding-top: 0;
+        margin: 0;
+        padding: 0;
+        
+        .header-tabs-item {
+            cursor: pointer;
+            display: inline-block;
+            padding: 1.5rem;
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0.5;
+            &-active {
+                opacity: 1;
+                font-weight: 600;
+            }
+        }
+    }
+}
