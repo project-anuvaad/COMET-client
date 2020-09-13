@@ -33,7 +33,13 @@ export default {
       `${APP_ENV.API_ROOT}/video/${videoId}/projectLeaders`,
     updateFolder: (id) => `${APP_ENV.API_ROOT}/video/${id}/folder`,
   },
-
+  noiseCancellationVideos: {
+    getVideos: (params = {}) =>
+      `${APP_ENV.API_ROOT}/noiseCancellationVideo?${querystring.encode(
+        params
+      )}`,
+    uploadVideo: () => `${APP_ENV.API_ROOT}/noiseCancellationVideo`,
+  },
   image: {
     uploadImage: () => `${APP_ENV.API_ROOT}/image/upload`,
     getImages: (params = {}) =>
@@ -42,15 +48,8 @@ export default {
     updateImageGroups: (id) => `${APP_ENV.API_ROOT}/image/${id}/groups`,
     updateImageById: (id) => `${APP_ENV.API_ROOT}/image/${id}`,
     updateImageStatus: (id) => `${APP_ENV.API_ROOT}/image/${id}/status`,
-    getColors: (id, params) => `${APP_ENV.API_ROOT}/image/${id}/colors?${querystring.encode(params)}`,
-  },
-
-  noiseCancellationVideos: {
-    getVideos: (params = {}) =>
-      `${APP_ENV.API_ROOT}/noiseCancellationVideo?${querystring.encode(
-        params
-      )}`,
-    uploadVideo: () => `${APP_ENV.API_ROOT}/noiseCancellationVideo`,
+    getColors: (id, params) =>
+      `${APP_ENV.API_ROOT}/image/${id}/colors?${querystring.encode(params)}`,
   },
   article: {
     getById: (id) => `${APP_ENV.API_ROOT}/article/${id}`,
@@ -193,6 +192,7 @@ export default {
     subscribeToApiDocs: () => `${APP_ENV.API_ROOT}/user/subscribe_api_docs`,
     resetPassword: () => `${APP_ENV.API_ROOT}/user/resetPassword`,
     getUserDetails: () => `${APP_ENV.API_ROOT}/user/getUserDetails`,
+    getIsSuperUser: () => `${APP_ENV.API_ROOT}/user/isSuperUser`,
     updatePassword: (userId) => `${APP_ENV.API_ROOT}/user/${userId}/password`,
     updateShowUserGuiding: () => `${APP_ENV.API_ROOT}/user/showUserGuiding`,
   },
@@ -259,4 +259,3 @@ export default {
       )}`,
   },
 };
-
