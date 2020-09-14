@@ -67,7 +67,7 @@ class ImageCard extends React.Component {
         >
           <div>
             <div className="image-container">
-              <Image src={image.url} />
+              <Image src={image.thumbnailUrl || image.url} />
             </div>
           </div>
           <Grid style={{ marginTop: 0, marginBottom: 0 }}>
