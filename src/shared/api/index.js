@@ -44,12 +44,17 @@ export default {
     uploadImage: () => `${APP_ENV.API_ROOT}/image/upload`,
     getImages: (params = {}) =>
       `${APP_ENV.API_ROOT}/image?${querystring.encode(params)}`,
+    getImagesTranslations: (params = {}) =>
+      `${APP_ENV.API_ROOT}/image/translations?${querystring.encode(params)}`,
     getById: (id) => `${APP_ENV.API_ROOT}/image/${id}`,
     updateImageGroups: (id) => `${APP_ENV.API_ROOT}/image/${id}/groups`,
     updateImageById: (id) => `${APP_ENV.API_ROOT}/image/${id}`,
     updateImageStatus: (id) => `${APP_ENV.API_ROOT}/image/${id}/status`,
+    translateImage: (id) => `${APP_ENV.API_ROOT}/image/${id}/translate`,
     getColors: (id, params) =>
       `${APP_ENV.API_ROOT}/image/${id}/colors?${querystring.encode(params)}`,
+    getText: (id, params) =>
+      `${APP_ENV.API_ROOT}/image/${id}/text?${querystring.encode(params)}`,
   },
   article: {
     getById: (id) => `${APP_ENV.API_ROOT}/article/${id}`,

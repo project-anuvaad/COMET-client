@@ -26,7 +26,7 @@ export default {
     organziationReview: () => `/organization/videos/review`,
     organziationTranslations: (params) => `/organization/videos/translations${params ? `?${querystring.encode(params)}` : ''}`,
 
-    organizationImageAnnotation: () => '/organization/images/annotate',
+    organizationImageAnnotation: () => '/organization/images/annotations',
     organizationImageTranslation: () => '/organization/images/translations',
     
     // organizationTasks: () => '/organization/tasks',
@@ -42,4 +42,5 @@ export default {
     invitationsRoute: (organizationId = ':organizationId') => `/invitations/${organizationId}`,
 
     annotateImage: (imageId) => `/annotate${imageId ? `?image=${imageId}` : ''}`,
+    translateImage: (imageId) => `/organization/images/translations/${imageId}`,
 }

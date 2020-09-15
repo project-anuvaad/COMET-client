@@ -1,11 +1,12 @@
 import React from "react";
 import moment from "moment";
-import { getUserNamePreview } from "../../utils/helpers";
+import { getUserNamePreview, displayLanguage } from "../../utils/helpers";
 import ShowMore from "../ShowMore";
 import AnimatedButton from "../AnimatedButton";
 import RoleRenderer from "../../containers/RoleRenderer";
-import { Grid, Icon, Image, Card, Dropdown } from "semantic-ui-react";
+import { Grid, Icon, Image, Card, Dropdown, Button } from "semantic-ui-react";
 import "./style.scss";
+import routes from "../../routes";
 
 class ImageCard extends React.Component {
   state = {
@@ -47,7 +48,14 @@ class ImageCard extends React.Component {
   };
 
   render() {
-    const { image, rounded, selected } = this.props;
+    const {
+      image,
+      rounded,
+      selected,
+      editable,
+      buttonTitle,
+      translations,
+    } = this.props;
     return (
       <div
         className={`image-card ${rounded ? "rounded" : ""} ${
@@ -67,7 +75,10 @@ class ImageCard extends React.Component {
         >
           <div>
             <div className="image-container">
-              <Image src={image.url} />
+              <Image
+                style={{ width: "100%", maxHeight: 250 }}
+                src={image.thumbnailUrl || image.url}
+              />
             </div>
           </div>
           <Grid style={{ marginTop: 0, marginBottom: 0 }}>
@@ -77,7 +88,9 @@ class ImageCard extends React.Component {
                   <ShowMore length={55} text={image.title} />
                 </h3>
               </Grid.Column>
-              <Grid.Column width={2}>{this.renderOptions()}</Grid.Column>
+              {editable && (
+                <Grid.Column width={2}>{this.renderOptions()}</Grid.Column>
+              )}
             </Grid.Row>
           </Grid>
           {image.created_at && (
@@ -90,7 +103,35 @@ class ImageCard extends React.Component {
               </small>
             </Card.Content>
           )}
-
+          {translations && translations.length > 0 && (
+              <div
+                style={{
+                  marginLeft: 15,
+                  marginTop: 0,
+                  color: "#999999",
+                  fontSize: 10,
+                }}
+              >
+                <p>Edit translated versions:</p>
+                <p style={{ wordBreak: "break-word" }}>
+                  {translations.map((translation, index) => (
+                    <a
+                      key={`translated-image-adadad-${translation._id}`}
+                      href={routes.translateImage(translation._id)}
+                      style={{ color: "#999999" }}
+                    >
+                      <Button
+                        size="mini"
+                        circular
+                        style={{ marginRight: 10, marginBottom: 10 }}
+                      >
+                        {displayLanguage(translation.langCode)}
+                      </Button>
+                    </a>
+                  ))}
+                </p>
+              </div>
+          )}
           <Grid style={{ margin: 0 }}>
             <Grid.Row style={{ alignItems: "center" }}>
               <Grid.Column width={this.props.showSkip ? 8 : 10}>
@@ -107,7 +148,7 @@ class ImageCard extends React.Component {
                   animation="moema"
                   animating={this.props.animateButton}
                 >
-                  Annotate
+                  {buttonTitle || ""}
                   <Icon name="chevron right" style={{ marginLeft: 10 }} />
                 </AnimatedButton>
               </Grid.Column>
