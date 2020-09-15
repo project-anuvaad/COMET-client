@@ -51,6 +51,8 @@ export default {
     updateImageById: (id) => `${APP_ENV.API_ROOT}/image/${id}`,
     updateImageStatus: (id) => `${APP_ENV.API_ROOT}/image/${id}/status`,
     translateImage: (id) => `${APP_ENV.API_ROOT}/image/${id}/translate`,
+    getPixelColor: (id, params) =>
+      `${APP_ENV.API_ROOT}/image/${id}/pixelColor?${querystring.encode(params)}`,
     getColors: (id, params) =>
       `${APP_ENV.API_ROOT}/image/${id}/colors?${querystring.encode(params)}`,
     getText: (id, params) =>

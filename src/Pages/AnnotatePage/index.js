@@ -21,6 +21,18 @@ class AnnotatePage extends React.Component {
     this.props.fetchImageById(image);
   };
 
+   getPixelColor = (params) =>
+    new Promise((resolve, reject) => {
+      requestAgent
+        .get(api.image.getPixelColor(this.props.image._id, params))
+        .then((res) => {
+          const { color } = res.body;
+          resolve({ color });
+        })
+        .catch(reject);
+    });
+
+
   getColors = (params) =>
     new Promise((resolve, reject) => {
       requestAgent
@@ -93,11 +105,11 @@ class AnnotatePage extends React.Component {
           displayHeight={image.displayHeight}
           onChange={this.onChange}
           getColors={this.getColors}
+          getPixelColor={this.getPixelColor}
           getText={this.getText}
         />
       </div>
     );
-    return;
   }
 }
 

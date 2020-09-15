@@ -25,6 +25,10 @@ import { rgbToHex } from "./utils/helpers";
 import "semantic-ui-css/semantic.min.css";
 import "./style.scss";
 
+function renderPopup(trigger, content) {
+  return <Popup trigger={trigger} content={content} />;
+}
+
 let canvas,
   currentObj = {},
   currentGroup = {};
@@ -32,9 +36,12 @@ let canvas,
 class Annotate extends React.Component {
   state = {
     canvas: null,
+    eyeDropperMode: "",
+    eyeDropperLoading: false,
     getTextLoading: false,
     groups: [],
     selectedGroupId: null,
+    selectedGroupIndex: 0,
     text: "",
     textChanged: false,
     fontSize: 12,
@@ -137,6 +144,7 @@ class Annotate extends React.Component {
       this.setState({
         groups: addedGroups,
         selectedGroupId: addedGroups[0].uniqueId,
+        selectedGroupIndex: 0,
       });
     } else {
       this.setState({ groups: [] });
@@ -167,6 +175,7 @@ class Annotate extends React.Component {
     let startPoints = {};
     canvas
       .on("mouse:down", function (o) {
+        if (self.state.eyeDropperMode) return false;
         if (!self.state.objectNotSelected) return false;
 
         self.setState({ mouseDown: true });
@@ -243,7 +252,11 @@ class Annotate extends React.Component {
         }
       })
       .on("mouse:move", function (o) {
-        if (!self.state.mouseDown || !self.state.objectNotSelected)
+        if (
+          !self.state.mouseDown ||
+          !self.state.objectNotSelected ||
+          self.state.eyeDropperMode
+        )
           return false;
         if (self.state.mouseDown && !canvas.getActiveObject()) {
           self.setState({ mouseMove: true });
@@ -302,6 +315,15 @@ class Annotate extends React.Component {
       })
       .on("mouse:up", function (o) {
         self.setState({ mouseDown: false });
+        console.log(o);
+        if (self.state.eyeDropperMode) {
+          const { x, y } = canvas.getPointer(o.e);
+          const { eyeDropperMode, selectedGroupIndex } = self.state;
+          canvas.setActiveObject(canvas.item(selectedGroupIndex));
+          return self.setState({ eyeDropperLoading: true }, () => {
+            self.extractEyeDropperPixelValue({ x, y });
+          });
+        }
         if (Object.keys(currentObj).length) {
           if (
             (currentObj["obj"].width === 0 || currentObj["obj"].height === 0) &&
@@ -331,10 +353,36 @@ class Annotate extends React.Component {
               actionStatus: ACTION_BUTTONS.selection,
               mouseMove: false,
             });
-            self.cropImageAndExractColors();
+            // self.cropImageAndExractColors();
             self.cropImageAndExtractText();
           }
         }
+      });
+  };
+
+  extractEyeDropperPixelValue = ({ x, y }) => {
+    const { eyeDropperMode, selectedGroupIndex } = this.state;
+    this.props
+      .getPixelColor({ left: x, top: y })
+      .then(({ color }) => {
+        console.log("color", color);
+        color = rgbToHex(color);
+
+        if (eyeDropperMode === "background") {
+          canvas.item(selectedGroupIndex).item(0).set({ fill: color });
+          this.setState({ selectedBackgroundColor: color });
+        } else {
+          canvas.item(selectedGroupIndex).item(1).set({ fill: color });
+          this.setState({ selectedTextColor: color });
+        }
+        const groups = canvas.toObject().objects
+        this.setState({ eyeDropperMode: "", eyeDropperLoading: false, groups });
+        this.props.onChange({ groups });
+        canvas.renderAll();
+      })
+      .catch((err) => {
+        this.setState({ eyeDropperMode: "", eyeDropperLoading: false });
+        console.log(err);
       });
   };
 
@@ -347,7 +395,7 @@ class Annotate extends React.Component {
       const height = canvas.getActiveObject().height;
       const angle = canvas.getActiveObject().angle;
       const groupId = canvas.getActiveObject().uniqueId;
-      this.setState({ getTextLoading: true })
+      this.setState({ getTextLoading: true });
       this.props
         .getText({ left, top, width, height, angle })
         .then(({ text }) => {
@@ -355,15 +403,14 @@ class Annotate extends React.Component {
           const groupIndex = canvas
             .toObject()
             .objects.findIndex((group) => group.uniqueId === groupId);
-          console.log("got text", text);
-          canvas.item(groupIndex).item(1).set({ text});
+          canvas.item(groupIndex).item(1).set({ text });
           canvas.renderAll();
           const groups = canvas.toObject().objects;
-          this.props.onChange({ groups })
+          this.props.onChange({ groups });
           this.setState({ getTextLoading: false, text, groups });
         })
         .catch((err) => {
-          this.setState({ getTextLoading: false })
+          this.setState({ getTextLoading: false });
           console.log(err);
         });
     }
@@ -408,44 +455,6 @@ class Annotate extends React.Component {
         .catch((err) => {
           console.log(err);
         });
-      // fetch(
-      //   `http://localhost:5000/getColors?groupId=${groupId}&url=${url}&left=${left}&top=${top}&width=${width}&height=${height}&angle=${angle}`
-      // )
-      //   .then((res) => res.json())
-      //   .then(
-      //     (result) => {
-      //       const { groupId, colors } = result;
-      //       const hexColors = [];
-      //       colors.forEach((rgb) => {
-      //         hexColors.push(rgbToHex(rgb));
-      //       });
-      //       let groupsColors;
-      //       groupsColors = JSON.parse(localStorage.getItem("colors")) || [];
-      //       const groupColors = groupsColors.find(
-      //         (gc) => gc.groupId === groupId
-      //       );
-      //       if (groupColors) {
-      //         groupColors.hexColors = hexColors;
-      //       }
-      //       groupsColors.push({ groupId, hexColors });
-      //       localStorage.setItem("colors", JSON.stringify(groupsColors));
-      //       const groupIndex = canvas
-      //         .toObject()
-      //         .objects.findIndex((group) => group.uniqueId === groupId);
-      //       canvas.item(groupIndex).item(0).set({ fill: hexColors[0] });
-      //       canvas.item(groupIndex).item(1).set({ fill: hexColors[1] });
-      //       this.setState({ selectedTextColor: hexColors[1] });
-      //       this.setState({ selectedBackgroundColor: hexColors[0] });
-      //       canvas.renderAll();
-      //       localStorage.setItem(
-      //         "initialGroups",
-      //         JSON.stringify(canvas.toObject().objects)
-      //       );
-      //     },
-      //     (error) => {
-      //       console.log(error);
-      //     }
-      //   );
     }
   };
 
@@ -601,6 +610,7 @@ class Annotate extends React.Component {
     this.setState({
       text: ao.item(1).text,
       selectedGroupId: ao.get("uniqueId"),
+      selectedGroupIndex: i,
       fontSize: ao.item(1).get("fontSize"),
       selectedTextColor: ao.item(1).fill,
       selectedBackgroundColor: ao.item(0).fill,
@@ -642,6 +652,7 @@ class Annotate extends React.Component {
   onObjectSelected = () => {
     const self = this;
     canvas.on("object:selected", function () {
+      if (self.state.eyeDropperMode) return false;
       const ao = canvas.getActiveObject();
       if (ao) {
         self.setState({ objectNotSelected: false });
@@ -675,6 +686,7 @@ class Annotate extends React.Component {
   onSelectionCleared = () => {
     const self = this;
     canvas.on("selection:cleared", function (options) {
+      if (self.state.eyeDropperMode) return;
       self.setState({ selectedGroupId: null, objectNotSelected: true });
     });
   };
@@ -682,7 +694,7 @@ class Annotate extends React.Component {
   onObjectModified = () => {
     const self = this;
     canvas.on("object:modified", function () {
-      self.cropImageAndExractColors();
+      // self.cropImageAndExractColors();
       const groups = canvas.toObject().objects;
       self.props.onChange({ groups });
     });
@@ -704,6 +716,25 @@ class Annotate extends React.Component {
       });
     }
     canvas.renderAll();
+  };
+
+  duplicateObject = () => {
+    if (canvas.getActiveGroup()) {
+      for (var i in canvas.getActiveGroup().objects) {
+        var object = fabric.util.object.clone(
+          canvas.getActiveGroup().objects[i]
+        );
+        object.set("top", object.top + 5);
+        object.set("left", object.left + 5);
+        copiedObjects[i] = object;
+      }
+    } else if (canvas.getActiveObject()) {
+      var object = fabric.util.object.clone(canvas.getActiveObject());
+      //object.set("top", object.top + 5);
+      //object.set("left", object.left + 5);
+      copiedObject = object;
+      copiedObjects = new Array();
+    }
   };
 
   _renderColorPickerModal() {
@@ -756,12 +787,7 @@ class Annotate extends React.Component {
   }
 
   render() {
-    let selectedGroupIndex;
-    if (canvas) {
-      selectedGroupIndex = canvas
-        .getObjects()
-        .indexOf(canvas.getActiveObject());
-    }
+    const { selectedGroupIndex } = this.state;
 
     return (
       <Grid>
@@ -942,17 +968,59 @@ class Annotate extends React.Component {
                                     Text Color:
                                   </Grid.Column>
                                   <Grid.Column width={10}>
-                                    <Button
+                                    <div
                                       style={{
-                                        marginLeft: "1rem",
-                                        backgroundColor: this.state
-                                          .selectedTextColor,
-                                        border: "1px solid black",
+                                        display: "flex",
+                                        alignItems: "center",
                                       }}
-                                      onClick={() => {
-                                        this.onColorPickerOpen("text");
-                                      }}
-                                    ></Button>
+                                    >
+                                      <Button
+                                        style={{
+                                          marginLeft: "1rem",
+                                          backgroundColor: this.state
+                                            .selectedTextColor,
+                                          border: "1px solid black",
+                                        }}
+                                        onClick={() => {
+                                          this.onColorPickerOpen("text");
+                                        }}
+                                      ></Button>
+                                      {renderPopup(
+                                        <Button
+                                          icon="eye dropper"
+                                          loading={
+                                            this.state.eyeDropperMode ===
+                                              "text" &&
+                                            this.state.eyeDropperLoading
+                                          }
+                                          disabled={
+                                            this.state.eyeDropperMode ===
+                                              "text" &&
+                                            this.state.eyeDropperLoading
+                                          }
+                                          onClick={() => {
+                                            if (
+                                              this.state.eyeDropperMode ===
+                                              "text"
+                                            ) {
+                                              return this.setState({
+                                                eyeDropperMode: "",
+                                              });
+                                            }
+                                            this.setState({
+                                              eyeDropperMode: "text",
+                                            });
+                                          }}
+                                          primary={
+                                            this.state.eyeDropperMode === "text"
+                                          }
+                                          basic
+                                          size="tiny"
+                                        />,
+
+                                        "Pick Color from picture"
+                                      )}
+                                    </div>
                                   </Grid.Column>
                                 </Grid.Row>
                                 <Grid.Row>
@@ -960,18 +1028,61 @@ class Annotate extends React.Component {
                                     Background Color:
                                   </Grid.Column>
                                   <Grid.Column width={10}>
-                                    <Button
+                                    <div
                                       style={{
-                                        marginLeft: "1rem",
-                                        backgroundColor: this.state
-                                          .selectedBackgroundColor,
-                                        border: "1px solid black",
+                                        display: "flex",
+                                        alignItems: "center",
                                       }}
-                                      onClick={() => {
-                                        this.onColorPickerOpen("background");
-                                      }}
-                                    ></Button>
-                                    <div>
+                                    >
+                                      <Button
+                                        style={{
+                                          marginLeft: "1rem",
+                                          backgroundColor: this.state
+                                            .selectedBackgroundColor,
+                                          border: "1px solid black",
+                                        }}
+                                        onClick={() => {
+                                          this.onColorPickerOpen("background");
+                                        }}
+                                      ></Button>
+                                      {renderPopup(
+                                        <Button
+                                          icon="eye dropper"
+                                          loading={
+                                            this.state.eyeDropperMode ===
+                                              "background" &&
+                                            this.state.eyeDropperLoading
+                                          }
+                                          disabled={
+                                            this.state.eyeDropperMode ===
+                                              "background" &&
+                                            this.state.eyeDropperLoading
+                                          }
+                                          onClick={() => {
+                                            if (
+                                              this.state.eyeDropperMode ===
+                                              "background"
+                                            ) {
+                                              return this.setState({
+                                                eyeDropperMode: "",
+                                              });
+                                            }
+                                            this.setState({
+                                              eyeDropperMode: "background",
+                                            });
+                                          }}
+                                          primary={
+                                            this.state.eyeDropperMode ===
+                                            "background"
+                                          }
+                                          basic
+                                          size="tiny"
+                                        />,
+
+                                        "Pick color from picture"
+                                      )}
+                                    </div>
+                                    {/* <div>
                                       <Popup
                                         position="top center"
                                         trigger={
@@ -1008,7 +1119,7 @@ class Annotate extends React.Component {
                                         }
                                         content={"Swap Colors"}
                                       />
-                                    </div>
+                                    </div> */}
                                   </Grid.Column>
                                 </Grid.Row>
                               </Grid>
