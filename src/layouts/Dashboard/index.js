@@ -58,7 +58,6 @@ function getNavLinks(user, organization) {
         {
             title: 'Images',
             route: routes.organizationImages(),
-            roles: [],
             icon: 'image',
         },
         {
