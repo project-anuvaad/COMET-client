@@ -32,9 +32,19 @@ class AnnotatePage extends React.Component {
         .catch(reject);
     });
 
+  getText = (params) =>
+    new Promise((resolve, reject) => {
+      console.log('getting text')
+      requestAgent
+        .get(api.image.getText(this.props.image._id, params))
+        .then((res) => {
+          const { text } = res.body;
+          resolve({ text });
+        })
+        .catch(reject);
+    });
   onChange = (changes) => {
     const { groups } = changes;
-    console.log("groups", groups);
     this.props.updateImageGroups(this.props.image._id, groups);
   };
 
@@ -83,6 +93,7 @@ class AnnotatePage extends React.Component {
           displayHeight={image.displayHeight}
           onChange={this.onChange}
           getColors={this.getColors}
+          getText={this.getText}
         />
       </div>
     );

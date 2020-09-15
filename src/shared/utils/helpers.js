@@ -170,6 +170,18 @@ export const redirectToSwitchOrganization = (token, organization, redirectTo = '
   window.location.href = targetLocation;
 }
 
+export const displayLanguage = function(langCode) {
+  let displayedLangName = '';
+  if (langCode) {
+    if (isoLangs[langCode] && isoLangs[langCode].name) {
+      displayedLangName += isoLangs[langCode].name;
+    } else if (supportedLangs.find(l => l.code === langCode)) {
+      displayedLangName += supportedLangs.find(l => l.code === langCode).name
+    }
+  }
+
+  return displayedLangName
+}
 export const displayArticleLanguage = function(article) {
   let displayedLangName = '';
   if (article.langCode) {

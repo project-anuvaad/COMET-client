@@ -32,6 +32,7 @@ let canvas,
 class Annotate extends React.Component {
   state = {
     canvas: null,
+    getTextLoading: false,
     groups: [],
     selectedGroupId: null,
     text: "",
@@ -131,9 +132,16 @@ class Annotate extends React.Component {
       addedGroups.push(addedGroup);
       canvas.add(addedGroup);
     });
-    canvas.setActiveObject(addedGroups[0])
+    if (addedGroups && addedGroups[0]) {
+      canvas.setActiveObject(addedGroups[0]);
+      this.setState({
+        groups: addedGroups,
+        selectedGroupId: addedGroups[0].uniqueId,
+      });
+    } else {
+      this.setState({ groups: [] });
+    }
     canvas.renderAll();
-    this.setState({ groups: addedGroups, selectedGroupId: addedGroups[0].uniqueId });
     // const initialGroups = groups;
     // if (initialGroups) {
     //   fabric.util.enlivenObjects(initialGroups, function (groups) {
@@ -294,7 +302,6 @@ class Annotate extends React.Component {
       })
       .on("mouse:up", function (o) {
         self.setState({ mouseDown: false });
-        console.log("mouseup");
         if (Object.keys(currentObj).length) {
           if (
             (currentObj["obj"].width === 0 || currentObj["obj"].height === 0) &&
@@ -325,9 +332,41 @@ class Annotate extends React.Component {
               mouseMove: false,
             });
             self.cropImageAndExractColors();
+            self.cropImageAndExtractText();
           }
         }
       });
+  };
+
+  cropImageAndExtractText = () => {
+    const ao = canvas.getActiveObject();
+    if (ao) {
+      const left = canvas.getActiveObject().left;
+      const top = canvas.getActiveObject().top;
+      const width = canvas.getActiveObject().width;
+      const height = canvas.getActiveObject().height;
+      const angle = canvas.getActiveObject().angle;
+      const groupId = canvas.getActiveObject().uniqueId;
+      this.setState({ getTextLoading: true })
+      this.props
+        .getText({ left, top, width, height, angle })
+        .then(({ text }) => {
+          if (!text) return;
+          const groupIndex = canvas
+            .toObject()
+            .objects.findIndex((group) => group.uniqueId === groupId);
+          console.log("got text", text);
+          canvas.item(groupIndex).item(1).set({ text});
+          canvas.renderAll();
+          const groups = canvas.toObject().objects;
+          this.props.onChange({ groups })
+          this.setState({ getTextLoading: false, text, groups });
+        })
+        .catch((err) => {
+          this.setState({ getTextLoading: false })
+          console.log(err);
+        });
+    }
   };
 
   cropImageAndExractColors = () => {
@@ -366,9 +405,9 @@ class Annotate extends React.Component {
           this.setState({ selectedBackgroundColor: hexColors[0] });
           canvas.renderAll();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
-        })
+        });
       // fetch(
       //   `http://localhost:5000/getColors?groupId=${groupId}&url=${url}&left=${left}&top=${top}&width=${width}&height=${height}&angle=${angle}`
       // )
@@ -557,7 +596,6 @@ class Annotate extends React.Component {
   };
 
   onBoxSelected = (i) => {
-    console.log("on box selected");
     canvas.setActiveObject(canvas.item(i));
     const ao = canvas.getActiveObject();
     this.setState({
@@ -604,7 +642,6 @@ class Annotate extends React.Component {
   onObjectSelected = () => {
     const self = this;
     canvas.on("object:selected", function () {
-      console.log("on object selected");
       const ao = canvas.getActiveObject();
       if (ao) {
         self.setState({ objectNotSelected: false });
@@ -793,18 +830,29 @@ class Annotate extends React.Component {
                             <h4 style={{ padding: "1rem" }}>
                               Box {selectedGroupIndex + 1}
                             </h4>
-                            <Button
-                              primary
-                              basic
-                              disabled={!this.state.textChanged}
-                              onClick={this.onTextBlur}
-                            >
-                              Update
-                            </Button>
+                            <div>
+                              <Button
+                                loading={this.state.getTextLoading}
+                                disabled={this.state.getTextLoading}
+                                color="blue"
+                                icon="refresh"
+                                onClick={this.cropImageAndExtractText}
+                                basic
+                              />
+                              <Button
+                                primary
+                                basic
+                                disabled={!this.state.textChanged}
+                                onClick={this.onTextBlur}
+                              >
+                                Update
+                              </Button>
+                            </div>
                           </Card.Header>
                           <div>
-                            <div style={{ height: "100%" }}>
+                            <div style={{ height: 150 }}>
                               <TextArea
+                                disabled={this.state.getTextLoading}
                                 style={{
                                   height: "100%",
                                   width: "100%",

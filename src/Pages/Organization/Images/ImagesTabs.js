@@ -7,7 +7,7 @@ import NotificationService from "../../../shared/utils/NotificationService";
 
 // import * as videoActions from "./modules/actions";
 import AnimatedButton from "../../../shared/components/AnimatedButton";
-const items = [{ title: "Annotate" }, { title: "Translations" }];
+const items = [{ title: "Annotations" }, { title: "Translations" }];
 
 class ImagesTabs extends React.Component {
   state = {
@@ -23,11 +23,11 @@ class ImagesTabs extends React.Component {
 
     this.setState({ tabItems });
     if (pathname.indexOf(routes.organizationImageAnnotation()) !== -1) {
-      this.setState({ currentTitle: "Annotate" });
+      this.setState({ currentTitle: "Annotations" });
     } else if (pathname.indexOf(routes.organizationImageTranslation()) !== -1) {
       this.setState({ currentTitle: "Translations" });
     } else {
-      this.setState({ currentTitle: "Annotate" });
+      this.setState({ currentTitle: "Annotations" });
     }
   };
 
@@ -46,7 +46,7 @@ class ImagesTabs extends React.Component {
     const currentTitle = this.state.tabItems[val].title;
     this.setState({ currentTitle });
     switch (currentTitle.toLowerCase()) {
-      case "annotate":
+      case "annotations":
         return this.props.history.push(routes.organizationImageAnnotation());
       case "translations":
         this.props.history.push(routes.organizationImageTranslation());

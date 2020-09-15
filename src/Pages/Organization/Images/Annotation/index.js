@@ -121,10 +121,12 @@ class Annotation extends React.Component {
             </Grid.Row>
             <Grid.Row>
               {this.props.images.map((image) => (
-                <Grid.Column width={4}>
+                <Grid.Column width={4} style={{ marginBottom: 10 }}>
                   <ImageCard
                     image={image}
                     rounded
+                    editable
+                    buttonTitle="Annotate"
                     onEditClick={() => {
                       this.onEditClick(image);
                     }}

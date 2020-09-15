@@ -144,6 +144,32 @@ export const fetchImages = () => (dispatch, getState) => {
     });
 };
 
+export const fetchImagesTranslations = () => (dispatch, getState) => {
+  const { organization } = getState().organization;
+  const { currentPageNumber, searchFilter, status } = getState().image;
+  dispatch(setImagesLoading(true));
+  requestAgent
+    .get(
+      Api.image.getImagesTranslations({
+        organization: organization._id,
+        page: currentPageNumber,
+        search: searchFilter,
+        status,
+      })
+    )
+    .then((res) => {
+      console.log(res.body);
+      const { images, pagesCount } = res.body;
+      dispatch(setImages(images));
+      dispatch(setTotalPagesCount(pagesCount || 1));
+      dispatch(setImagesLoading(false));
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Some thing went wrong");
+      dispatch(setImagesLoading(false));
+    });
+};
 export const updateImage = (id, chnages) => (dispatch, getState) => {
   requestAgent
     .patch(Api.image.updateImageById(id), chnages)
@@ -169,6 +195,23 @@ export const updateImageStatus = (id, status) => (dispatch, getState) => {
     .put(Api.image.updateImageStatus(id), { status })
     .then((res) => {
       const { image } = res.body;
+      NotificationService.success("Recorded successfully");
+      setTimeout(() => {
+        window.location.href = routes.organizationImageAnnotation();
+      }, 1000);
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Some thing went wrong");
+    });
+};
+
+export const translateImage = (id, langCode) => (dispatch, getState) => {
+  requestAgent
+    .post(Api.image.translateImage(id), { langCode })
+    .then((res) => {
+      const { image } = res.body;
+      console.log(image);
       NotificationService.success("Recorded successfully");
       setTimeout(() => {
         window.location.href = routes.organizationImageAnnotation();

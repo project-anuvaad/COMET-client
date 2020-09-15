@@ -51,9 +51,9 @@ function getNavLinks(user, organization) {
 
     const navLinks = [
         {
-            title: 'Home',
+            title: 'Videos',
             route: routes.organizationVideos(),
-            icon: 'home',
+            icon: 'video',
         },
         {
             title: 'Images',
