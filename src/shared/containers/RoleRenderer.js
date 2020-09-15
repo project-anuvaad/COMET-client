@@ -7,6 +7,7 @@ class RoleRenderer extends React.Component {
     canView = () => {
         if (!this.props.user || !this.props.user.organizationRoles) return false;
         const userRole = getUserOrganziationRole(this.props.user, this.props.organization);
+        if (!this.props.roles || this.props.roles.length === 0) return true;
         if (userRole && userRole.organizationOwner) {
             return true;
         } else if (userRole) {
