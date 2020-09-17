@@ -830,13 +830,14 @@ class Annotate extends React.Component {
           <Grid.Column width={2}>
             <div className="tools-container">
               <div className="shapes-container">
-                <Button
+                {/* <Button
                   fluid
                   primary={this.state.actionStatus === ACTION_BUTTONS.selection}
                   onClick={this.onSelectionClick}
                 >
                   Selection
                 </Button>
+                */}
                 <Button
                   className="rect"
                   fluid
