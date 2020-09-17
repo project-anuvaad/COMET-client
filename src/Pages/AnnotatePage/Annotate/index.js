@@ -3,7 +3,6 @@ import {
   Grid,
   Button,
   Input,
-  Form,
   Icon,
   TextArea,
   Popup,
@@ -57,7 +56,7 @@ class Annotate extends React.Component {
     presetColors: [],
     mouseDown: false,
     mouseMove: false,
-    objectNotSelected: true,
+    objectNotSelected: false,
     color: "#000000",
   };
 
@@ -132,7 +131,6 @@ class Annotate extends React.Component {
         return function () {
           return fabric.util.object.extend(toObject.call(this), {
             uniqueId: this.uniqueId,
-            _id: this._id,
           });
         };
       })(addedGroup.toObject);
@@ -170,6 +168,7 @@ class Annotate extends React.Component {
     //   });
     // }
   };
+
   getCoordinates = () => {
     const self = this;
     let startPoints = {};
@@ -205,7 +204,6 @@ class Annotate extends React.Component {
             return function () {
               return fabric.util.object.extend(toObject.call(this), {
                 uniqueId: this.uniqueId,
-                _id: this._id,
               });
             };
           })(currentGroup.toObject);
@@ -241,7 +239,6 @@ class Annotate extends React.Component {
             return function () {
               return fabric.util.object.extend(toObject.call(this), {
                 uniqueId: this.uniqueId,
-                _id: this._id,
               });
             };
           })(currentGroup.toObject);
@@ -249,6 +246,9 @@ class Annotate extends React.Component {
           canvas.isDrawingMode = false;
           canvas.add(currentGroup);
           canvas.renderAll();
+          const groups = canvas.toObject().objects;
+          self.setState({ groups });
+          self.props.onChange({ groups });
         }
       })
       .on("mouse:move", function (o) {
@@ -315,10 +315,10 @@ class Annotate extends React.Component {
       })
       .on("mouse:up", function (o) {
         self.setState({ mouseDown: false });
-        console.log(o);
+        console.log(self.state, Object.keys(currentObj).length);
         if (self.state.eyeDropperMode) {
           const { x, y } = canvas.getPointer(o.e);
-          const { eyeDropperMode, selectedGroupIndex } = self.state;
+          const { selectedGroupIndex } = self.state;
           canvas.setActiveObject(canvas.item(selectedGroupIndex));
           return self.setState({ eyeDropperLoading: true }, () => {
             self.extractEyeDropperPixelValue({ x, y });
@@ -337,6 +337,8 @@ class Annotate extends React.Component {
               actionStatus: ACTION_BUTTONS.rectangle,
               groups,
             });
+            self.onSelectionStart();
+            console.log("on selection stat");
             return;
           } else {
             if (!self.state.mouseMove) {
@@ -360,25 +362,101 @@ class Annotate extends React.Component {
       });
   };
 
+  onObjectSelected = () => {
+    const self = this;
+    canvas.on("object:selected", function () {
+      if (self.state.eyeDropperMode) return false;
+      const ao = canvas.getActiveObject();
+      if (ao) {
+        // const groupColors = JSON.parse(localStorage.getItem("colors")).find(
+        //   (groupColors) => groupColors.groupId === ao.uniqueId
+        // );
+        // const presetColors = groupColors ? groupColors.hexColors : [];
+        const groupId = ao.get("uniqueId");
+        const groups = canvas.toObject().objects;
+        const groupIndex = groups.findIndex((g) => g.uniqueId === groupId);
+        self.setState({
+          // presetColors,
+          objectNotSelected: false,
+          text: ao.item(1).text,
+          selectedGroupId: ao.get("uniqueId"),
+          selectedGroupIndex: groupIndex,
+          fontSize: ao.item(1).get("fontSize"),
+          selectedTextColor: ao.item(1).fill,
+          selectedBackgroundColor: ao.item(0).fill,
+          fontWeightStatus: FONT_WEIGHT_BUTTONS[ao.item(1).get("fontWeight")]
+            ? FONT_WEIGHT_BUTTONS[ao.item(1).get("fontWeight")]
+            : FONT_WEIGHT_BUTTONS.normal,
+          fontStyleStatus: FONT_STYLE_BUTTONS[ao.item(1).get("fontStyle")]
+            ? FONT_STYLE_BUTTONS[ao.item(1).get("fontStyle")]
+            : FONT_STYLE_BUTTONS.normal,
+          textDecorationStatus: TEXT_DECORATION_BUTTONS[
+            ao.item(1).get("textDecoration")
+          ]
+            ? TEXT_DECORATION_BUTTONS[ao.item(1).get("textDecoration")]
+            : TEXT_DECORATION_BUTTONS.normal,
+        });
+      }
+    });
+  };
+
+  onSelectionCleared = () => {
+    const self = this;
+    canvas.on("selection:cleared", function (options) {
+      if (self.state.eyeDropperMode) return;
+      console.log("selection:cleared");
+      self.setState({ selectedGroupId: null, objectNotSelected: true });
+    });
+  };
+
+  onObjectModified = () => {
+    const self = this;
+
+    canvas.on("object:modified", function (options) {
+      canvas.renderAll();
+      const updatedGroups = canvas.toObject().objects;
+      self.setState({ groups: updatedGroups });
+      self.props.onChange({ groups: updatedGroups });
+    });
+    //    canvas.on("object:modified", function (options) {
+    //      const { target } = options;
+    //      console.log(target.toObject());
+    //      const width = target.getWidth();
+    //      const height = target.getHeight();
+    //      const left = target.getLeft();
+    //      const top = target.getTop();
+    //      const ao = canvas.getActiveObject();
+    //      if (ao) {
+    //        const groupId = ao.get("uniqueId");
+    //        const groups = canvas.toObject().objects;
+    //        const groupIndex = groups.findIndex((g) => g.uniqueId === groupId);
+    //        ao.set({ width, height, left, top });
+    //        ao.item(0).set({ width, height });
+    //        canvas.renderAll();
+    //        const updatedGroups = canvas.toObject().objects;
+    //        self.props.onChange({ groups: updatedGroups });
+    //      }
+    //    });
+  };
+
   extractEyeDropperPixelValue = ({ x, y }) => {
     const { eyeDropperMode, selectedGroupIndex } = this.state;
     this.props
       .getPixelColor({ left: x, top: y })
       .then(({ color }) => {
-        console.log("color", color);
         color = rgbToHex(color);
 
         if (eyeDropperMode === "background") {
           canvas.item(selectedGroupIndex).item(0).set({ fill: color });
-          this.setState({ selectedBackgroundColor: color });
+          this.setState({ color, selectedBackgroundColor: color });
         } else {
           canvas.item(selectedGroupIndex).item(1).set({ fill: color });
-          this.setState({ selectedTextColor: color });
+          this.setState({ color, selectedTextColor: color });
         }
-        const groups = canvas.toObject().objects
+        canvas.renderAll();
+        const groups = canvas.toObject().objects;
         this.setState({ eyeDropperMode: "", eyeDropperLoading: false, groups });
         this.props.onChange({ groups });
-        canvas.renderAll();
       })
       .catch((err) => {
         this.setState({ eyeDropperMode: "", eyeDropperLoading: false });
@@ -529,64 +607,61 @@ class Annotate extends React.Component {
   };
 
   onFontSizeChange = (value) => {
-    this.setState({
-      fontSize: parseInt(value),
-    });
     canvas
       .getActiveObject()
       .item(1)
       .set({ fontSize: parseInt(value) || 12 });
     canvas.renderAll();
+    const groups = canvas.toObject().objects;
+    this.setState({ groups, fontSize: parseInt(value), groups });
+    this.props.onChange({ groups });
   };
 
   toggleFontWeight = () => {
+    const stateUpdate = {};
     if (this.state.fontWeightStatus === "bold") {
-      this.setState({
-        fontWeightStatus: FONT_WEIGHT_BUTTONS.noraml,
-      });
+      stateUpdate.fontWeightStatus = FONT_WEIGHT_BUTTONS.normal;
       canvas.getActiveObject().item(1).set({ fontWeight: "normal" });
     } else {
-      this.setState({
-        fontWeightStatus: FONT_WEIGHT_BUTTONS.bold,
-      });
+      stateUpdate.fontWeightStatus = FONT_WEIGHT_BUTTONS.bold;
       canvas.getActiveObject().item(1).set({ fontWeight: "bold" });
     }
     canvas.renderAll();
     const groups = canvas.toObject().objects;
+    stateUpdate.groups = groups;
+    this.setState(stateUpdate);
     this.props.onChange({ groups });
   };
 
   toggleTextDecoration = () => {
+    const stateUpdate = {};
     if (this.state.textDecorationStatus === "underline") {
-      this.setState({
-        textDecorationStatus: TEXT_DECORATION_BUTTONS.normal,
-      });
+      stateUpdate.textDecorationStatus = TEXT_DECORATION_BUTTONS.normal;
       canvas.getActiveObject().item(1).set({ textDecoration: "normal" });
     } else {
-      this.setState({
-        textDecorationStatus: TEXT_DECORATION_BUTTONS.underline,
-      });
+      stateUpdate.textDecorationStatus = TEXT_DECORATION_BUTTONS.underline;
       canvas.getActiveObject().item(1).set({ textDecoration: "underline" });
     }
     canvas.renderAll();
     const groups = canvas.toObject().objects;
+    stateUpdate.groups = groups;
+    this.setState(stateUpdate);
     this.props.onChange({ groups });
   };
 
   toggleFontStyle = () => {
+    const stateUpdate = {};
     if (this.state.fontStyleStatus === "italic") {
-      this.setState({
-        fontStyleStatus: FONT_STYLE_BUTTONS.normal,
-      });
+      stateUpdate.fontStyleStatus = FONT_STYLE_BUTTONS.normal;
       canvas.getActiveObject().item(1).set({ fontStyle: "normal" });
     } else {
-      this.setState({
-        fontStyleStatus: FONT_STYLE_BUTTONS.italic,
-      });
+      stateUpdate.fontStyleStatus = FONT_STYLE_BUTTONS.italic;
       canvas.getActiveObject().item(1).set({ fontStyle: "italic" });
     }
     canvas.renderAll();
     const groups = canvas.toObject().objects;
+    stateUpdate.groups = groups;
+    this.setState(stateUpdate);
     this.props.onChange({ groups });
   };
 
@@ -622,13 +697,16 @@ class Annotate extends React.Component {
   };
 
   onSelectionClick = () => {
+    this.onSelectionStart();
+  };
+
+  onSelectionStart = () => {
     canvas.isDrawingMode = false;
     this.setState({
       actionStatus: ACTION_BUTTONS.selection,
     });
     this.makeSelectableEnable();
   };
-
   onSaveImage = () => {
     this.setState({ actionStatus: ACTION_BUTTONS.save });
     localStorage.setItem(
@@ -646,57 +724,6 @@ class Annotate extends React.Component {
   makeSelectableDisable = () => {
     canvas.getObjects().map(function (o) {
       return o.set("selectable", false);
-    });
-  };
-
-  onObjectSelected = () => {
-    const self = this;
-    canvas.on("object:selected", function () {
-      if (self.state.eyeDropperMode) return false;
-      const ao = canvas.getActiveObject();
-      if (ao) {
-        self.setState({ objectNotSelected: false });
-        // const groupColors = JSON.parse(localStorage.getItem("colors")).find(
-        //   (groupColors) => groupColors.groupId === ao.uniqueId
-        // );
-        // const presetColors = groupColors ? groupColors.hexColors : [];
-        self.setState({
-          // presetColors,
-          text: ao.item(1).text,
-          selectedGroupId: ao.get("uniqueId"),
-          fontSize: ao.item(1).get("fontSize"),
-          selectedTextColor: ao.item(1).fill,
-          selectedBackgroundColor: ao.item(0).fill,
-          fontWeightStatus: FONT_WEIGHT_BUTTONS[ao.item(1).get("fontWeight")]
-            ? FONT_WEIGHT_BUTTONS[ao.item(1).get("fontWeight")]
-            : FONT_WEIGHT_BUTTONS.normal,
-          fontStyleStatus: FONT_STYLE_BUTTONS[ao.item(1).get("fontStyle")]
-            ? FONT_STYLE_BUTTONS[ao.item(1).get("fontStyle")]
-            : FONT_STYLE_BUTTONS.normal,
-          textDecorationStatus: TEXT_DECORATION_BUTTONS[
-            ao.item(1).get("textDecoration")
-          ]
-            ? TEXT_DECORATION_BUTTONS[ao.item(1).get("textDecoration")]
-            : TEXT_DECORATION_BUTTONS.normal,
-        });
-      }
-    });
-  };
-
-  onSelectionCleared = () => {
-    const self = this;
-    canvas.on("selection:cleared", function (options) {
-      if (self.state.eyeDropperMode) return;
-      self.setState({ selectedGroupId: null, objectNotSelected: true });
-    });
-  };
-
-  onObjectModified = () => {
-    const self = this;
-    canvas.on("object:modified", function () {
-      // self.cropImageAndExractColors();
-      const groups = canvas.toObject().objects;
-      self.props.onChange({ groups });
     });
   };
 
@@ -718,22 +745,30 @@ class Annotate extends React.Component {
     canvas.renderAll();
   };
 
-  duplicateObject = () => {
-    if (canvas.getActiveGroup()) {
-      for (var i in canvas.getActiveGroup().objects) {
-        var object = fabric.util.object.clone(
-          canvas.getActiveGroup().objects[i]
-        );
-        object.set("top", object.top + 5);
-        object.set("left", object.left + 5);
-        copiedObjects[i] = object;
-      }
-    } else if (canvas.getActiveObject()) {
-      var object = fabric.util.object.clone(canvas.getActiveObject());
-      //object.set("top", object.top + 5);
-      //object.set("left", object.left + 5);
-      copiedObject = object;
-      copiedObjects = new Array();
+  onDuplicateObject = () => {
+    if (canvas.getActiveObject()) {
+      fabric.util.enlivenObjects(
+        [canvas.getActiveObject().toObject()],
+        function (objects) {
+          objects.forEach((o) => {
+            o.set("top", o.top + 15);
+            o.set("left", o.left + 15);
+            o.set("uniqueId", uuidv4());
+            o.toObject = (function (toObject) {
+              return function () {
+                return fabric.util.object.extend(toObject.call(this), {
+                  uniqueId: this.uniqueId,
+                });
+              };
+            })(o.toObject);
+            canvas.add(o);
+          });
+        }
+      );
+      canvas.renderAll();
+      const groups = canvas.toObject().objects;
+      this.props.onChange({ groups });
+      this.setState({ groups });
     }
   };
 
@@ -827,6 +862,11 @@ class Annotate extends React.Component {
                 >
                   Oval
                 </Button>
+                {this.state.selectedGroupId && (
+                  <Button fluid onClick={this.onDuplicateObject}>
+                    Duplicate
+                  </Button>
+                )}
               </div>
             </div>
           </Grid.Column>
@@ -1082,44 +1122,6 @@ class Annotate extends React.Component {
                                         "Pick color from picture"
                                       )}
                                     </div>
-                                    {/* <div>
-                                      <Popup
-                                        position="top center"
-                                        trigger={
-                                          <Button
-                                            icon="refresh"
-                                            role="Swap colors"
-                                            basic
-                                            style={{
-                                              position: "absolute",
-                                              top: "-2.5rem",
-                                              right: 0,
-                                            }}
-                                            onClick={() => {
-                                              // Swap colors of background and text
-                                              const {
-                                                selectedBackgroundColor,
-                                                selectedTextColor,
-                                              } = this.state;
-                                              this.changeSelectedGroupColor(
-                                                "text",
-                                                selectedBackgroundColor
-                                              );
-                                              this.changeSelectedGroupColor(
-                                                "background",
-                                                selectedTextColor
-                                              );
-                                              const groups = canvas.toObject()
-                                                .objects;
-                                              this.props.onChange({
-                                                groups,
-                                              });
-                                            }}
-                                          />
-                                        }
-                                        content={"Swap Colors"}
-                                      />
-                                    </div> */}
                                   </Grid.Column>
                                 </Grid.Row>
                               </Grid>
@@ -1131,7 +1133,7 @@ class Annotate extends React.Component {
                   </Grid>
                 </React.Fragment>
               ) : (
-                <React.Fragment></React.Fragment>
+                <React.Fragment>Nothing selected</React.Fragment>
               )}
             </div>
 
@@ -1145,19 +1147,21 @@ class Annotate extends React.Component {
                         : "#c6c6c6",
                   }}
                   className="box"
-                  key={group.uniqueId || group._id}
+                  key={group.uniqueId}
                   onClick={() => {
                     this.onBoxSelected(i);
                   }}
                 >
                   <div>Box {i + 1}</div>
                   {this.state.selectedGroupId === group.uniqueId && (
-                    <Button
-                      size="mini"
-                      color="red"
-                      icon="trash"
-                      onClick={this.onDeleteBoxClick}
-                    />
+                    <div>
+                      <Button
+                        size="mini"
+                        color="red"
+                        icon="trash"
+                        onClick={this.onDeleteBoxClick}
+                      />
+                    </div>
                   )}
                 </div>
               ))}
