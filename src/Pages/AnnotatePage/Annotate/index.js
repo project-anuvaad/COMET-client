@@ -7,6 +7,7 @@ import {
   TextArea,
   Popup,
   Card,
+  Dropdown,
 } from "semantic-ui-react";
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
@@ -23,6 +24,7 @@ import {
 import { rgbToHex } from "./utils/helpers";
 import "semantic-ui-css/semantic.min.css";
 import "./style.scss";
+//import FontFaceObserver from "fontfaceobserver";
 
 function renderPopup(trigger, content) {
   return <Popup trigger={trigger} content={content} />;
@@ -31,6 +33,8 @@ function renderPopup(trigger, content) {
 let canvas,
   currentObj = {},
   currentGroup = {};
+
+const FONTS_OPTIONS = ["Serif", "Sans Serif", "Arial", "Courier"];
 
 class Annotate extends React.Component {
   state = {
@@ -42,6 +46,7 @@ class Annotate extends React.Component {
     selectedGroupId: null,
     selectedGroupIndex: 0,
     text: "",
+    fontFamily: FONTS_OPTIONS[0],
     textChanged: false,
     fontSize: 12,
     colorType: "text",
@@ -198,6 +203,7 @@ class Annotate extends React.Component {
             originX: "center",
             originY: "center",
             selectable: false,
+            fontFamily: FONTS_OPTIONS[0],
           });
           text.setCoords();
           currentGroup = new fabric.Group([currentObj["obj"], text], {
@@ -230,9 +236,10 @@ class Annotate extends React.Component {
           currentObj["obj"].setCoords();
           const text = new fabric.Text("", {
             fontSize: 12,
-                        originX: "center",
-                        originY: "center",
+            originX: "center",
+            originY: "center",
             selectable: false,
+            fontFamily: FONTS_OPTIONS[0],
           });
           text.setCoords();
           currentGroup = new fabric.Group([currentObj["obj"], text], {
@@ -384,9 +391,10 @@ class Annotate extends React.Component {
         self.setState({
           // presetColors,
           objectNotSelected: false,
-          text: ao.item(1).text,
           selectedGroupId: ao.get("uniqueId"),
           selectedGroupIndex: groupIndex,
+          text: ao.item(1).text,
+          fontFamily: ao.item(1).get("fontFamily"),
           fontSize: ao.item(1).get("fontSize"),
           selectedTextColor: ao.item(1).fill,
           selectedBackgroundColor: ao.item(0).fill,
@@ -410,7 +418,6 @@ class Annotate extends React.Component {
     const self = this;
     canvas.on("selection:cleared", function (options) {
       if (self.state.eyeDropperMode) return;
-      console.log("selection:cleared");
       self.setState({ selectedGroupId: null, objectNotSelected: true });
     });
   };
@@ -427,7 +434,6 @@ class Annotate extends React.Component {
       const angle = target.getAngle();
       const scaleX = target.getScaleX();
       const scaleY = target.getScaleY();
-      console.log({ width, height, left, top, angle, scaleX, scaleY });
       const ao = canvas.getActiveObject();
       const updatedProperties = {
         width,
@@ -634,6 +640,27 @@ class Annotate extends React.Component {
     this.setState({ textChanged: false });
   };
 
+  onFontFamilyChange = (fontFamily) => {
+    canvas.getActiveObject().item(1).set("fontFamily", fontFamily);
+    canvas.renderAll();
+    const groups = canvas.toObject().objects;
+    this.setState({ groups, fontFamily });
+    this.props.onChange({ groups });
+    //    const myfont = new FontFaceObserver(fontFamily);
+    //    myfont
+    //      .load()
+    //      .then(() => {
+    //        // when font is loaded, use it.
+    //        canvas.getActiveObject().item(1).set("fontFamily", fontFamily);
+    //        canvas.renderAll();
+    //        const groups = canvas.toObject().objects;
+    //        this.setState({ groups });
+    //        this.props.onChange({ groups });
+    //      })
+    //      .catch((e) => {
+    //        console.log(e);
+    //      });
+  };
   onFontSizeChange = (value) => {
     canvas
       .getActiveObject()
@@ -987,6 +1014,23 @@ class Annotate extends React.Component {
                                       onChange={(e, { value }) => {
                                         this.onFontSizeChange(value);
                                       }}
+                                    />
+                                  </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                  <Grid.Column width={6}>
+                                    <strong>Font Family:</strong>
+                                  </Grid.Column>
+                                  <Grid.Column width={10}>
+                                    <Dropdown
+                                      options={FONTS_OPTIONS.map((o) => ({
+                                        text: o,
+                                        value: o,
+                                      }))}
+                                      value={this.state.fontFamily}
+                                      onChange={(e, { value }) =>
+                                        this.onFontFamilyChange(value)
+                                      }
                                     />
                                   </Grid.Column>
                                 </Grid.Row>
