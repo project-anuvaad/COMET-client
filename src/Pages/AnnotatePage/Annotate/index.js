@@ -105,6 +105,12 @@ class Annotate extends React.Component {
             });
             groupObjects.push(circle);
             break;
+          case "ellipse":
+            const oval = new fabric.Ellipse({
+              ...object,
+            });
+            groupObjects.push(oval);
+            break;
           case "rect":
             const rect = new fabric.Rect({
               ...object,
@@ -224,8 +230,8 @@ class Annotate extends React.Component {
           currentObj["obj"].setCoords();
           const text = new fabric.Text("", {
             fontSize: 12,
-            originX: "center",
-            originY: "center",
+                        originX: "center",
+                        originY: "center",
             selectable: false,
           });
           text.setCoords();
@@ -413,7 +419,29 @@ class Annotate extends React.Component {
     const self = this;
 
     canvas.on("object:modified", function (options) {
+      const { target } = options;
+      const width = target.getWidth();
+      const height = target.getHeight();
+      const left = target.getLeft();
+      const top = target.getTop();
+      const angle = target.getAngle();
+      const scaleX = target.getScaleX();
+      const scaleY = target.getScaleY();
+      console.log({ width, height, left, top, angle, scaleX, scaleY });
+      const ao = canvas.getActiveObject();
+      const updatedProperties = {
+        width,
+        height,
+        top,
+        left,
+        angle,
+        scaleX: 1,
+        scaleY: 1,
+      };
+      ao.set(updatedProperties);
+      ao.item(0).set({ width, height });
       canvas.renderAll();
+
       const updatedGroups = canvas.toObject().objects;
       self.setState({ groups: updatedGroups });
       self.props.onChange({ groups: updatedGroups });
@@ -477,7 +505,7 @@ class Annotate extends React.Component {
       this.props
         .getText({ left, top, width, height, angle })
         .then(({ text }) => {
-          if (!text) return;
+          if (!text) return this.setState({ getTextLoading: false });
           const groupIndex = canvas
             .toObject()
             .objects.findIndex((group) => group.uniqueId === groupId);
@@ -848,7 +876,7 @@ class Annotate extends React.Component {
                 </Button>
                 <Button
                   className="circle"
-                  fluid
+                  circular
                   primary={this.state.actionStatus === ACTION_BUTTONS.circle}
                   onClick={this.onCircleClick}
                 >
