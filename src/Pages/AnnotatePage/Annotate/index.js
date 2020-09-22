@@ -61,7 +61,7 @@ class Annotate extends React.Component {
     presetColors: [],
     mouseDown: false,
     mouseMove: false,
-    objectNotSelected: false,
+    objectNotSelected: true,
     color: "#000000",
   };
 
@@ -93,7 +93,10 @@ class Annotate extends React.Component {
       self.getCoordinates();
       canvas.renderAll();
       if (groups) {
-        setTimeout(() => self.setInintialGroups(groups), 100);
+        setTimeout(() => {
+        self.setInintialGroups(groups)
+        self.onRectClick()
+        }, 100);
       }
     });
   };
