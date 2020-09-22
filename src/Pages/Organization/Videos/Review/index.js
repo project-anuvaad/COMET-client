@@ -134,6 +134,8 @@ class Review extends React.Component {
         this.automaticVideoBreakDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone)
         this.AITranscribeVideoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH, this.onAITranscribeVideoDone)
         this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted)
+        this.videoThumbnailGeneratedSub  = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_THUMBNAIL_GENERATED, this.onVideoThumbnailGenerated)
+
     }
 
     componentWillUnmount = () => {
@@ -142,6 +144,7 @@ class Review extends React.Component {
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE, this.onVideoCompleted);
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.AUTOMATIC_VIDEO_BREAKING_DONE, this.onAutomaticVideoBreakingDone);
         websockets.unsubscribeFromEvent(websockets.websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH, this.onAITranscribeVideoDone);
+        websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_THUMBNAIL_GENERATED, this.onVideoThumbnailGenerated);
     }
     
     onAITranscribeVideoDone = (video) => {
@@ -171,6 +174,13 @@ class Review extends React.Component {
             this.props.fetchVideos();
             this.props.fetchVideosCount(this.props.organization._id);
             NotificationService.success(`"${video.title}" has been converted successfully!`);
+        }
+    }
+
+    onVideoThumbnailGenerated = (video) => {
+        if (this.props.videos.map((video) => video._id).indexOf(video._id) !== -1) {
+            this.props.fetchVideos();
+            this.props.fetchVideosCount(this.props.organization._id);
         }
     }
 
@@ -677,7 +687,7 @@ class Review extends React.Component {
                     <div style={{ margin: 50 }}>No videos requires proofreading</div>
                 ) : this.props.videos && this.props.videos.map((video) => {
                     const props = commonProps(video);
-                    const loading = video.status === 'automated_cutting';
+                    const loading = video.status === 'automated_cutting' || video.thumbnailLoading;
                     const animate = !loading && (this.props.videosCounts && this.props.videosCounts.total === 1 && this.props.videosCounts.cutting === 1);
                     const whatsappIconTarget = generateWhatsappTranscribeLink(video._id);
 

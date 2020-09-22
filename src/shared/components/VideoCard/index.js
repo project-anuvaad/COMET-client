@@ -375,6 +375,15 @@ class VideoCard extends React.Component {
       </div>
     )
   }
+   renderVideoUploadFinalizeProgress = () => {
+    return (
+      <div style={{ marginLeft: 20, marginRight: 20 }}>
+          <p>
+            Processing your video, please wait...
+          </p>
+      </div>
+    )
+  }
 
   render() {
     const {
@@ -397,6 +406,7 @@ class VideoCard extends React.Component {
       subTitle,
       status,
       cuttingBy,
+      thumbnailLoading,
     } = this.props;
 
     const isHovering = this.isHovering();
@@ -474,6 +484,7 @@ class VideoCard extends React.Component {
           {(status === 'automated_cutting' || status === 'cutting') && this.renderCuttingEndTimeProgress()}
           {status === 'proofreading' && this.renderTranscribeEndTimeProgress()}
           {status === 'converting' && this.renderVideoConvertingDoneProgress()}
+          {status === 'uploaded' && thumbnailLoading &&  this.renderVideoUploadFinalizeProgress()}
 
           {(reviewers || verifiers) && (
             <div style={{ margin: 20 }}>
