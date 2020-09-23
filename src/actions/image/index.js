@@ -214,11 +214,47 @@ export const translateImage = (id, langCode) => (dispatch, getState) => {
       console.log(image);
       NotificationService.success("Recorded successfully");
       setTimeout(() => {
-        window.location.href = routes.organizationImageAnnotation();
+        window.location.href = routes.translateImage(image._id);
       }, 1000);
     })
     .catch((err) => {
       console.log(err);
       NotificationService.error("Some thing went wrong");
+    });
+};
+
+export const setTranslationActiveTabIndex = index => ({
+  type: actionTypes.SET_TRANSLATION_ACTIVE_TAB_INDEX,
+  payload: index,
+})
+
+export const exportImageTranslation = (id) => (dispatch, getState) => {
+  requestAgent
+    .post(Api.imageTranslationExport.exportImageTranslation(), { image: id })
+    .then((res) => {
+      NotificationService.success("Recorded successfully");
+      dispatch(setTranslationActiveTabIndex(1));
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Something went wrong");
+    });
+};
+
+const setImageTranslationExports = ts => ({
+  type: actionTypes.SET_IMAGE_TRANSLATION_EXPORTS,
+  payload: ts,
+})
+
+export const fetchImageTranslationExports = (id) => (dispatch, getState) => {
+  requestAgent
+    .get(Api.imageTranslationExport.get({ image: id }))
+    .then((res) => {
+      const { imageTranslationExports } = res.body;
+      dispatch(setImageTranslationExports(imageTranslationExports));
+    })
+    .catch((err) => {
+      console.log(err);
+      NotificationService.error("Something went wrong");
     });
 };

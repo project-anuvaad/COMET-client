@@ -52,11 +52,20 @@ export default {
     updateImageStatus: (id) => `${APP_ENV.API_ROOT}/image/${id}/status`,
     translateImage: (id) => `${APP_ENV.API_ROOT}/image/${id}/translate`,
     getPixelColor: (id, params) =>
-      `${APP_ENV.API_ROOT}/image/${id}/pixelColor?${querystring.encode(params)}`,
+      `${APP_ENV.API_ROOT}/image/${id}/pixelColor?${querystring.encode(
+        params
+      )}`,
     getColors: (id, params) =>
       `${APP_ENV.API_ROOT}/image/${id}/colors?${querystring.encode(params)}`,
     getText: (id, params) =>
       `${APP_ENV.API_ROOT}/image/${id}/text?${querystring.encode(params)}`,
+  },
+  imageTranslationExport: {
+    exportImageTranslation: () => `${APP_ENV.API_ROOT}/imageTranslationExport`,
+    get: (params) =>
+      `${APP_ENV.API_ROOT}/imageTranslationExport?${querystring.encode(
+        params
+      )}`,
   },
   article: {
     getById: (id) => `${APP_ENV.API_ROOT}/article/${id}`,

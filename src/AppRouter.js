@@ -40,7 +40,8 @@ const OrganizationReview = () => import('./Pages/Organization/Videos/Review');
 const OrganzationTranslations = () => import('./Pages/Organization/Videos/Translations');
 const OrganizationTranslationMetrics = () => import('./Pages/Organization/Videos/TranslationMetrics');
 const OrganizationImageAnnotation = () => import('./Pages/Organization/Images/Annotation');
-const OrganizationImageTranslation = () => import('./Pages/Organization/Images/Translations');
+const OrganizationImageTranslation = () => import('./Pages/Organization/Images/Translation');
+const OrganizationImageTranslations = () => import('./Pages/Organization/Images/Translations');
 const OrganizationTips = () => import('./Pages/Organization/Tips');
 const OrganzaitionTasksTranslations = () => import('./Pages/Organization/Tasks/Translations');
 const OrganzaitionTasksReviews = () => import('./Pages/Organization/Tasks/Reviews');
@@ -357,8 +358,17 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organizationImageTranslation()}
                 isPrivateRoute={true}
-                title="Organziation: Translations"
+                title="Organziation: Image Translations"
                 authorize={[]}
+                loader={OrganizationImageTranslations}
+                layout={DashboardLayout}
+              />
+
+              <LazyRoute
+                exact
+                path={routes.translateImage()}
+                isPrivateRoute={true}
+                title="Organziation: Image Translation"
                 loader={OrganizationImageTranslation}
                 layout={DashboardLayout}
               />

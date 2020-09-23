@@ -4,7 +4,7 @@ import { getUserNamePreview, displayLanguage } from "../../utils/helpers";
 import ShowMore from "../ShowMore";
 import AnimatedButton from "../AnimatedButton";
 import RoleRenderer from "../../containers/RoleRenderer";
-import { Grid, Icon, Image, Card, Dropdown, Button } from "semantic-ui-react";
+import { Grid, Icon, Card, Dropdown, Button } from "semantic-ui-react";
 import "./style.scss";
 import routes from "../../routes";
 
@@ -75,8 +75,8 @@ class ImageCard extends React.Component {
         >
           <div>
             <div className="image-container">
-              <Image
-                style={{ width: "100%", maxHeight: 250 }}
+              <img
+                style={{ width: "100%", height: 250 }}
                 src={image.thumbnailUrl || image.url}
               />
             </div>

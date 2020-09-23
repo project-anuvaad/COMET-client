@@ -34,12 +34,12 @@ class ImageTranslations extends React.Component {
 
   debouncedSearch = debounce(() => {
     this.props.setCurrentPageNumber(1);
-    this.props.fetchImages();
+    this.props.fetchImagesTranslations();
   }, 500);
 
   onPageChange = (e, { activePage }) => {
     this.props.setCurrentPageNumber(activePage);
-    this.props.fetchImages();
+    this.props.fetchImagesTranslations();
   };
 
   onSearchChange = (searchTerm) => {
@@ -120,7 +120,7 @@ class ImageTranslations extends React.Component {
             </Grid.Row>
             <Grid.Row>
               {this.props.images.map((image) => (
-                <Grid.Column width={4}>
+                <Grid.Column width={4} key={`images-list-${image._id}`} style={{ marginBottom: '2rem' }}>
                   <ImageCard
                     image={image}
                     rounded

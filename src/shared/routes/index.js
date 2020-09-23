@@ -42,5 +42,5 @@ export default {
     invitationsRoute: (organizationId = ':organizationId') => `/invitations/${organizationId}`,
 
     annotateImage: (imageId) => `/annotate${imageId ? `?image=${imageId}` : ''}`,
-    translateImage: (imageId) => `/organization/images/translations/${imageId}`,
+    translateImage: (imageId = ':imageId') => `/organization/images/translations/${imageId}`,
 }

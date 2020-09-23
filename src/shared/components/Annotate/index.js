@@ -69,6 +69,8 @@ class Annotate extends React.Component {
     this.init(this.props.imageUrl, this.props.defaultGroups);
   }
 
+  canModifyBoxes = () => this.props.mode !== "translate";
+
   init = (image, groups) => {
     const { displayWidth, displayHeight } = this.props;
     const self = this;
@@ -94,8 +96,10 @@ class Annotate extends React.Component {
       canvas.renderAll();
       if (groups) {
         setTimeout(() => {
-        self.setInintialGroups(groups)
-        self.onRectClick()
+          self.setInintialGroups(groups);
+          if (self.canModifyBoxes()) {
+            self.onRectClick();
+          }
         }, 100);
       }
     });
@@ -888,14 +892,6 @@ class Annotate extends React.Component {
           <Grid.Column width={2}>
             <div className="tools-container">
               <div className="shapes-container">
-                {/* <Button
-                  fluid
-                  primary={this.state.actionStatus === ACTION_BUTTONS.selection}
-                  onClick={this.onSelectionClick}
-                >
-                  Selection
-                </Button>
-                */}
                 <Button
                   className="rect"
                   fluid
@@ -933,6 +929,13 @@ class Annotate extends React.Component {
             <div className="image-container">
               <canvas id="canvas"></canvas>
             </div>
+            {this.props.belowImageContent || ""}
+            {this.props.originalText && this.props.originalText.length > 0 && (
+              <div style={{ margin: "2rem", marginLeft: 0 }}>
+                <strong>Original Text:</strong>
+                <p>{this.props.originalText[this.state.selectedGroupIndex]}</p>
+              </div>
+            )}
           </Grid.Column>
           <Grid.Column width={6}>
             <div className="text-box-container">

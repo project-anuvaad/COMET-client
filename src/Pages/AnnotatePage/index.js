@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import Annotate from "./Annotate";
+import Annotate from "../../shared/components/Annotate";
 import queryString from "query-string";
 import {
   fetchImageById,
@@ -99,6 +99,7 @@ class AnnotatePage extends React.Component {
           </Grid.Row>
         </Grid>
         <Annotate
+          // mode="translate"
           imageUrl={image.url}
           defaultGroups={image.groups}
           displayWidth={image.displayWidth}

@@ -12,6 +12,8 @@ const INITIAL_STATE = {
     images: [],
   },
   image: null,
+  translationActiveTabIndex: 0,
+  imageTranslationExports: [],
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -36,6 +38,11 @@ export default function (state = INITIAL_STATE, action) {
       return { ...state, image: action.payload };
     case actionTypes.SET_STATUS:
       return { ...state, status: action.payload };
+    case actionTypes.SET_TRANSLATION_ACTIVE_TAB_INDEX:
+      return { ...state, translationActiveTabIndex: action.payload };
+    case actionTypes.SET_IMAGE_TRANSLATION_EXPORTS:
+      return { ...state, imageTranslationExports: action.payload };
+
     default:
       return state;
   }
