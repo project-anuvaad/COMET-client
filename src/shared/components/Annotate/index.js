@@ -917,11 +917,6 @@ class Annotate extends React.Component {
                 >
                   Oval
                 </Button>
-                {this.state.selectedGroupId && (
-                  <Button fluid onClick={this.onDuplicateObject}>
-                    Duplicate
-                  </Button>
-                )}
               </div>
             </div>
           </Grid.Column>
@@ -1233,7 +1228,17 @@ class Annotate extends React.Component {
                 >
                   <div>Box {i + 1}</div>
                   {this.state.selectedGroupId === group.uniqueId && (
-                    <div>
+                    <div style={{ display: "flex" }}>
+                      {this.canModifyBoxes() && (
+                        <Button
+                          primary
+                          size="tiny"
+                          fluid
+                          onClick={this.onDuplicateObject}
+                        >
+                          Duplicate
+                        </Button>
+                      )}
                       <Button
                         size="mini"
                         color="red"
