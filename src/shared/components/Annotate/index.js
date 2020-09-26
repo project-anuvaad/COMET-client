@@ -1229,16 +1229,14 @@ class Annotate extends React.Component {
                   <div>Box {i + 1}</div>
                   {this.state.selectedGroupId === group.uniqueId && (
                     <div style={{ display: "flex" }}>
-                      {this.canModifyBoxes() && (
-                        <Button
-                          primary
-                          size="tiny"
-                          fluid
-                          onClick={this.onDuplicateObject}
-                        >
-                          Duplicate
-                        </Button>
-                      )}
+                      <Button
+                        primary
+                        size="tiny"
+                        fluid
+                        onClick={this.onDuplicateObject}
+                      >
+                        Duplicate
+                      </Button>
                       <Button
                         size="mini"
                         color="red"
