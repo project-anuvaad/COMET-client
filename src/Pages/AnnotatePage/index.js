@@ -68,7 +68,7 @@ class AnnotatePage extends React.Component {
     if (!this.props.image) return null;
     const { image } = this.props;
     return (
-      <div>
+      <div style={{ padding: '2rem', paddingBottom: 0 }}>
         <Grid>
           <Grid.Row>
             <Grid.Column width={16}>

@@ -998,7 +998,7 @@ class Annotate extends React.Component {
                       <Grid.Column width={16}>
                         <Grid>
                           <Grid.Row>
-                            <Grid.Column width={8}>
+                            <Grid.Column width={10}>
                               <Grid>
                                 <Grid.Row>
                                   <Grid.Column width={6}>
