@@ -3,9 +3,9 @@ import Api from "../../shared/api";
 import requestAgent from "../../shared/utils/requestAgent";
 import NotificationService from "../../shared/utils/NotificationService";
 import asyncSeries from "async/series";
-import organization from "../../reducers/organization";
 import routes from "../../shared/routes";
-import { SET_SEARCH_FILTER } from "../../Pages/Organization/Tasks/modules/types";
+
+const moduleName = 'image';
 
 export const setUploadImageForm = (uploadImageForm) => ({
   type: actionTypes.SET_UPLOAD_IMAGE_FORM,
@@ -241,17 +241,29 @@ export const exportImageTranslation = (id) => (dispatch, getState) => {
     });
 };
 
+export const setTranslationExportsCurrentPage = (page) => ({
+  type: actionTypes.SET_TRANSLATION_EXPORTS_CURRENT_PAGE,
+  payload: page,
+})
+
+export const setTranslationExportsTotalPages = (pagesCount) => ({
+  type: actionTypes.SET_TRANSLATION_EXPORTS_TOTAL_PAGES,
+  payload: pagesCount,
+})
+
 const setImageTranslationExports = ts => ({
   type: actionTypes.SET_IMAGE_TRANSLATION_EXPORTS,
   payload: ts,
 })
 
 export const fetchImageTranslationExports = (id) => (dispatch, getState) => {
+  const { translationExportsCurrentPage } = getState()[moduleName];
   requestAgent
-    .get(Api.imageTranslationExport.get({ image: id }))
+    .get(Api.imageTranslationExport.get({ image: id, page: translationExportsCurrentPage }))
     .then((res) => {
-      const { imageTranslationExports } = res.body;
+      const { imageTranslationExports, pagesCount } = res.body;
       dispatch(setImageTranslationExports(imageTranslationExports));
+      dispatch(setTranslationExportsTotalPages(pagesCount));
     })
     .catch((err) => {
       console.log(err);

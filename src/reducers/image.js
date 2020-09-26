@@ -14,6 +14,8 @@ const INITIAL_STATE = {
   image: null,
   translationActiveTabIndex: 0,
   imageTranslationExports: [],
+  translationExportsTotalPages: 1,
+  translationExportsCurrentPage: 1,
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -42,6 +44,10 @@ export default function (state = INITIAL_STATE, action) {
       return { ...state, translationActiveTabIndex: action.payload };
     case actionTypes.SET_IMAGE_TRANSLATION_EXPORTS:
       return { ...state, imageTranslationExports: action.payload };
+    case actionTypes.SET_TRANSLATION_EXPORTS_TOTAL_PAGES:
+      return { ...state, translationExportsTotalPages: action.payload };
+    case actionTypes.SET_TRANSLATION_EXPORTS_CURRENT_PAGE:
+      return { ...state, translationExportsCurrentPage: action.payload };
 
     default:
       return state;
