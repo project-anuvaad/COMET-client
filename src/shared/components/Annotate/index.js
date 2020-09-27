@@ -636,6 +636,21 @@ class Annotate extends React.Component {
 
   onTextChange = (value) => {
     canvas.getActiveObject().item(1).set({ text: value });
+    const ao = canvas.getActiveObject().toObject();
+    const boxItem = ao.objects[0];
+    const textItem = ao.objects[1];
+    if (textItem.width > ao.width) {
+      canvas.getActiveObject().set({ width: textItem.width }); 
+    }
+    if (textItem.width > boxItem.width) {
+      canvas.getActiveObject().item(0).set({ width: textItem.width }); 
+    }
+    if (textItem.height > ao.height) {
+      canvas.getActiveObject().set({ height: textItem.height }); 
+    }
+    if (textItem.height > boxItem.height) {
+      canvas.getActiveObject().item(0).set({ height: textItem.height }); 
+    }
     canvas.renderAll();
     const groups = canvas.toObject().objects;
     this.setState({ text: value, groups, textChanged: true });
@@ -653,20 +668,6 @@ class Annotate extends React.Component {
     const groups = canvas.toObject().objects;
     this.setState({ groups, fontFamily });
     this.props.onChange({ groups });
-    //    const myfont = new FontFaceObserver(fontFamily);
-    //    myfont
-    //      .load()
-    //      .then(() => {
-    //        // when font is loaded, use it.
-    //        canvas.getActiveObject().item(1).set("fontFamily", fontFamily);
-    //        canvas.renderAll();
-    //        const groups = canvas.toObject().objects;
-    //        this.setState({ groups });
-    //        this.props.onChange({ groups });
-    //      })
-    //      .catch((e) => {
-    //        console.log(e);
-    //      });
   };
   onFontSizeChange = (value) => {
     canvas
