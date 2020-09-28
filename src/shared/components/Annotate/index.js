@@ -640,16 +640,16 @@ class Annotate extends React.Component {
     const boxItem = ao.objects[0];
     const textItem = ao.objects[1];
     if (textItem.width > ao.width) {
-      canvas.getActiveObject().set({ width: textItem.width }); 
+      canvas.getActiveObject().set({ width: textItem.width });
     }
     if (textItem.width > boxItem.width) {
-      canvas.getActiveObject().item(0).set({ width: textItem.width }); 
+      canvas.getActiveObject().item(0).set({ width: textItem.width });
     }
     if (textItem.height > ao.height) {
-      canvas.getActiveObject().set({ height: textItem.height }); 
+      canvas.getActiveObject().set({ height: textItem.height });
     }
     if (textItem.height > boxItem.height) {
-      canvas.getActiveObject().item(0).set({ height: textItem.height }); 
+      canvas.getActiveObject().item(0).set({ height: textItem.height });
     }
     canvas.renderAll();
     const groups = canvas.toObject().objects;
@@ -669,11 +669,27 @@ class Annotate extends React.Component {
     this.setState({ groups, fontFamily });
     this.props.onChange({ groups });
   };
+
   onFontSizeChange = (value) => {
     canvas
       .getActiveObject()
       .item(1)
       .set({ fontSize: parseInt(value) || 12 });
+    const ao = canvas.getActiveObject().toObject();
+    const boxItem = ao.objects[0];
+    const textItem = ao.objects[1];
+    if (textItem.width > ao.width) {
+      canvas.getActiveObject().set({ width: textItem.width });
+    }
+    if (textItem.width > boxItem.width) {
+      canvas.getActiveObject().item(0).set({ width: textItem.width });
+    }
+    if (textItem.height > ao.height) {
+      canvas.getActiveObject().set({ height: textItem.height });
+    }
+    if (textItem.height > boxItem.height) {
+      canvas.getActiveObject().item(0).set({ height: textItem.height });
+    }
     canvas.renderAll();
     const groups = canvas.toObject().objects;
     this.setState({ groups, fontSize: parseInt(value), groups });
@@ -851,7 +867,7 @@ class Annotate extends React.Component {
           this.changeSelectedGroupColor(this.state.colorType, color.hex);
           const groups = canvas.toObject().objects;
           this.props.onChange({ groups });
-          this.setState({ color })
+          this.setState({ color });
         }}
         color={this.state.color}
         // presetColors={presetColors}
