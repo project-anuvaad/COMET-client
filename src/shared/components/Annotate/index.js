@@ -851,6 +851,7 @@ class Annotate extends React.Component {
           this.changeSelectedGroupColor(this.state.colorType, color.hex);
           const groups = canvas.toObject().objects;
           this.props.onChange({ groups });
+          this.setState({ color })
         }}
         color={this.state.color}
         // presetColors={presetColors}
