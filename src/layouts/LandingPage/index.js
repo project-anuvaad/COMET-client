@@ -219,7 +219,7 @@ class LandingPage extends React.Component {
                                 <div className="col-xl-7 col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div className="intro-content">
                                         <h3>COMET</h3>
-                                        <p>COMET stands for Community Orchestrated Media Translator</p>
+                                        <p>COMET - Community Orchestrated Media Translator is a tool that enables translation of video content from English/Hindi to other Indian languages. Users can translate the videos easily and quickly, without the need for a studio set up. The tool automatically extracts speech from source video and translates into text of the target language. Besides, to ensure high audio quality the tool also eliminates background noise, if any, in the voice over recording.</p>
                                     </div>
                                 </div>
                                 <div className="col-xl-5 col-lg-6 col-md-6 col-sm-12 col-xs-12 worldCloud">
