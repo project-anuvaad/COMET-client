@@ -64,9 +64,9 @@ class AppRouter extends React.Component {
     populateAppEnv()
       .then((data) => {
         websockets.createWebsocketConnection(APP_ENV.WEBSOCKET_SERVER_URL, {
-            path: '/socket.io',
-            transports: ['websocket'],
-            secure: true,
+          path: '/socket.io',
+          transports: ['websocket'],
+          secure: true,
         })
         if (process.env.NODE_ENV === 'production' && APP_ENV.SENTRY_DSN) {
           Sentry.init({ dsn: APP_ENV.SENTRY_DSN });
@@ -80,7 +80,7 @@ class AppRouter extends React.Component {
       })
       .catch(err => {
         console.log('error loading env file', err);
-        alert('Misconfiguration error: Please contact Videowiki\'s support team, error ' + JSON.stringify(err))
+        alert('Misconfiguration error: Please contact COMET\'s support team')
       })
   }
 
@@ -95,32 +95,32 @@ class AppRouter extends React.Component {
               <LazyRoute
                 exact
                 path={routes.home()}
-                title="VideoWiki"
+                title="COMET"
                 loader={Home}
               />
               <LazyRoute
                 exact
                 path={routes.api()}
-                title="VideoWiki: Api"
+                title="COMET: Api"
                 loader={Api}
               />
 
               <LazyRoute
                 exact
                 path={routes.faq()}
-                title="VideoWiki: FAQ"
+                title="COMET: FAQ"
                 loader={FAQ}
               />
               <LazyRoute
                 exact
                 path={routes.resetPassword()}
-                title="VideoWiki: Reset Password"
+                title="COMET: Reset Password"
                 loader={ResetPassword}
               />
               <LazyRoute
                 exact
                 path={routes.loginRedirect()}
-                title="VideoWiki"
+                title="COMET"
                 loader={LoginRedirect}
               />
               <LazyRoute
@@ -190,10 +190,7 @@ class AppRouter extends React.Component {
                 path={routes.organizationUsers()}
                 title="Organziation: Users"
                 isPrivateRoute={true}
-                authorize={[
-                  'admin',
-                  'project_leader',
-                ]}
+                authorize={['admin']}
                 loader={OrganizationUsers}
                 layout={DashboardLayout}
               />
@@ -202,15 +199,7 @@ class AppRouter extends React.Component {
                 path={routes.organizationVideos()}
                 isPrivateRoute={true}
                 title="Organziation: Videos"
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'uploader',
-                  'review',
-                  'break_videos',
-                  'transcribe_text',
-                  'approve_transcriptions',
-                ]}
+                authorize={['admin', 'review']}
                 loader={OrganizationReview}
                 layout={DashboardLayout}
               />
@@ -218,15 +207,7 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organizationHome()}
                 isPrivateRoute={true}
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'uploader',
-                  'review',
-                  'break_videos',
-                  'transcribe_text',
-                  'approve_transcriptions',
-                ]}
+                authorize={['admin', 'review']}
                 title="Organziation: Videos"
                 loader={OrganizationReview}
                 layout={DashboardLayout}
@@ -235,14 +216,7 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organziationTasksTranslations()}
                 isPrivateRoute={true}
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'translate',
-                  'voice_over_artist',
-                  'translate_text',
-                  'approve_translations',
-                ]}
+                authorize={['admin', 'translate']}
                 title="Organziation: My Translations"
                 loader={OrganzaitionTasksTranslations}
                 layout={DashboardLayout}
@@ -252,14 +226,7 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organziationTasksReview()}
                 isPrivateRoute={true}
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'review',
-                  'break_videos',
-                  'transcribe_text',
-                  'approve_transcriptions',
-                ]}
+                authorize={['admin', 'review']}
                 title="Organziation: My Reviews"
                 loader={OrganzaitionTasksReviews}
                 layout={DashboardLayout}
@@ -268,10 +235,7 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organizationArchive()}
                 isPrivateRoute={true}
-                authorize={[
-                  'admin',
-                  'project_leader',
-                ]}
+                authorize={['admin']}
                 title="Organziation: Archive"
                 loader={OrganizationArchive}
                 layout={DashboardLayout}
@@ -289,15 +253,7 @@ class AppRouter extends React.Component {
                 path={routes.organziationReview()}
                 isPrivateRoute={true}
                 title="Organziation: Reviews"
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'uploader',
-                  'review',
-                  'break_videos',
-                  'transcribe_text',
-                  'approve_transcriptions',
-                ]}
+                authorize={['admin', 'review']}
                 loader={OrganizationReview}
                 layout={DashboardLayout}
               />
@@ -306,14 +262,7 @@ class AppRouter extends React.Component {
                 path={routes.organziationTranslations()}
                 isPrivateRoute={true}
                 title="Organziation: Translations"
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'translate',
-                  'voice_over_artist',
-                  'translate_text',
-                  'approve_translations',
-                ]}
+                authorize={['admin', 'translate']}
                 loader={OrganzationTranslations}
                 layout={DashboardLayout}
               />
@@ -322,14 +271,7 @@ class AppRouter extends React.Component {
                 path={routes.organziationTranslationMetrics()}
                 isPrivateRoute={true}
                 title="Organziation: Translations"
-                authorize={[
-                  'admin',
-                  'project_leader',
-                  'translate',
-                  'voice_over_artist',
-                  'translate_text',
-                  'approve_translations'
-                ]}
+                authorize={['admin', 'translate']}
                 loader={OrganizationTranslationMetrics}
                 layout={DashboardLayout}
               />
