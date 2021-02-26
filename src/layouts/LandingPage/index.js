@@ -103,14 +103,10 @@ class LandingPage extends React.Component {
             open={this.state.registerModalOpen}
             onClose={() => this.setState({ registerModalOpen: false })}
             trigger={
-                <Button
-                    color="black"
-                    size="medium"
-                    id="main-register-btn"
-                    className="register-btn"
+                <button type="button" id="main-register-btn" className="explore-diksha"
                     onClick={() => this.setState({ registerModalOpen: true })}>
-                    Register Now
-                </Button>
+                    SIGN UP
+                </button>
             }
             size='tiny'
         >
@@ -207,11 +203,12 @@ class LandingPage extends React.Component {
                 <div className="container-fluid p-0 ">
                     <header className="header">
                         <a href="#" className="logo"> <img src="https://via.placeholder.com/100" alt="Comet Logo" /> </a>
-                        {/* <a href="#" className="explore no-underline">
-                            <button type="button" className="explore-diksha">
+                        <a href="#" className="explore no-underline">
+                            {/* <button type="button" className="explore-diksha">
                                 EXPLORE DIKSHA
-                            </button>
-                        </a> */}
+                            </button> */}
+                            {this.renderRegisterModal()}
+                        </a>
                     </header>
                     <div className="contents">
                         <section className="intro-section">
