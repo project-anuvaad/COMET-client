@@ -490,12 +490,12 @@ class VideoCard extends React.Component {
             <div style={{ margin: 20 }}>
               {reviewers && reviewers.length > 0 && (
                 <div>
-                  {cuttingBy === "videowiki" ? (
+                  {cuttingBy === "comet" ? (
                     <React.Fragment>
                       <p>
                         Transcribers:{" "}
                         <span style={{ color: "green", fontWeight: "bold" }}>
-                          Videowiki's Team
+                          COMET's Team
                         </span>
                       </p>
                       {/* cuttingEndTime */}

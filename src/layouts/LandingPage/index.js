@@ -25,10 +25,6 @@ const NAV_LINKS = [
         title: 'Our Solutions',
         id: 'solutions',
     },
-    // {
-    //     title: 'Why Videowiki?',
-    //     id: 'why-videowiki'
-    // },
     {
         title: 'API',
         route: routes.api(),
@@ -46,12 +42,6 @@ class LandingPage extends React.Component {
     }
     componentWillMount = () => {
         // const { hostname, protocol, search } = window.location;
-
-        // const hostnameParts = hostname.split('.');
-        // console.log('hostname parts', hostnameParts)
-        // if (hostnameParts.length > 2 && hostnameParts[0] !== 'www' && (hostnameParts.indexOf('videowiki') !== -1)) {
-        //     window.location.href = `${protocol}//${hostnameParts[hostnameParts.length - 2]}.${hostnameParts[hostnameParts.length - 1]}/${search || ''}`;
-        // }
     }
 
     componentDidMount = () => {

@@ -44,7 +44,7 @@ export default class EndToEndLocalization extends React.Component {
                                     The days of using multiple platforms such as emails, storage, task managers, and spreadsheets for translations are finally over.
                                 </p>
                                 <p>
-                                    Save time with VideoWiki by securely collaborating across your organization, and translators in one platform
+                                    Save time with COMET by securely collaborating across your organization, and translators in one platform
                                 </p>
                             </div>
                         </Grid.Column>

@@ -107,7 +107,7 @@ class EditorHeader extends Component {
     const { article } = this.props
     const title = article.title.split('_').join(' ')
     const url = window.location.href;
-    const description = `Checkout the new VideoWiki article at ${window.location.href}`
+    const description = `Checkout the new COMET article at ${window.location.href}`
 
     return (
       <span>
@@ -221,7 +221,7 @@ class EditorHeader extends Component {
     const wikiSource = article.wikiSource || 'https://en.wikipedia.org';
 
     if (article.mediaSource === 'script') {
-      return NotificationManager.info('The media of custom Videowiki articles are editable only in the script page');
+      return NotificationManager.info('The media of custom COMET articles are editable only in the script page');
     }
     this.props.history.push(`/${this.props.language}/editor/${article.title}?wikiSource=${wikiSource}`)
   }

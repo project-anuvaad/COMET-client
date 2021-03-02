@@ -66,13 +66,13 @@ class LazyRoute extends React.Component {
     if (!LayoutComp) {
 
       RenderedComp =  (
-        <DocumentMeta title={title || 'Videowiki'}>
+        <DocumentMeta title={title || 'COMET'}>
           <Route {...rest} component={LoadableComponent} />
         </DocumentMeta>
       )
     } else {
       RenderedComp = (
-        <DocumentMeta title={title || 'Videowiki'}>
+        <DocumentMeta title={title || 'COMET'}>
           <LayoutComp>
             <Route {...rest} component={LoadableComponent} />
           </LayoutComp>

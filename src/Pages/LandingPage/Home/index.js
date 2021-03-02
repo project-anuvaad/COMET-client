@@ -4,7 +4,7 @@ import { Button, Modal, Grid } from 'semantic-ui-react';
 
 import Problem from './Problem';
 import Solution from './Solution';
-import WhyVideowiki from './WhyVideowiki';
+// import WhyVideowiki from './WhyVideowiki';
 import { Link as ScrollLink, animateScroll as scroll } from "react-scroll";
 import { Link } from 'react-router-dom';
 import LandingPage from '../../../layouts/LandingPage';
@@ -60,7 +60,7 @@ export default class Home extends React.Component {
                                 <p
                                     className="poc"
                                 >
-                                    Videowiki is a one-stop video localization platform that allows organizations to translate text/add voice-over in local language to their videos.
+                                    COMET is a one-stop video localization platform that allows organizations to translate text/add voice-over in local language to their videos.
                                         </p>
                                 <div>
                                     {this.renderRegisterNowArrowButton()}
@@ -86,7 +86,7 @@ export default class Home extends React.Component {
                 </div>
                 <Problem id="problem" />
                 <Solution id="solutions" />
-                <WhyVideowiki id="why-videowiki" />
+                {/* <WhyVideowiki id="why-videowiki" /> */}
                 <div style={{ display: 'flex', justifyContent: 'center', margin: '5rem' }}>
                     {this.renderRegisterNowArrowButton()}
                 </div>

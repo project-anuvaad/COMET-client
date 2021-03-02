@@ -464,7 +464,7 @@ export const skipTranscribe = (video, cuttingBy) => (dispatch, getState) => {
                 NotificationService.success('We\'re automatically cutting the video for you.')
                 dispatch(fetchVideos())
             } else {
-                NotificationService.success('Videowiki\'s team will get it done shortly!')
+                NotificationService.success('COMET\'s team will get it done shortly!')
                 dispatch(fetchVideos())
             }
             dispatch(fetchUploadedVideos())

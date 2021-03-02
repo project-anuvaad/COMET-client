@@ -12,7 +12,7 @@ export default class Solution extends React.Component{
                     Our solution
                 </h1>
                 <p className="solution-desc">
-                    Using VideoWiki, organizations can localize their videos into multiple Indian languages
+                    Using COMET, organizations can localize their videos into multiple Indian languages
                 </p>
                 <FlagshipFeatures />
                 <EndToEndLocalization />

@@ -33,7 +33,7 @@ class Api extends React.Component {
                                     <Grid.Row>
                                         <Grid.Column width={16}>
                                             <p>
-                                                Integrate VideoWiki’s video localization platform directly onto your website
+                                                Integrate COMET’s video localization platform directly onto your website
                                             </p>
                                         </Grid.Column>
                                     </Grid.Row>

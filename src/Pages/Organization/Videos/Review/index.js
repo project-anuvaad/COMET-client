@@ -259,7 +259,7 @@ class Review extends React.Component {
         const { selectedVideo } = this.props;
         this.setState({ isSelectCutterModalOpen: false });
         this.props.skipTranscribe(selectedVideo, cuttingBy);
-        if (cuttingBy === 'videowiki') {
+        if (cuttingBy === 'comet') {
             this.setState({ isNotifyWithWhatsappModalOpen: true })
         }
     }
@@ -389,7 +389,7 @@ class Review extends React.Component {
             </Modal.Header>
             <Modal.Content>
                 <p>
-                    Would you like to do that yourself or let Videowiki's team do it for you?
+                    Would you like to do that yourself or let COMET's team do it for you?
                 </p>
             </Modal.Content>
             <Modal.Actions>
@@ -397,9 +397,9 @@ class Review extends React.Component {
                     circular
                     basic
                     className="clear-button"
-                    onClick={() => this.onSkipTranscribe('videowiki')}
+                    onClick={() => this.onSkipTranscribe('comet')}
                 >
-                    Let Videowiki's Team do it
+                    Let COMET's Team do it
                 </Button>
                 <Button
                     circular

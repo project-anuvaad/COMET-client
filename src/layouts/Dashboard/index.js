@@ -484,7 +484,6 @@ class Dashboard extends React.Component {
                                 <Avatar size="50px" name={organization.name[0]} />
                                 <div style={{ marginLeft: '1rem' }}>
                                     <h4 >{organization.name}</h4>
-                                    {/* <h5 style={{ margin: 0 }}><small>{showMoreText(`https://${organization.name}.videowiki.org`, 30)}</small></h5> */}
                                 </div>
                             </div>
                         )}

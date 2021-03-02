@@ -46,7 +46,7 @@ export default class FasterSubtitles extends React.Component {
                                     <span className="green">2X Faster</span> Subtitle Generator
                             </h2>
                                 <p className="subtitles-desc">
-                                    Leveraging the subtitles of the original video, VideoWiki allows users to generate super-fast subtitles for translated videos.
+                                    Leveraging the subtitles of the original video, COMET allows users to generate super-fast subtitles for translated videos.
                             </p>
                             </Grid.Column>
                             <Grid.Column width={8}>
