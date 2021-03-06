@@ -197,7 +197,7 @@ class LandingPage extends React.Component {
                             {/* <button type="button" className="explore-diksha">
                                 EXPLORE DIKSHA
                             </button> */}
-                            {this.renderRegisterModal()}
+                            {/* {this.renderRegisterModal()} */}
                         </a>
                     </header>
                     <div className="contents">

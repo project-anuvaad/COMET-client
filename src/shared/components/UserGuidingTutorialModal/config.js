@@ -44,7 +44,7 @@ export const STEP_CONTENT = {
     },
     6: {
         title: 'Add voiceover to each slide',
-        description: 'VideoWiki will apply machine learning to remove any background noise in your audio.',
+        description: 'COMET will apply machine learning to remove any background noise in your audio.',
         image: '/img/onboarding/6/6.png',
     }
 }

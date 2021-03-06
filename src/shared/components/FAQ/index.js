@@ -33,7 +33,7 @@ const detailed = [
         link: 'https://stonly.com/explanation/l9PZgi62iQ/Steps/',
     },
     {
-        title: 'How do I add voice-overs in VideoWiki?',
+        title: 'How do I add voice-overs in COMET?',
         link: 'https://stonly.com/explanation/LG7yTdLSA5/Steps/',
     },
     {
@@ -48,11 +48,11 @@ const admin = [
         link: 'https://stonly.com/explanation/BBkfRwc8vU/Steps/',
     },
     {
-        title: 'Can VideoWiki help me in removing the background noise and improving the quality of my videos?',
+        title: 'Can COMET help me in removing the background noise and improving the quality of my videos?',
         link: 'https://stonly.com/explanation/iNzSuSqEpL/Steps/',
     },
     {
-        title: 'How do I add new users on VideoWiki?',
+        title: 'How do I add new users on COMET?',
         link: 'https://stonly.com/explanation/DplqMWk3Yd/Steps/',
     },
     {
@@ -149,7 +149,7 @@ export default class FAQ extends React.Component {
                             <div style={{ padding: '0 10%', paddingTop: '5rem', backgroundColor: '#F3F5F9' }}>
                                 <div className="how-it-work-card">
                                     <h3>
-                                        How does VideoWiki work?
+                                        How does COMET work?
                                         </h3>
 
                                     <div>

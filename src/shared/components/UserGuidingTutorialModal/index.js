@@ -58,7 +58,7 @@ export default class UserGuidingTutorialModal extends React.Component {
 
                 <Modal.Header>
                     <h3>
-                        How does VideoWiki work?
+                        How does COMET work?
                         <Button
                             circular
                             basic
@@ -89,7 +89,7 @@ export default class UserGuidingTutorialModal extends React.Component {
                                             Back
                                     </Button>
                                         <Button circular primary className="next" onClick={this.onNext}>
-                                            {this.state.currentStep < NUMBER_OF_STEPS ? 'Next' : 'Go to VideoWiki Home'}
+                                            {this.state.currentStep < NUMBER_OF_STEPS ? 'Next' : 'Go to COMET Home'}
                                         </Button>
 
 

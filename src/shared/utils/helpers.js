@@ -24,7 +24,7 @@ export const generateConvertStages = function generateConvertStages() {
     active: false,
   },
   {
-    title: 'Step 3: Converting to a VideoWiki video',
+    title: 'Step 3: Converting to a COMET video',
     completed: false,
     active: false,
   }]
@@ -236,18 +236,18 @@ export function getUserName(user) {
 }
 
 export function generateWhatsappTranscribeLink(videoId) {
-  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
+  return `https://wa.me/${APP_ENV.WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
 }
 
 export function generateWhatsappProofreadLink(videoId) {
-  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
+  return `https://wa.me/${APP_ENV.WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
 }
 
 
 export function generateWhatsappTranslateLink(videoId, langTo) {
-  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
+  return `https://wa.me/${APP_ENV.WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
 }
 
 export function getWhatsappNotifyOnProofreadingReady(videoId) {
-  return `https://wa.me/${APP_ENV.VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
+  return `https://wa.me/${APP_ENV.WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
 }

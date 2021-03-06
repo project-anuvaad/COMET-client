@@ -30,7 +30,7 @@ export default class GiveFeedbackModal extends React.Component {
                 )}
             >
                 <Modal.Header>
-                    Give Feedback to VideoWiki
+                    Give Feedback to COMET
 
                     <Button
                         circular
@@ -42,7 +42,7 @@ export default class GiveFeedbackModal extends React.Component {
                 <Modal.Content>
                     <div className="feedback-item" >
                         <a
-                            href="https://feature-request.videowiki.org"
+                            href="#"//https://feature-request.videowiki.org
                             target="_blank"
                         >
                             <div style={{ marginRight: 30 }}>
@@ -50,10 +50,10 @@ export default class GiveFeedbackModal extends React.Component {
                             </div>
 
                             <div>
-                                Help us improve VideoWiki
+                                Help us improve COMET
                                 <div>
                                     <small>
-                                        Give feedback about your VideoWiki experience
+                                        Give feedback about your COMET experience
                                     </small>
                                 </div>
                             </div>
@@ -61,7 +61,7 @@ export default class GiveFeedbackModal extends React.Component {
                     </div>
                     <div className="feedback-item" >
                         <a
-                            href="https://support.videowiki.org"
+                            href="#"//https://support.videowiki.org
                             target="_blank"
                             rel="noopener noreferrer"
                         >

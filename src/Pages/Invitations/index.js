@@ -34,8 +34,8 @@ class Invitations extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
-                    <Grid.Column width={5} />
-                    <Grid.Column width={4}>
+                    <Grid.Column width={3} />
+                    <Grid.Column width={8}>
                         <Form onSubmit={(e) => e.preventDefault()}>
                             <p>Set your password</p>
                             {/* <Label>New Password</Label> */}
