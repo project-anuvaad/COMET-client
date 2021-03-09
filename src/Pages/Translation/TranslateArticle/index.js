@@ -30,7 +30,7 @@ class TranslateArticle extends React.Component {
         },
         () => {
           import("@videowiki/vw-translate").then((a) => {
-            const el = document.createElement("vw-translate");
+            const el = document.createElement("vd-translate");
             el.apiRoot = APP_ENV.API_ROOT;
             el.apiKey = this.props.apiKey.key;
             el.articleId = articleId;
@@ -38,7 +38,7 @@ class TranslateArticle extends React.Component {
             el.backRoute = routes.organziationTranslationMetrics(
               this.props.article.video
             );
-            document.getElementById("vw-translate-container").appendChild(el);
+            document.getElementById("vd-translate-container").appendChild(el);
           });
         }
       );
@@ -48,7 +48,7 @@ class TranslateArticle extends React.Component {
   render() {
     return (
       <div
-        id="vw-translate-container"
+        id="vd-translate-container"
         style={{ minHeight: "100%", height: "100%" }}
       >
         {!this.state.loaded && (

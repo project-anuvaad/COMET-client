@@ -32,14 +32,14 @@ class Convert extends React.Component {
         loaded: true,
       });
       import("@videowiki/vw-proofread").then((a) => {
-        const el = document.createElement("vw-proofread");
+        const el = document.createElement("vd-proofread");
         el.apiRoot = APP_ENV.API_ROOT;
         el.apiKey = this.props.apiKey.key;
         el.videoId = video;
         el.websocketServerUrl = APP_ENV.WEBSOCKET_SERVER_URL;
         el.backRoute = `${routes.organizationVideos()}?activeTab=proofread`;
         el.finishRedirectRoute = this.getFinishRedirectRoute();
-        document.getElementById('vw-proofread-container').appendChild(el);
+        document.getElementById('vd-proofread-container').appendChild(el);
       });
     }
   };
@@ -52,25 +52,25 @@ class Convert extends React.Component {
     return `${routes.organziationTranslations()}?video=${video._id}`;
   };
 
-//   renderVwProofread = () => {
-//     const { video } = querstring.parse(window.location.search);
-//     return (
-//       <vw-proofread
-//         apiKey={this.props.apiKey.key}
-//         apiRoot={APP_ENV.API_ROOT}
-//         videoId={video}
-//         backRoute={`${routes.organizationVideos()}?activeTab=proofread`}
-//         finishRedirectRoute={this.getFinishRedirectRoute()}
-//         websocketServerUrl={APP_ENV.WEBSOCKET_SERVER_URL}
-//       ></vw-proofread>
-//     );
-//   };
+  //   renderVwProofread = () => {
+  //     const { video } = querstring.parse(window.location.search);
+  //     return (
+  //       <vd-proofread
+  //         apiKey={this.props.apiKey.key}
+  //         apiRoot={APP_ENV.API_ROOT}
+  //         videoId={video}
+  //         backRoute={`${routes.organizationVideos()}?activeTab=proofread`}
+  //         finishRedirectRoute={this.getFinishRedirectRoute()}
+  //         websocketServerUrl={APP_ENV.WEBSOCKET_SERVER_URL}
+  //       ></vd-proofread>
+  //     );
+  //   };
 
   render() {
     if (!this.props.apiKey) return null;
 
     return (
-      <div id="vw-proofread-container" style={{ minHeight: '100%', height: '100%'}}>
+      <div id="vd-proofread-container" style={{ minHeight: '100%', height: '100%' }}>
         {!this.state.loaded ||
           (!this.props.video && (
             <LoadingComponent active={true}></LoadingComponent>

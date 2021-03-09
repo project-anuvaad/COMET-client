@@ -20,7 +20,7 @@ export const IMAGE_EXTENSIONS = [
 export const VIDEOS_EXTESION = ["webm", "mp4", "ogg", "ogv"];
 export const GIF_EXTESIONS = ["gif"];
 export const VIDEO_PLAYER_THUMBNAIL_IMAGE =
-  "https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/video-placeholder.jpg";
+  "";
 export const SPEAKER_BACKGROUND_COLORS = {
   [-1]: "white",
   0: "#800080",
@@ -150,7 +150,7 @@ export const ARTICLE_STAGES_TITLES = {
 };
 
 export const APP_ENV = {
-  API_ROOT: "",
+  API_ROOT: "https://comet.anuvaad.org",
   WHATSAPP_NUMBER: "",
   WEBSOCKET_SERVER_URL: "",
   FRONTEND_HOST_NAME: "",

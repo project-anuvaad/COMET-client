@@ -113,7 +113,7 @@ class SingleUpload extends React.Component {
                                 <div
                                     style={{ height: 400, position: 'relative' }}
                                 >
-                                    <img alt="video thumbnail" style={{ width: '100%', height: '100%' }} src="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/video-placeholder.jpg" />
+                                    {/* <img alt="video thumbnail" style={{ width: '100%', height: '100%' }} src="" /> */}
                                     <div style={{ position: 'absolute', top: '20%', left: 0, right: 0, textAlign: 'center' }} >
                                         <p>
                                            {this.renderSuccessLottie()} 

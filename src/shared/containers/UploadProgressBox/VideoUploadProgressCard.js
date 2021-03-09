@@ -10,10 +10,10 @@ export default class VideoUploadProgressCard extends React.Component {
 
             <Grid.Row style={{ height: 70 }}>
                 <Grid.Column width={4}>
-                    <img
-                        src={'https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/video-placeholder.jpg'}
+                    {/* <img
+                        src=""
                         style={{ height: '100%' }}
-                    />
+                    /> */}
                 </Grid.Column>
                 <Grid.Column width={12} style={{ padding: 0 }}>
                     <div>

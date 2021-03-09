@@ -192,7 +192,7 @@ class LandingPage extends React.Component {
             <StickyContainer>
                 <div className="container-fluid p-0 ">
                     <header className="header">
-                        <a href="#" className="logo"> <img src="https://via.placeholder.com/100" alt="Comet Logo" /> </a>
+                        <a href="#" className="logo"> <img src="/img/logo.png" alt="Comet Logo" /> </a>
                         <a href="#" className="explore no-underline">
                             {/* <button type="button" className="explore-diksha">
                                 EXPLORE DIKSHA

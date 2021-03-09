@@ -11196,19 +11196,18 @@ body {
 }
 
 .logo {
-    height: 93px;
     width: 164px;
     border-radius: 0 0 4px 4px;
     background-color: #FFF;
     box-shadow: 0 20px 40px -7px #D8D8D8;
     display: inline-block;
-    padding: 18px 33px;
+    padding: 20px;
     margin-top: 0px;
 }
 
 .logo img {
-    height: 56px;
-    width: 98px;
+    object-fit: contain;
+    width: 100%;
 }
 
 .eResources .about-section .aboutVidyadaan,
