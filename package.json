@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@comet-anuvaad/video-proofread": "^1.0.0",
+    "@comet-anuvaad/video-translate": "^1.0.0",
     "@sentry/browser": "^5.15.1",
-    "@videowiki/vw-proofread": "^3.5.2",
-    "@videowiki/vw-translate": "^3.0.7",
     "async": "^3.1.0",
     "classnames": "^2.2.6",
     "clipboard-copy": "^3.0.0",
     "connected-react-router": "^6.5.2",
     "express": "^4.17.1",
+    "fabric": "1.6.2",
     "lodash": "^4.17.20",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
@@ -19,6 +20,7 @@
     "react": "^16.8.6",
     "react-addons-css-transition-group": "^15.6.2",
     "react-avatar": "^3.7.0",
+    "react-color": "^2.18.1",
     "react-custom-scrollbars": "^4.2.1",
     "react-datepicker": "^2.9.6",
     "react-day-picker": "^7.3.2",
@@ -56,9 +58,7 @@
     "superagent": "^5.1.0",
     "superagent-use": "^0.1.0",
     "swagger-ui-react": "^3.24.3",
-    "typewriter-effect": "^2.12.1",
-    "fabric": "1.6.2",
-    "react-color": "^2.18.1"
+    "typewriter-effect": "^2.12.1"
   },
   "scripts": {
     "start": "pm2 start server.js --name tvw_frontend",

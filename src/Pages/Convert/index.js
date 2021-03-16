@@ -31,7 +31,7 @@ class Convert extends React.Component {
       this.setState({
         loaded: true,
       });
-      import("@videowiki/vw-proofread").then((a) => {
+      import("@comet-anuvaad/video-proofread").then((a) => {
         const el = document.createElement("vd-proofread");
         el.apiRoot = APP_ENV.API_ROOT;
         el.apiKey = this.props.apiKey.key;

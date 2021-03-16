@@ -176,14 +176,14 @@ class AppRouter extends React.Component {
                 layout={DashboardLayout}
               />
 
-              <LazyRoute
+              {/* <LazyRoute
                 exact
                 path={routes.organizationTips()}
                 title="Organziation: Tips and Tutorials"
                 isPrivateRoute={true}
                 loader={OrganizationTips}
                 layout={DashboardLayout}
-              />
+              /> */}
 
               <LazyRoute
                 exact
@@ -207,7 +207,7 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organizationHome()}
                 isPrivateRoute={true}
-                authorize={['admin', 'review']}
+                authorize={[]}
                 title="Organziation: Videos"
                 loader={OrganizationReview}
                 layout={DashboardLayout}

@@ -29,7 +29,7 @@ class TranslateArticle extends React.Component {
           loaded: true,
         },
         () => {
-          import("@videowiki/vw-translate").then((a) => {
+          import("@comet-anuvaad/video-translate").then((a) => {
             const el = document.createElement("vd-translate");
             el.apiRoot = APP_ENV.API_ROOT;
             el.apiKey = this.props.apiKey.key;
