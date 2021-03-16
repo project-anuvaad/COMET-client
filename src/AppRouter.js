@@ -207,7 +207,7 @@ class AppRouter extends React.Component {
                 exact
                 path={routes.organizationHome()}
                 isPrivateRoute={true}
-                authorize={[]}
+                authorize={['admin', 'review']}
                 title="Organziation: Videos"
                 loader={OrganizationReview}
                 layout={DashboardLayout}
