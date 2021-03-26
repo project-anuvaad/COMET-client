@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@comet-anuvaad/video-proofread": "^1.0.0",
-    "@comet-anuvaad/video-translate": "^1.0.0",
+    "@comet-anuvaad/video-proofread": "^1.1.0",
+    "@comet-anuvaad/video-translate": "^1.1.0",
     "@sentry/browser": "^5.15.1",
     "async": "^3.1.0",
     "classnames": "^2.2.6",
