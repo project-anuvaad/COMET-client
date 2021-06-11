@@ -147,7 +147,7 @@ export default class FAQ extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <div style={{ padding: '0 10%', paddingTop: '5rem', backgroundColor: '#F3F5F9' }}>
-                                <h2>COMING SOON...</h2>
+                                <h2 style={{ textAlign: 'center' }}>COMING SOON...</h2>
                                 {/* <div className="how-it-work-card">
                                     <h3>
                                         How does COMET work?
@@ -199,10 +199,10 @@ export default class FAQ extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                     {/* <UserGuidingTutorialModal open={this.state.guidingModalOpen} onClose={() => this.setState({ guidingModalOpen: false })} /> */}
-                    <Grid.Row>
+                    {/* <Grid.Row>
                         <Grid.Column width={16}>
                             <div style={{ width: '80%', margin: '0 auto', marginTop: '5rem' }}>
-                                {/* {this.state.activeTab === 0 && (
+                                {this.state.activeTab === 0 && (
 
                                     <div>
                                         <h2
@@ -284,10 +284,10 @@ export default class FAQ extends React.Component {
                                             </Grid.Row>
                                         </Grid>
                                     </div>
-                                )} */}
+                                )}
                             </div>
                         </Grid.Column>
-                    </Grid.Row>
+                    </Grid.Row> */}
 
                 </Grid>
             </div>
