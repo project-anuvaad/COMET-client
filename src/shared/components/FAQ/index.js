@@ -147,7 +147,8 @@ export default class FAQ extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <div style={{ padding: '0 10%', paddingTop: '5rem', backgroundColor: '#F3F5F9' }}>
-                                <div className="how-it-work-card">
+                                <h2>COMING SOON...</h2>
+                                {/* <div className="how-it-work-card">
                                     <h3>
                                         How does COMET work?
                                         </h3>
@@ -171,8 +172,8 @@ export default class FAQ extends React.Component {
                                             src="/img/onboarding/play-button.png"
                                         />
                                     </div>
-                                </div>
-                                {SUBTABS.map((item, index) => (
+                                </div> */}
+                                {/* {SUBTABS.map((item, index) => (
                                     <React.Fragment
                                         key={`subtab-item-${item.title}`}
                                     >
@@ -193,15 +194,15 @@ export default class FAQ extends React.Component {
                                             {item.title}
                                         </span>
                                     </React.Fragment>
-                                ))}
+                                ))} */}
                             </div>
                         </Grid.Column>
                     </Grid.Row>
-                    <UserGuidingTutorialModal open={this.state.guidingModalOpen} onClose={() => this.setState({ guidingModalOpen: false })} />
+                    {/* <UserGuidingTutorialModal open={this.state.guidingModalOpen} onClose={() => this.setState({ guidingModalOpen: false })} /> */}
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <div style={{ width: '80%', margin: '0 auto', marginTop: '5rem' }}>
-                                {this.state.activeTab === 0 && (
+                                {/* {this.state.activeTab === 0 && (
 
                                     <div>
                                         <h2
@@ -283,7 +284,7 @@ export default class FAQ extends React.Component {
                                             </Grid.Row>
                                         </Grid>
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         </Grid.Column>
                     </Grid.Row>
